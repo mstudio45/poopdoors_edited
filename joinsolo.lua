@@ -1,4 +1,4 @@
-if game.PlaceId == 6516141723 then
+
 	local NotificationHolder = loadstring(game:HttpGet("https://raw.githubusercontent.com/BocusLuke/UI/main/STX/Module.Lua"))()
 	local Notification = loadstring(game:HttpGet("https://raw.githubusercontent.com/BocusLuke/UI/main/STX/Client.Lua"))()
 	function message(text)
@@ -53,4 +53,4 @@ if game.PlaceId == 6516141723 then
 			normalmessage("POOPDOORS EDITED", "Solo games are full, retrying...", 2)
 		end
 	until teleported == true
-end
+
