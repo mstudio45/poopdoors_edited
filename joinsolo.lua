@@ -39,7 +39,10 @@ if game.PlaceId == 6516141723 then
 	repeat
 		for _,v in pairs(game:GetService("Workspace").Lobby.LobbyElevators:GetChildren()) do
 			if v.DoorHitbox.BillboardGui.Title.Text == "0 / 1" then
-				game.Players.LocalPlayer.Character:PivotTo(v.DoorHitbox.CFrame)
+				repeat
+					game.Players.LocalPlayer.Character:PivotTo(v.DoorHitbox.CFrame)
+					task.wait()
+				until v.DoorHitbox.BillboardGui.Title.Text == "1 / 1"
 				teleported = true
 				normalmessage("POOPDOORS EDITED", "Joining...", 10)
 				break
