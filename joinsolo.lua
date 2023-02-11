@@ -44,7 +44,6 @@
 					task.wait()
 				until v.DoorHitbox.BillboardGui.Title.Text == "1 / 1"
 				teleported = true
-				normalmessage("POOPDOORS EDITED", "Joining...", 10)
 				break
 			end
 		end
@@ -53,4 +52,4 @@
 			normalmessage("POOPDOORS EDITED", "Solo games are full, retrying...", 2)
 		end
 	until teleported == true
-
+normalmessage("POOPDOORS EDITED", "Joining...", 10)
