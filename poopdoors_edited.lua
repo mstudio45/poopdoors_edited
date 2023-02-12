@@ -1906,8 +1906,8 @@ window_anticheatbyppasses.button("method 2", function()
 			iyflyspeed = 1.5
 			sFLY()
 			workspace.CurrentCamera.CameraSubject = root
-			StarterGui:SetCoreGuiEnabled(Enum.CoreGuiType.All, true)
-			StarterGui:SetCore("ResetButtonCallback", true)
+			game:GetService("StarterGui"):SetCoreGuiEnabled(Enum.CoreGuiType.All, true)
+			game:GetService("StarterGui"):SetCore("ResetButtonCallback", true)
 			normalmessage("AC BYPASS", "Done!", 5)
 			flags.anticheatbypass = true
 		end
