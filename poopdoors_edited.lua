@@ -1752,6 +1752,7 @@ window_anticheatbyppasses.label("credits: Renzoo#5106", 10)
 window_anticheatbyppasses.button("method 2", function()
 	confirmnotification("AC BYPASS", "Are you sure you want to bypass anticheat with method 2?", 15, function(state)
 		if state == true then
+                task.spawn()
 			FLYING = false
 			QEfly = true
 			iyflyspeed = 1
@@ -1910,6 +1911,7 @@ window_anticheatbyppasses.button("method 2", function()
 			game:GetService("StarterGui"):SetCore("ResetButtonCallback", true)
 			normalmessage("AC BYPASS", "Done!", 5)
 			flags.anticheatbypass = true
+end)
 		end
 	end)
 end)
