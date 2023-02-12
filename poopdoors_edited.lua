@@ -1768,7 +1768,7 @@ if game.ReplicatedStorage:WaitForChild("GameData"):WaitForChild("Floor").Value =
 		end
 	end)
 
-	--[[window_experimentals.toggle("auto a-1000",false,function(val)
+	window_experimentals.toggle("auto a-1000",false,function(val)
 		flags.autorooms = val
 
 		if val then
@@ -1811,7 +1811,7 @@ if game.ReplicatedStorage:WaitForChild("GameData"):WaitForChild("Floor").Value =
 					repeat task.wait()
 						char:PivotTo(dpos)
 					until lastroom ~= room or not flags.autorooms
-				end--
+				end--]]
 
 				if hide then
 					local OldPos = game.Players.LocalPlayer.Character.HumanoidRootPart.Position
@@ -1844,7 +1844,7 @@ if game.ReplicatedStorage:WaitForChild("GameData"):WaitForChild("Floor").Value =
 			end
 			entconnect:Disconnect()
 		end
-	end)--]]
+	end)
 end
 
 local hidden = false
