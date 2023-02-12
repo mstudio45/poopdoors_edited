@@ -1860,7 +1860,7 @@ window_misc.button("hide gui",function(val)
 	toggleguis()
 end)
 local aaaaa = game.UserInputService.InputBegan:Connect(function(key,gpa)
-	if gpa then return end
+	--if gpa then return end
 	if key.KeyCode == Enum.KeyCode.RightShift then
 		toggleguis()
 	end
