@@ -78,21 +78,23 @@ end
 
 -- credits alan1508 on v3erm
 do
-	if hookfunction then
-		local f;
-		f = hookfunction(game:GetService("ContentProvider").PreloadAsync, function(g, h, i)
-			if table.find(h, game:GetService("CoreGui")) then
-				local j = function(j, k)
-					if (j:match("^rbxasset://") or j:match("^rbxthumb://")) then
-						return i(j, k);
-					end
-				end;
-				warn("Anticheat Check Detected");
-				return f(g, h, j);
-			end
-			return f(g, h, i);
-		end);
-	end
+	task.spawn(function()
+		if hookfunction then
+			local f;
+			f = hookfunction(game:GetService("ContentProvider").PreloadAsync, function(g, h, i)
+				if table.find(h, game:GetService("CoreGui")) then
+					local j = function(j, k)
+						if (j:match("^rbxasset://") or j:match("^rbxthumb://")) then
+							return i(j, k);
+						end
+					end;
+					warn("Anticheat Check Detected");
+					return f(g, h, j);
+				end
+				return f(g, h, i);
+			end);
+		end
+	end)
 end
 
 local library = loadstring(game:HttpGet('https://pastebin.com/raw/vPWzQEC8'))()
