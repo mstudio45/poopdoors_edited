@@ -1,4 +1,4 @@
 {
-	"Version": "1.1",
-	"Announcement": "Fixed gui not loading and some bugs\nAdded hide/show gui\nAuto a-1000 is not fixed yet (im having some issues)"
+	"ver": "1.1",
+	"changelog": "Fixed gui not loading and some bugs\nAdded hide/show gui\nAuto a-1000 is not fixed yet (im having some issues)"
 }
