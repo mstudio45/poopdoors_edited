@@ -1746,7 +1746,7 @@ window_anticheatbyppasses.button("method 1",function()
 end)
 
 window_anticheatbyppasses.label("method 2 info:",30)
-window_anticheatbyppasses.label("with this method you will not see proximity prompts but they still works",50)
+window_anticheatbyppasses.label("with this method you will not see proximity prompts but some still works",50)
 window_anticheatbyppasses.label("if you want to use this method run it after the elevator is closed",30)
 window_anticheatbyppasses.label("credits: Renzoo#5106", 10)
 window_anticheatbyppasses.button("method 2", function()
