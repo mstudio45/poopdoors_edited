@@ -1,5 +1,5 @@
 {
 	"ver": "1.1",
-	"changelog": "Fixed gui not loading and some bugs\nAdded hide/show gui\nAuto a-1000 is not working",
+	"changelog": "Fixed gui not loading and some bugs\nAdded hide/show gui\nAuto a-1000 is not working properly",
 	"loadstring": "https://raw.githubusercontent.com/mstudio45/poopdoors_edited/main/poopdoors_edited.lua"
 }
