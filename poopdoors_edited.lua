@@ -1745,7 +1745,8 @@ end)
 
 if game.ReplicatedStorage:WaitForChild("GameData"):WaitForChild("Floor").Value == "Rooms" then
 	local window_rooms = library.window("the rooms")
-
+	table.insert(gui_windows, window)
+	
 	local a90remote = game.ReplicatedStorage:WaitForChild("EntityInfo"):WaitForChild("A90")
 
 	window_rooms.toggle("harmless A90",false,function(val)
