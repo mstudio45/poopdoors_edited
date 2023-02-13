@@ -27,7 +27,7 @@ function confirmnotification(title, text, timee, callback)
 		{OutlineColor = Color3.fromRGB(80, 80, 80), Time = timee or 10, Type = "option"},
 		{Image = "http://www.roblox.com/asset/?id=6023426923", ImageColor = Color3.fromRGB(255, 84, 84), Callback = callback or function(state)end}
 	)
-end 
+end  
 
 function warnmessage(title, text, timee)
 	Notification:Notify(
