@@ -1894,12 +1894,14 @@ window_anticheatbyppasses.button("method 1",function()
 end)
 
 window_anticheatbyppasses.label("method 2 info:",30)
-window_anticheatbyppasses.label("with this method you will not see proximity prompts but some still works",50)
-window_anticheatbyppasses.label("if you want to use this method run it after the elevator is closed",30)
-window_anticheatbyppasses.label("credits: Renzoo#5106", 10)
-window_anticheatbyppasses.button("method 2", function()
-	confirmnotification("AC BYPASS", "Are you sure you want to bypass anticheat with method 2?", 15, function(state)
-		if state == true then
+--window_anticheatbyppasses.label("with this method you will not see proximity prompts but some still works",50)
+--window_anticheatbyppasses.label("if you want to use this method run it after the elevator is closed",30)
+--window_anticheatbyppasses.label("credits: Renzoo#5106", 10)
+window_anticheatbyppasses.label("Roblox did a thing that you lose net ownership when you die so this method is patched (invisfling too)",70)
+window_anticheatbyppasses.button("method 2 (patched)", function()
+   local ok = false
+ confirmnotification("AC BYPASS", "Are you sure you want to bypass anticheat with method 2?", 15, function(state)
+		if ok == true then
 			function getRoot(char)
 				local rootPart = char:FindFirstChild('HumanoidRootPart') or char:FindFirstChild('Torso') or char:FindFirstChild('UpperTorso')
 				return rootPart
