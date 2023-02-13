@@ -282,6 +282,8 @@ local window_experimentals = library.window("experimentals [beta]")
 local window_rooms = library.window("the rooms")
 window_rooms.hide()
 
+local window_togglegui = library.window("toggle gui")
+
 local window_credits = library.window("credits")
 window_credits.label("v3rm post: 1200475", 15)
 window_credits.label("original by: zoophiliaphobic#6287",40) -- v3rm acc: 1802731
@@ -298,7 +300,7 @@ local gui_windows = {
 	window_credits,
 }
 
-window_esp.button("clear esp",function(val)
+window_esp.button("clear esp",function()
 	pcall(function()
 		for _,e in pairs(esptable) do
 			for _,v in pairs(e) do
@@ -2430,8 +2432,8 @@ function toggleguis()
 	end
 	hidden = not hidden
 end
-window_misc.button("hide gui",function(val)
-	normalmessage("POOPDOORS EDITED v"..currentver, "To toggle gui press 'RightShift'", 10)
+window_togglegui.button("toggle gui",function(val)
+	normalmessage("POOPDOORS EDITED v"..currentver, "GuI toggled. (You toggle gui with 'RightShift')", 10)
 	toggleguis()
 end)
 local aaaaa = game.UserInputService.InputBegan:Connect(function(key,gpa)
