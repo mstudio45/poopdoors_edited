@@ -1,6 +1,5 @@
 -- edited by mstudio45 | original by https://v3rmillion.net/member.php?action=profile&uid=1802731 
 -- https://v3rmillion.net/showthread.php?tid=1200475
--- loadstring(game:HttpGet(("https://raw.githubusercontent.com/mstudio45/poopdoors_edited/main/poopdoors_edited.lua"), true)()
 
 local NotificationHolder = loadstring(game:HttpGet("https://raw.githubusercontent.com/BocusLuke/UI/main/STX/Module.Lua"))()
 local Notification = loadstring(game:HttpGet("https://raw.githubusercontent.com/BocusLuke/UI/main/STX/Client.Lua"))()
@@ -1874,7 +1873,7 @@ end
 
 window_anticheatbyppasses.label("method 1 info:",30)
 window_anticheatbyppasses.label("this method will make it so you CANT pick up ANYTHING so only do this in multiplayer",40)
-window_anticheatbyppasses.label("if you use this in rooms you will may not get the a-1000 badge!", 40)
+window_anticheatbyppasses.label("if you use this in rooms you will NOT get the a-1000 badge!", 40)
 window_anticheatbyppasses.button("method 1",function()
 	confirmnotification("AC BYPASS", "Are you sure you want to bypass anticheat with method 1?", 15, function(state)
 		if state == true then
@@ -2340,40 +2339,40 @@ if game.ReplicatedStorage:WaitForChild("GameData"):WaitForChild("Floor").Value =
 				end
 				
 				if hide then
-					if #Wardrobes >= 1 then
+					--if #Wardrobes >= 1 then
 						hidefunc()
 						repeat task.wait() until not hide
 						unhidefunc()
-					else
-						local OldPos = game.Players.LocalPlayer.Character.HumanoidRootPart.Position
-						local function getrecentroom(index)
-							local rooms = workspace.CurrentRooms:GetChildren() 
-							table.sort(rooms,function(a,b)
-								return tonumber(a.Name) > tonumber(b.Name) 
-							end)
-
-							return rooms[index]
-						end
-						local room = getrecentroom(2)
-						local door = room:WaitForChild("Door")
-						local con = game:GetService("RunService").Heartbeat:Connect(function()
-							--	hum.WalkSpeed = 0
-							if door then
-								game.Players.LocalPlayer.Character:MoveTo(door.Door.Position + Vector3.new(0,avoidingYvalue,0))
-							else
-								game.Players.LocalPlayer.Character:MoveTo(OldPos + Vector3.new(0,avoidingYvalue,0))
-							end
-							--game.Players.LocalPlayer.Character:MoveTo(OldPos + Vector3.new(0,125,0))
-						end)
-
-						repeat task.wait() until not hide
+					--else
+					--	local OldPos = game.Players.LocalPlayer.Character.HumanoidRootPart.Position
+					--	local function getrecentroom(index)
+					--		local rooms = workspace.CurrentRooms:GetChildren() 
+					--		table.sort(rooms,function(a,b)
+					--			return tonumber(a.Name) > tonumber(b.Name) 
+					--		end)
+--
+					--		return rooms[index]
+					--	end
+					--	local room = getrecentroom(2)
+					--	local door = room:WaitForChild("Door")
+					--	local con = game:GetService("RunService").Heartbeat:Connect(function()
+					--		--	hum.WalkSpeed = 0
+					--		if door then
+					--			game.Players.LocalPlayer.Character:MoveTo(door.Door.Position + Vector3.new(0,avoidingYvalue,0))
+					--		else
+					--			game.Players.LocalPlayer.Character:MoveTo(OldPos + Vector3.new(0,avoidingYvalue,0))
+					--		end
+					--		--game.Players.LocalPlayer.Character:MoveTo(OldPos + Vector3.new(0,125,0))
+					--	end)
+--
+					--	repeat task.wait() until not hide
 						con:Disconnect()
-
-						for i = 1,15 do				
-							game.Players.LocalPlayer.Character:MoveTo(door.Door.Position)--OldPos)
-							task.wait()
-						end
-					end
+--
+					--	for i = 1,15 do				
+					--		game.Players.LocalPlayer.Character:MoveTo(door.Door.Position)--OldPos)
+					--		task.wait()
+					--	end
+					--end
 					if flags.noa90 == false then
 						return
 					end
