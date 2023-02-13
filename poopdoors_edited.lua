@@ -1975,9 +1975,9 @@ window_anticheatbyppasses.button("method 2", function()
 						elseif KEY:lower() == 'd' then 
 							CONTROL.R = (vfly and vehicleflyspeed or iyflyspeed)
 						elseif QEfly and KEY:lower() == 'e' then
-							CONTROL.Q = 0--(vfly and vehicleflyspeed or iyflyspeed)*2
+							CONTROL.Q = (vfly and vehicleflyspeed or iyflyspeed)*2
 						elseif QEfly and KEY:lower() == 'q' then
-							CONTROL.E = 0-- -(vfly and vehicleflyspeed or iyflyspeed)*2
+							CONTROL.E = -(vfly and vehicleflyspeed or iyflyspeed)*2
 						end
 						pcall(function() workspace.CurrentCamera.CameraType = Enum.CameraType.Track end)
 					end)
