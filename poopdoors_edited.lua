@@ -1,5 +1,6 @@
 -- edited by mstudio45 | original by https://v3rmillion.net/member.php?action=profile&uid=1802731 
 -- https://v3rmillion.net/showthread.php?tid=1200475
+-- loadstring(game:HttpGet("https://raw.githubusercontent.com/mstudio45/poopdoors_edited/main/poopdoors_edited.lua"), true)()
 
 local NotificationHolder = loadstring(game:HttpGet("https://raw.githubusercontent.com/BocusLuke/UI/main/STX/Module.Lua"))()
 local Notification = loadstring(game:HttpGet("https://raw.githubusercontent.com/BocusLuke/UI/main/STX/Client.Lua"))()
@@ -52,7 +53,7 @@ if game.PlaceId ~= 6839171747 and game.PlaceId == 6516141723 then
 	--warnmessage("POOPDOORS EDITED v"..currentver, "You need to join a game to run this script.", 10) 
 	confirmnotification("POOPDOORS EDITED v"..currentver, "Do you want to join a game?", 15, function(state)
 		if state == true then
-			loadstring(game:HttpGet(("https://raw.githubusercontent.com/mstudio45/poopdoors_edited/main/joinsolo.lua"),true))()
+			loadstring(game:HttpGet(("https://raw.githubusercontent.com/mstudio45/poopdoors_edited/main/joinsolo.lua"), true)()
 		end
 	end)
 	return
