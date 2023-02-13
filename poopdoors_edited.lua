@@ -2314,8 +2314,8 @@ if game.ReplicatedStorage:WaitForChild("GameData"):WaitForChild("Floor").Value =
 					--	end)
 --
 					--	repeat task.wait() until not hide
-						con:Disconnect()
---
+					--	con:Disconnect()
+----
 					--	for i = 1,15 do				
 					--		game.Players.LocalPlayer.Character:MoveTo(door.Door.Position)--OldPos)
 					--		task.wait()
