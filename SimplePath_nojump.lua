@@ -258,9 +258,9 @@ function Path:Stop()
 		return
 	end
 	if self._status == Path.StatusType.Idle then
-		output(function(m)
+		--[[output(function(m)
 			warn(debug.traceback(m))
-		end, "Attempt to run Path:Stop() in idle state")
+		end, "Attempt to run Path:Stop() in idle state")--]]
 		return
 	end
 	disconnectMoveConnection(self)
