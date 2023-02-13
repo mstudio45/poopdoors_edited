@@ -1900,31 +1900,31 @@ window_anticheatbyppasses.button("method 2", function()
 	confirmnotification("AC BYPASS", "Are you sure you want to bypass anticheat with method 2?", 15, function(state)
 		if state == true then
 			task.spawn(function()
-				local FLYING = false
-				local QEfly = true
-				local iyflyspeed = 1
-				local vehicleflyspeed = 1
-				local RunService = game:GetService("RunService")
-				local Players = game:GetService("Players")
-				local IYMouse = game.Players.LocalPlayer:GetMouse()
-				local flyKeyDown,flyKeyUp
+				FLYING = false
+				QEfly = true
+				iyflyspeed = 1
+				vehicleflyspeed = 1
+				RunService = game:GetService("RunService")
+				Players = game:GetService("Players")
+				IYMouse = game.Players.LocalPlayer:GetMouse()
+				flyKeyDown,flyKeyUp = nil, nil
 
-				local function getRoot(char)
+				function getRoot(char)
 					local rootPart = char:FindFirstChild('HumanoidRootPart') or char:FindFirstChild('Torso') or char:FindFirstChild('UpperTorso')
 					return rootPart
 				end
 				
-				local function sFLY(vfly)
+				function sFLY(vfly)
 					repeat wait() until Players.LocalPlayer and Players.LocalPlayer.Character and getRoot(Players.LocalPlayer.Character) and Players.LocalPlayer.Character:FindFirstChildOfClass("Humanoid")
 					repeat wait() until IYMouse
-					if flyKeyDown or flyKeyUp then flyKeyDown:Disconnect() flyKeyUp:Disconnect() end
+					if flyKeyDown or flyKeyUp then pcall(function()flyKeyDown:Disconnect()end) pcall(function()flyKeyUp:Disconnect()end) end
 
 					local T = getRoot(Players.LocalPlayer.Character)
 					local CONTROL = {F = 0, B = 0, L = 0, R = 0, Q = 0, E = 0}
 					local lCONTROL = {F = 0, B = 0, L = 0, R = 0, Q = 0, E = 0}
 					local SPEED = 0
 
-					local function FLY()
+					function FLY()
 						FLYING = true
 						local BG = Instance.new('BodyGyro')
 						local BV = Instance.new('BodyVelocity')
@@ -1999,7 +1999,7 @@ window_anticheatbyppasses.button("method 2", function()
 					FLY()
 				end
 
-				local function NOFLY()
+				function NOFLY()
 					FLYING = false
 					if flyKeyDown or flyKeyUp then flyKeyDown:Disconnect() flyKeyUp:Disconnect() end
 					if Players.LocalPlayer.Character:FindFirstChildOfClass('Humanoid') then
