@@ -2027,68 +2027,15 @@ window_anticheatbyppasses.button("method 2", function()
 
 				z1.Position = Vector3.new(0,9999,0)
 				speaker.Character=prt
-				wait(3)
+				task.wait(3)
 				speaker.Character=ch
-				wait(3)
+				task.wait(3)
 				local Hum = Instance.new("Humanoid")
 				z2:Clone()
 				Hum.Parent = speaker.Character
-				--hum = Hum
-				local root = getRoot(speaker.Character)
-				for i,v in pairs(speaker.Character:GetChildren()) do
-					if v ~= root and  v.Name ~= "Humanoid" then
-						v:Destroy()
-					end
-				end
-				root.Transparency = 0
-				root.Color = Color3.new(1, 1, 1)
-
-				local invisflingStepped
-				invisflingStepped = RunService.Stepped:Connect(function()
-					if speaker.Character and getRoot(speaker.Character) then
-						getRoot(speaker.Character).CanCollide = false
-					else
-						invisflingStepped:Disconnect()
-					end
-				end)
-				iyflyspeed = 1.5
-				sFLY()
-				workspace.CurrentCamera.CameraSubject = root
-				game:GetService("StarterGui"):SetCoreGuiEnabled(Enum.CoreGuiType.All, true)
-				game:GetService("StarterGui"):SetCore("ResetButtonCallback", true)
-				normalmessage("AC BYPASS", "Done!", 5)
-			end)
 			
-			task.spawn(function()
-				local speaker = game.Players.LocalPlayer
-				local ch = speaker.Character
-				local prt=Instance.new("Model")
-				prt.Parent = speaker.Character
-
-				local z1 = Instance.new("Part")
-				z1.Name="Torso"
-				z1.CanCollide = false
-				z1.Anchored = true
-
-				local z2 = Instance.new("Part")
-				z2.Name="Head"
-				z2.Parent = prt
-				z2.Anchored = true
-				z2.CanCollide = false
-
-				local z3 =Instance.new("Humanoid")
-				z3.Name="Humanoid"
-				z3.Parent = prt
-
-				z1.Position = Vector3.new(0,9999,0)
-				speaker.Character=prt
-				wait(3)
-				speaker.Character=ch
-				wait(3)
-				local Hum = Instance.new("Humanoid")
-				z2:Clone()
-				Hum.Parent = speaker.Character
-				--hum = Hum
+				hum = hum
+				
 				local root = getRoot(speaker.Character)
 				for i,v in pairs(speaker.Character:GetChildren()) do
 					if v ~= root and  v.Name ~= "Humanoid" then
@@ -2106,13 +2053,14 @@ window_anticheatbyppasses.button("method 2", function()
 						invisflingStepped:Disconnect()
 					end
 				end)
-				iyflyspeed = 1.5
-				sFLY()
+				task.spawn(function()
+				    iyflyspeed = 1.5
+				    sFLY()
+				end)
 				workspace.CurrentCamera.CameraSubject = root
 				game:GetService("StarterGui"):SetCoreGuiEnabled(Enum.CoreGuiType.All, true)
 				game:GetService("StarterGui"):SetCore("ResetButtonCallback", true)
 				normalmessage("AC BYPASS", "Done!", 5)
-				flags.anticheatbypass = true
 			end)
 		end
 	end)
@@ -2340,9 +2288,9 @@ if game.ReplicatedStorage:WaitForChild("GameData"):WaitForChild("Floor").Value =
 				
 				if hide then
 					--if #Wardrobes >= 1 then
-						hidefunc()
-						repeat task.wait() until not hide
-						unhidefunc()
+					hidefunc()
+					repeat task.wait() until not hide
+					unhidefunc()
 					--else
 					--	local OldPos = game.Players.LocalPlayer.Character.HumanoidRootPart.Position
 					--	local function getrecentroom(index)
