@@ -1752,7 +1752,7 @@ window_anticheatbyppasses.label("credits: Renzoo#5106", 10)
 window_anticheatbyppasses.button("method 2", function()
 	confirmnotification("AC BYPASS", "Are you sure you want to bypass anticheat with method 2?", 15, function(state)
 		if state == true then
-                	task.spawn(function()
+			task.spawn(function()
 				FLYING = false
 				QEfly = true
 				iyflyspeed = 1
@@ -1920,7 +1920,7 @@ local inRooms = false
 if game.ReplicatedStorage:WaitForChild("GameData"):WaitForChild("Floor").Value == "Rooms" then
 	inRooms = true
 	window_rooms.show()
-	
+
 	local a90remote = game.ReplicatedStorage:WaitForChild("EntityInfo"):WaitForChild("A90")
 
 	window_rooms.toggle("harmless A90",false,function(val)
