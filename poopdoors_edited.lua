@@ -1852,25 +1852,25 @@ if #game.Players:GetChildren() <= 1 or #game.Players:GetChildren() == 0 then
 	end)
 end
 
---if syn then
-	--if syn.queue_on_teleport then
-	--	window_experimentals.button("start a new solo run", function()
-	--		syn.queue_on_teleport([[
-	--			game.Loaded:Wait()
-	--			loadstring(game:HttpGet(("https://raw.githubusercontent.com/mstudio45/poopdoors_edited/main/joinsolo.lua"),true))()
-	--		]])
-	--		game:GetService("TeleportService"):Teleport(6516141723, game:GetService("Players").LocalPlayer)
-	--	end)
-	--end
---elseif queue_on_teleport then
-	--window_experimentals.button("start a new solo run", function()
-	--	queue_on_teleport([[
-	--		game.Loaded:Wait()
-	--		loadstring(game:HttpGet(("https://raw.githubusercontent.com/mstudio45/poopdoors_edited/main/joinsolo.lua"),true))()	
-	--	]])
-	--	game:GetService("TeleportService"):Teleport(6516141723, game:GetService("Players").LocalPlayer)
-	--end)
---end
+if syn then
+	if syn.queue_on_teleport then
+		window_experimentals.button("start a new solo run", function()
+			syn.queue_on_teleport([[
+				game.Loaded:Wait()
+				loadstring(game:HttpGet(("https://raw.githubusercontent.com/mstudio45/poopdoors_edited/main/joinsolo.lua"),true))()
+			]])
+			game:GetService("TeleportService"):Teleport(6516141723, game:GetService("Players").LocalPlayer)
+		end)
+	end
+elseif queue_on_teleport then
+	window_experimentals.button("start a new solo run", function()
+		queue_on_teleport([[
+			game.Loaded:Wait()
+			loadstring(game:HttpGet(("https://raw.githubusercontent.com/mstudio45/poopdoors_edited/main/joinsolo.lua"),true))()	
+		]])
+		game:GetService("TeleportService"):Teleport(6516141723, game:GetService("Players").LocalPlayer)
+	end)
+end
 
 window_anticheatbyppasses.label("method 1 info:",30)
 window_anticheatbyppasses.label("this method will make it so you CANT pick up ANYTHING so only do this in multiplayer",40)
