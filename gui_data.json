@@ -1,5 +1,5 @@
 {
 	"ver": "1.2",
-	"changelog": "New auto a-1000 (still in beta)\nAdded breaker aura\nFixed some bugs",
+	"changelog": "New auto a-1000 (still in beta)\nAdded breaker aura\nAdded auro skip rooms\nFixed some bugs",
 	"loadstring": "https://raw.githubusercontent.com/mstudio45/poopdoors_edited/main/poopdoors_edited.lua"
 }
