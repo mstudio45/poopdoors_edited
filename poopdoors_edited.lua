@@ -1,5 +1,6 @@
 -- edited by mstudio45 | original by https://v3rmillion.net/member.php?action=profile&uid=1802731 
 -- https://v3rmillion.net/showthread.php?tid=1200475
+-- loadstring(game:HttpGet(("https://raw.githubusercontent.com/mstudio45/poopdoors_edited/main/poopdoors_edited.lua"), true)()
 
 local NotificationHolder = loadstring(game:HttpGet("https://raw.githubusercontent.com/BocusLuke/UI/main/STX/Module.Lua"))()
 local Notification = loadstring(game:HttpGet("https://raw.githubusercontent.com/BocusLuke/UI/main/STX/Client.Lua"))()
@@ -27,7 +28,7 @@ function confirmnotification(title, text, timee, callback)
 		{OutlineColor = Color3.fromRGB(80, 80, 80), Time = timee or 10, Type = "option"},
 		{Image = "http://www.roblox.com/asset/?id=6023426923", ImageColor = Color3.fromRGB(255, 84, 84), Callback = callback or function(state)end}
 	)
-end  
+end 
 
 function warnmessage(title, text, timee)
 	Notification:Notify(
@@ -37,7 +38,7 @@ function warnmessage(title, text, timee)
 	)
 end
 
-local currentver = "1.1"
+local currentver = "1.2"
 local gui_data = nil
 local s,e = pcall(function()
 	gui_data = game:HttpGet(("https://raw.githubusercontent.com/mstudio45/poopdoors_edited/main/gui_data.json"), true)
@@ -75,6 +76,9 @@ normalmessage("POOPDOORS EDITED v"..currentver, "Loading script...", 2)
 if gui_data ~= nil then
 	normalmessage("INFO", gui_data.changelog, 20)
 end
+
+local SimplePath = loadstring(game:HttpGet(("https://raw.githubusercontent.com/mstudio45/poopdoors_edited/main/SimplePath_nojump.lua"--[["https://raw.githubusercontent.com/Zeref-Z/RBLX-SimplePath/main/src/SimplePath.lua"--]]),true))()
+SimplePath.JUMP_WHEN_STUCK = false
 
 -- credits alan1508 on v3erm
 do
@@ -225,7 +229,7 @@ task.spawn(function()
 	end	
 end)
 
-local avoidingYvalue = 20.5
+local avoidingYvalue = 22.5
 local flags = {
 	speed = 0,
 	espdoors = false,
@@ -261,7 +265,9 @@ local flags = {
 	anticheatbypass = false,
 	noeyesdamage = false,
 	predictentities = false,
-	noclip = false --, fly = false
+	noclip = false, --fly = false
+	breakercollecter = false,
+	autoskiprooms = false
 }
 
 local DELFLAGS = {table.unpack(flags)}
@@ -383,7 +389,7 @@ else
 end
 
 local walkspeedtoggle = false
-local walkspeedslider = window_player.slider("walkspeed",16,25,1,16,function(val)
+local walkspeedslider = window_player.slider("walkspeed",16,22,1,16,function(val)
 	flags.speed = val
 	if walkspeedtoggle == true then
 		hum.WalkSpeed = val
@@ -621,8 +627,13 @@ window_esp.toggle("book/breaker esp",false,function(val)
 
 			if v:IsA("Model") and (v.Name == "LiveHintBook" or v.Name == "LiveBreakerPolePickup") then
 				task.wait(0.1)
+				local h
+				if v.Name == "LiveHintBook" then
+					h = esp(v,Color3.fromRGB(160,190,255),v.PrimaryPart,"Book")
+				elseif v.Name == "LiveBreakerPolePickup" then
+					h = esp(v,Color3.fromRGB(160,190,255),v.PrimaryPart,"Breaker")
+				end
 
-				local h = esp(v,Color3.fromRGB(160,190,255),v.PrimaryPart,"Book")
 				table.insert(esptable.books,h)
 				table.insert(esptableinstances, v)
 
@@ -1260,6 +1271,60 @@ window_roomsdoors.button("skip room 50",function()
 	end)
 end)
 
+
+if fireproximityprompt then
+	window_roomsdoors.toggle("auto skip room",false,function(val)
+		flags.autoskiprooms = val
+		
+		pcall(function()
+			if val then
+				repeat
+					local key = false
+					local lever = false
+					local CurrentDoor = workspace.CurrentRooms[tostring(game:GetService("ReplicatedStorage").GameData.LatestRoom.Value)]:WaitForChild("Door")
+					for _,object in ipairs(CurrentDoor.Parent:GetDescendants()) do
+						if object.Name == "KeyObtain" then
+							key = object
+						end
+					end
+					for _,object in ipairs(CurrentDoor.Parent:GetDescendants()) do
+						if object.Name == "LeverForGate" then
+							lever = object
+						end
+					end
+					if LatestRoom.Value == 50 then
+						CurrentDoor = workspace.CurrentRooms[tostring(LatestRoom.Value + 1)]:WaitForChild("Door")
+						game.Players.LocalPlayer.Character:PivotTo(CFrame.new(CurrentDoor.Door.Position))
+					else
+						if key then
+							game.Players.LocalPlayer.Character:PivotTo(CFrame.new(key.Hitbox.Position))
+							task.wait(.3)
+							fireproximityprompt(key.ModulePrompt)
+							task.wait(.3)
+							game.Players.LocalPlayer.Character:PivotTo(CFrame.new(CurrentDoor.Door.Position))
+							task.wait(.3)
+							fireproximityprompt(CurrentDoor.Lock.UnlockPrompt)
+						end
+						if lever then
+							game.Players.LocalPlayer.Character:PivotTo(CFrame.new(lever.Main.Position))
+							task.wait(.3)
+							fireproximityprompt(lever.ActivateEventPrompt)
+							task.wait(.3)
+							game.Players.LocalPlayer.Character:PivotTo(CFrame.new(CurrentDoor.Door.Position))
+						end
+						game.Players.LocalPlayer.Character:PivotTo(CFrame.new(CurrentDoor.Door.Position))
+					end
+					task.wait(.45)
+					CurrentDoor.ClientOpen:FireServer()
+					task.wait(.1)
+				until not flags.autoskiprooms
+			end
+		end)
+	end)
+else
+	warnmessage("POOPDOORS EDITED v"..currentver, "You need to have fireproximityprompt function for 'skip room'.", 7)
+end
+
 window_misc.toggle("delete gates",false,function(val)
 	flags.nogates = val
 
@@ -1572,9 +1637,11 @@ if fireproximityprompt then
 								if not interactions then
 									task.spawn(function()
 										repeat task.wait(0.1)
-											if plr:DistanceFromCharacter(v.PrimaryPart.Position) <= 12 then
-												fireproximityprompt(prompt)
-											end
+											pcall(function()
+												if plr:DistanceFromCharacter(v.PrimaryPart.Position) <= 12 then
+													fireproximityprompt(prompt)
+												end
+											end)
 										until prompt:GetAttribute("Interactions") or not flags.draweraura
 									end)
 								end
@@ -1585,9 +1652,11 @@ if fireproximityprompt then
 								if not interactions then
 									task.spawn(function()
 										repeat task.wait(0.1)
-											if plr:DistanceFromCharacter(v.PrimaryPart.Position) <= 12 then
-												fireproximityprompt(prompt)
-											end
+											pcall(function()
+												if plr:DistanceFromCharacter(v.PrimaryPart.Position) <= 12 then
+													fireproximityprompt(prompt)
+												end
+											end)
 										until prompt:GetAttribute("Interactions") or not flags.draweraura
 									end)
 								end
@@ -1701,29 +1770,107 @@ else
 	warnmessage("POOPDOORS EDITED v"..currentver, "You need to have fireproximityprompt function for 'book aura'.", 7)
 end
 
+if fireproximityprompt then
+	window_misc.toggle("breaker aura",false,function(val)
+		flags.breakercollecter = val
+
+		if val then
+			local function setup(room)
+				local function check(v)
+					if v:IsA("Model") then
+						if v.PrimaryPart then
+							if v.Name == "LiveBreakerPolePickup" then
+								local prompt = v:WaitForChild("ActivateEventPrompt")
+
+								local okcanckl = 0
+								task.spawn(function()
+									repeat task.wait(0.1)
+										if plr:DistanceFromCharacter(v.PrimaryPart.Position) <= 12 then
+											fireproximityprompt(prompt) 
+											okcanckl += 1
+										end
+									until not v:IsDescendantOf(workspace) or not prompt:IsDescendantOf(workspace) or not flags.breakercollecter or okcanckl > 50
+								end)
+							end
+						end
+					end
+
+				end
+
+				local subaddcon
+				subaddcon = room.DescendantAdded:Connect(function(v)
+					check(v) 
+				end)
+
+				for i,v in pairs(room:GetDescendants()) do
+					check(v)
+				end
+
+				task.spawn(function()
+					repeat task.wait() until not flags.breakercollecter
+					subaddcon:Disconnect() 
+				end)
+			end
+
+			repeat task.wait()if flags.breakercollecter == false then break end until game:GetService("ReplicatedStorage").GameData.LatestRoom.Value == 100
+
+			if flags.breakercollecter == true then
+				local addconnect
+				addconnect = workspace.CurrentRooms.ChildAdded:Connect(function(room)
+					setup(room)
+				end)
+
+				for i,room in pairs(workspace.CurrentRooms:GetChildren()) do
+					if room:FindFirstChild("Assets") then
+						setup(room) 
+					end
+				end
+				--	if workspace.CurrentRooms[tostring(game:GetService("ReplicatedStorage").GameData.LatestRoom.Value)]:FindFirstChild("Assets") then
+				setup(workspace.CurrentRooms[tostring(game:GetService("ReplicatedStorage").GameData.LatestRoom.Value)])
+				--	end
+
+				repeat task.wait() until not flags.breakercollecter
+				addconnect:Disconnect()
+			end
+		end
+	end)
+else
+	warnmessage("POOPDOORS EDITED v"..currentver, "You need to have fireproximityprompt function for 'book aura'.", 7)
+end
+
 if #game.Players:GetChildren() <= 1 or #game.Players:GetChildren() == 0 then
 	window_misc.button("instant leave",function()
 		confirmnotification("CONFIRM", "Are you sure you want to leave?", 15, function(state)
 			if state == true then
-				game:Shutdown()
+				task.spawn(function()
+					task.wait(.05)
+					game:Shutdown()
+				end)
+				game.Players.LocalPlayer:Kick()
 			end
 		end)
 	end)
 end
 
-if syn then
-	if syn.queue_on_teleport then
-		window_experimentals.button("start a new solo run", function()
-			syn.queue_on_teleport([[loadstring(game:HttpGet(("https://raw.githubusercontent.com/mstudio45/poopdoors_edited/main/joinsolo.lua"),true))()]])
-			game:GetService("TeleportService"):Teleport(6516141723, game:GetService("Players").LocalPlayer)
-		end)
-	end
-elseif queue_on_teleport then
-	window_experimentals.button("start a new solo run", function()
-		queue_on_teleport([[loadstring(game:HttpGet(("https://raw.githubusercontent.com/mstudio45/poopdoors_edited/main/joinsolo.lua"),true))()]])
-		game:GetService("TeleportService"):Teleport(6516141723, game:GetService("Players").LocalPlayer)
-	end)
-end
+--if syn then
+	--if syn.queue_on_teleport then
+	--	window_experimentals.button("start a new solo run", function()
+	--		syn.queue_on_teleport([[
+	--			game.Loaded:Wait()
+	--			loadstring(game:HttpGet(("https://raw.githubusercontent.com/mstudio45/poopdoors_edited/main/joinsolo.lua"),true))()
+	--		]])
+	--		game:GetService("TeleportService"):Teleport(6516141723, game:GetService("Players").LocalPlayer)
+	--	end)
+	--end
+--elseif queue_on_teleport then
+	--window_experimentals.button("start a new solo run", function()
+	--	queue_on_teleport([[
+	--		game.Loaded:Wait()
+	--		loadstring(game:HttpGet(("https://raw.githubusercontent.com/mstudio45/poopdoors_edited/main/joinsolo.lua"),true))()	
+	--	]])
+	--	game:GetService("TeleportService"):Teleport(6516141723, game:GetService("Players").LocalPlayer)
+	--end)
+--end
 
 window_anticheatbyppasses.label("method 1 info:",30)
 window_anticheatbyppasses.label("this method will make it so you CANT pick up ANYTHING so only do this in multiplayer",40)
@@ -1740,7 +1887,7 @@ window_anticheatbyppasses.button("method 1",function()
 			hum.Parent = nil
 
 			hum = newhum
-			walkspeedslider.setmax(100)
+			walkspeedslider.setmax(75)
 		end
 	end)
 end)
@@ -1753,14 +1900,15 @@ window_anticheatbyppasses.button("method 2", function()
 	confirmnotification("AC BYPASS", "Are you sure you want to bypass anticheat with method 2?", 15, function(state)
 		if state == true then
 			task.spawn(function()
-				FLYING = false
-				QEfly = true
-				iyflyspeed = 1
-				vehicleflyspeed = 1
-				RunService = game:GetService("RunService")
-				Players = game:GetService("Players")
-				IYMouse = game.Players.LocalPlayer:GetMouse()
-				function sFLY(vfly)
+				local FLYING = false
+				local QEfly = true
+				local iyflyspeed = 1
+				local vehicleflyspeed = 1
+				local RunService = game:GetService("RunService")
+				local Players = game:GetService("Players")
+				local IYMouse = game.Players.LocalPlayer:GetMouse()
+				local flyKeyDown,flyKeyUp
+				local function sFLY(vfly)
 					repeat wait() until Players.LocalPlayer and Players.LocalPlayer.Character and getRoot(Players.LocalPlayer.Character) and Players.LocalPlayer.Character:FindFirstChildOfClass("Humanoid")
 					repeat wait() until IYMouse
 					if flyKeyDown or flyKeyUp then flyKeyDown:Disconnect() flyKeyUp:Disconnect() end
@@ -1845,7 +1993,7 @@ window_anticheatbyppasses.button("method 2", function()
 					FLY()
 				end
 
-				function NOFLY()
+				local function NOFLY()
 					FLYING = false
 					if flyKeyDown or flyKeyUp then flyKeyDown:Disconnect() flyKeyUp:Disconnect() end
 					if Players.LocalPlayer.Character:FindFirstChildOfClass('Humanoid') then
@@ -1854,7 +2002,7 @@ window_anticheatbyppasses.button("method 2", function()
 					pcall(function() workspace.CurrentCamera.CameraType = Enum.CameraType.Custom end)
 				end
 
-				function getRoot(char)
+				local function getRoot(char)
 					local rootPart = char:FindFirstChild('HumanoidRootPart') or char:FindFirstChild('Torso') or char:FindFirstChild('UpperTorso')
 					return rootPart
 				end
@@ -1916,6 +2064,10 @@ window_anticheatbyppasses.button("method 2", function()
 	end)
 end)
 
+local Path = nil
+local Wardrobes = {}
+local Wardrobe = nil
+local CurrentWardrobe = nil
 local inRooms = false
 if game.ReplicatedStorage:WaitForChild("GameData"):WaitForChild("Floor").Value == "Rooms" then
 	inRooms = true
@@ -1926,7 +2078,7 @@ if game.ReplicatedStorage:WaitForChild("GameData"):WaitForChild("Floor").Value =
 	window_rooms.toggle("harmless A90",false,function(val)
 		flags.noa90 = val
 
-		if val  then
+		if val then
 			local jumpscare = plr.PlayerGui:WaitForChild("MainUI"):WaitForChild("Jumpscare"):FindFirstChild("Jumpscare_A90")
 
 			if jumpscare then
@@ -1934,7 +2086,7 @@ if game.ReplicatedStorage:WaitForChild("GameData"):WaitForChild("Floor").Value =
 
 				a90remote.Parent = nil
 				repeat task.wait()
-					game.SoundService.Main.Volume = 1 
+					game.SoundService.Main.Volume = 1
 				until not flags.noa90
 				jumpscare.Parent = plr.PlayerGui.MainUI.Jumpscare
 				a90remote.Parent = entityinfo 
@@ -1942,9 +2094,164 @@ if game.ReplicatedStorage:WaitForChild("GameData"):WaitForChild("Floor").Value =
 		end
 	end)
 
-	window_experimentals.toggle("auto a-1000 (not working properly)",false,function(val)
-		flags.autorooms = val
+	function hidefunc()
+		Wardrobes = {}
+		Wardrobe = nil
+		CurrentWardrobe = nil
+		if Path then Path:Stop();Path = nil end
+		for _,v in pairs(game:GetService("Workspace").CurrentRooms[game:GetService("ReplicatedStorage").GameData.LatestRoom.Value].Assets:GetChildren()) do
+			if (v.Name == "Rooms_Locker" or v.Name == "Rooms_Locker_Fridge") and v:FindFirstChild("HidePrompt") and not table.find(Wardrobes, v) then
+				pcall(function()
+					v.WalkToPart:Destroy()
+				end)
+				local newPart = Instance.new("Part",v)
+				newPart.Anchored = true
+				newPart.CFrame = v.Base.CFrame:ToWorldSpace(CFrame.new(0, -4, -4))
+				newPart.Name = "WalkToPart"
+				newPart.CanCollide = false
+				newPart.Transparency = 1
+				table.insert(Wardrobes, v)
+			end
+		end
+		for i = 1, 2 do
+			task.spawn(function()
+				for _,v in pairs(game:GetService("Workspace").CurrentRooms[game:GetService("ReplicatedStorage").GameData.LatestRoom.Value-i].Assets:GetChildren()) do
+					if (v.Name == "Rooms_Locker" or v.Name == "Rooms_Locker_Fridge") and v:FindFirstChild("HidePrompt") and not table.find(Wardrobes, v) then
+						pcall(function()
+							v.WalkToPart:Destroy()
+						end)
+						local newPart = Instance.new("Part",v)
+						newPart.Anchored = true
+						newPart.CFrame = v.Base.CFrame:ToWorldSpace(CFrame.new(0, -4, -4))
+						newPart.Name = "WalkToPart"
+						newPart.CanCollide = false
+						newPart.Transparency = 1
+						table.insert(Wardrobes, v)
+					end
+				end
+			end)
+		end
 
+		Wardrobe = Wardrobes[1]
+		if #Wardrobes == 1 then
+			Wardrobe = Wardrobes[1]
+		else
+			for i,v in pairs(Wardrobes) do
+				if (game.Players.LocalPlayer.Character.PrimaryPart.Position - v.WalkToPart.Position).magnitude < (Wardrobe.WalkToPart.Position - game.Players.LocalPlayer.Character.PrimaryPart.Position).magnitude then
+					Wardrobe = v
+				end
+			end
+		end
+
+		if Wardrobe.HiddenPlayer.Value ~= nil then
+			pcall(function()
+				table.remove(Wardrobes, Wardrobe)
+			end)
+			pcall(function()
+				table.remove(Wardrobes, table.find(Wardrobes, Wardrobe))
+			end)
+			repeat
+				task.wait()
+				for i,v in pairs(Wardrobes) do
+					if (game.Players.LocalPlayer.Character.PrimaryPart.Position - v.WalkToPart.Position).magnitude < (Wardrobe.WalkToPart.Position - game.Players.LocalPlayer.Character.PrimaryPart.Position).magnitude then
+						Wardrobe = v
+					end
+				end
+				local breewk = false
+				--Wardrobe = Wardrobes[math.random(1, #Wardrobes)]
+				pcall(function()
+					if Wardrobe.HiddenPlayer.Value ~= nil then
+						pcall(function()
+							table.remove(Wardrobes, Wardrobe)
+						end)
+						pcall(function()
+							table.remove(Wardrobes, table.find(Wardrobes, Wardrobe))
+						end)
+					else
+						breewk = true
+					end
+				end)
+				if breewk == true then break end
+			until Wardrobe.HiddenPlayer.Value == nil
+		end
+
+		local HIDDEN = false
+		if not Wardrobe:FindFirstChild("WalkToPart") then
+			pcall(function()
+				Wardrobe.WalkToPart:Destroy()
+			end)
+			local newPart = Instance.new("Part", Wardrobe)
+			newPart.Anchored = true
+			newPart.CFrame = Wardrobe.Base.CFrame:ToWorldSpace(CFrame.new(0, -4, -4))
+			newPart.Name = "WalkToPart"
+			newPart.CanCollide = false
+			newPart.Transparency = 1
+		end
+		--local Goal = Wardrobe.WalkToPart.Position
+		local Path = SimplePath.new(game.Players.LocalPlayer.Character, {
+			AgentCanJump = false
+		}, {
+			TIME_VARIANCE = 0.07;
+			COMPARISON_CHECKS = 5;
+			JUMP_WHEN_STUCK = false;
+		})
+		Path.Visualize = true	
+		Path.Blocked:Connect(function()
+			if HIDDEN == true then if Path then Path:Stop() end return end
+			--print("Path Blocked")
+			if Path then
+				Path:Run(Wardrobe.WalkToPart.Position)
+			end
+		end)
+		Path.WaypointReached:Connect(function()
+			if HIDDEN == true then if Path then Path:Stop() end return end
+			if Path then
+				Path:Run(Wardrobe.WalkToPart.Position)
+			end
+		end)
+		Path.Error:Connect(function(errorType)
+			if HIDDEN == true then if Path then Path:Stop() end return end
+			--print("Path Error",errorType)
+			if Path then
+				Path:Run(Wardrobe.WalkToPart.Position)
+			end
+		end)
+		Path.Reached:Connect(function()
+			if Path then Path:Stop() end
+			task.spawn(function()
+				repeat
+					task.wait()
+					fireproximityprompt(Wardrobe.HidePrompt)
+					if Wardrobe.HiddenPlayer.Value ~= nil then
+						if Wardrobe.HiddenPlayer.Value.Name == game.Players.LocalPlayer.Name then
+							if Path then Path:Stop() end
+							HIDDEN = true
+							CurrentWardrobe = Wardrobe
+							break
+						end
+					end
+				until true
+			end)
+		end)
+		Path:Run(Wardrobe.WalkToPart.Position)
+	end
+	
+	function unhidefunc()
+		task.wait()
+		game:GetService("VirtualUser"):SetKeyDown(119)
+		task.wait(.5)
+		game:GetService("VirtualUser"):SetKeyUp(119)
+		CurrentWardrobe = nil
+	end
+
+	window_rooms.toggle("auto a-1000 (beta)",false,function(val)
+		if flags.noa90 == false then
+			normalmessage("AUTO A-1000", "Enable 'harmless a90' and keep this on if you want to use this.", 5)
+			return
+		end
+		flags.autorooms = val
+		normalmessage("AUTO A-1000", "IN BETA.", 10)
+		
 		if val then
 			local hide = false
 
@@ -1970,53 +2277,136 @@ if game.ReplicatedStorage:WaitForChild("GameData"):WaitForChild("Floor").Value =
 					end
 				end
 			end)
-
+			
+			local Finished
 			while flags.autorooms do
-				local room = getrecentroom(2)
-				local door = room:WaitForChild("Door")
-				local dpos = door:GetPivot()
-
-				--[[
+				if flags.noa90 == false then
+					break
+				end
+				
 				if hide then
-					repeat task.wait()
-						char:PivotTo(dpos+Vector3.new(0,21,0))
-					until not hide
-				else
-					repeat task.wait()
-						char:PivotTo(dpos)
-					until lastroom ~= room or not flags.autorooms
-				end--]]
+					if #Wardrobes >= 1 then
+						hidefunc()
+						repeat task.wait() until not hide
+						unhidefunc()
+					else
+						local OldPos = game.Players.LocalPlayer.Character.HumanoidRootPart.Position
+						local function getrecentroom(index)
+							local rooms = workspace.CurrentRooms:GetChildren() 
+							table.sort(rooms,function(a,b)
+								return tonumber(a.Name) > tonumber(b.Name) 
+							end)
 
-				if hide then
-					local OldPos = game.Players.LocalPlayer.Character.HumanoidRootPart.Position
-					local oldwalkspeed = hum.WalkSpeed
-					local con = game:GetService("RunService").Heartbeat:Connect(function()
-						--	hum.WalkSpeed = 0
-						if door then
-							game.Players.LocalPlayer.Character:MoveTo(door.Door.Position + Vector3.new(0,avoidingYvalue,0))
-						else
-							game.Players.LocalPlayer.Character:MoveTo(OldPos + Vector3.new(0,avoidingYvalue,0))
+							return rooms[index]
 						end
-						--game.Players.LocalPlayer.Character:MoveTo(OldPos + Vector3.new(0,125,0))
-					end)
+						local room = getrecentroom(2)
+						local door = room:WaitForChild("Door")
+						local con = game:GetService("RunService").Heartbeat:Connect(function()
+							--	hum.WalkSpeed = 0
+							if door then
+								game.Players.LocalPlayer.Character:MoveTo(door.Door.Position + Vector3.new(0,avoidingYvalue,0))
+							else
+								game.Players.LocalPlayer.Character:MoveTo(OldPos + Vector3.new(0,avoidingYvalue,0))
+							end
+							--game.Players.LocalPlayer.Character:MoveTo(OldPos + Vector3.new(0,125,0))
+						end)
 
-					repeat task.wait() until not hide
-					--inst.Destroying:Wait()
-					--task.wait(0.35)
-					con:Disconnect()
+						repeat task.wait() until not hide
+						con:Disconnect()
 
-					for i = 1,5 do				
-						game.Players.LocalPlayer.Character:MoveTo(door.Door.Position)--OldPos)
-					end	
+						for i = 1,15 do				
+							game.Players.LocalPlayer.Character:MoveTo(door.Door.Position)--OldPos)
+							task.wait()
+						end
+					end
+					if flags.noa90 == false then
+						return
+					end
 				else
-					repeat task.wait()
-						char:PivotTo(dpos)
-					until lastroom ~= room or not flags.autorooms
+					repeat
+						unhidefunc()
+						task.wait()
+						if flags.noa90 == false then
+							break
+						end
+						task.wait()
+						local room = workspace.CurrentRooms[tostring(game:GetService("ReplicatedStorage").GameData.LatestRoom.Value)]
+						local door = room:FindFirstChild("Door")
+						if door == nil then
+							for _,v in pairs(room:GetChildren()) do
+								if v.Name == "Door" and v:IsA("Model") and v:FindFirstChild("ClientOpen") then
+									door = v
+									break
+								end
+							end
+						end
+						
+						Finished = false
+						if Path then Path:Stop();Path = nil end
+						--local Goal = door.Door.Position
+						
+						print("Going to",getrecentroom(1).Name..".")
+						
+						Path = SimplePath.new(game.Players.LocalPlayer.Character, {
+							AgentCanJump = false
+						}, {
+							TIME_VARIANCE = 0.07;
+							COMPARISON_CHECKS = 5;
+							JUMP_WHEN_STUCK = false;
+						})
+						Path.Visualize = true	
+						Path.Blocked:Connect(function()
+							if Finished == true then if Path then Path:Stop() end return end
+							if hide == true then
+								repeat task.wait() until not hide
+								unhidefunc()
+							end
+							--print("Path Blocked")
+							if Path then
+								Path:Run(door.Door.Position)
+							end
+						end)
+						Path.WaypointReached:Connect(function()
+							if Finished == true then if Path then Path:Stop() end return end
+							if hide == true then
+								repeat task.wait() until not hide
+								unhidefunc()
+							end
+							if Path then
+								Path:Run(door.Door.Position)
+							end
+						end)
+						Path.Error:Connect(function(errorType)
+							if Finished == true then if Path then Path:Stop() end return end
+							if hide == true then
+								repeat task.wait() until not hide
+								unhidefunc()
+							end
+							--print("Path Error",errorType)
+							if errorType == SimplePath.ErrorType.TargetUnreachable then
+								if Path then
+									Path:Run(door.Door.Position)
+								end
+							end
+							--Path:Run(Goal)
+						end)
+						Path.Reached:Connect(function()
+							if Path then Path:Stop() end
+							Finished = true
+							Path = nil
+						end)
+						Path:Run(door.Door.Position)
+						
+						repeat task.wait() until Finished == true or hide == true or flags.noa90 == false
+					until lastroom ~= room or not flags.autorooms or hide == true or flags.noa90 == false
 				end
 
 				task.wait()
 			end
 			entconnect:Disconnect()
+			if flags.noa90 == false then
+				normalmessage("AUTO A-1000", "Enable 'harmless a90' and keep this on if you want to use this.", 5)
+			end
 		end
 	end)
 end
@@ -2043,13 +2433,14 @@ window_misc.button("hide gui",function(val)
 	toggleguis()
 end)
 local aaaaa = game.UserInputService.InputBegan:Connect(function(key,gpa)
-	if gpa then return end
+	--if gpa then return end
 	if key.KeyCode == Enum.KeyCode.RightShift then
 		toggleguis()
 	end
 end)
 
 window_misc.button("close gui",function()
+	if Path then Path:Stop();Path = nil end
 	aaaaa:Disconnect()
 	flags = DELFLAGS
 	walkspeedtoggle = false
