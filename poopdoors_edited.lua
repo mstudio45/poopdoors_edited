@@ -2345,7 +2345,7 @@ if game.ReplicatedStorage:WaitForChild("GameData"):WaitForChild("Floor").Value =
 						
 						Finished = false
 						if Path then Path:Stop();Path = nil end
-						--local Goal = door.Door.Position
+						local Goal = door.Door.Position
 						
 						print("Going to",getrecentroom(1).Name..".")
 						
@@ -2365,7 +2365,7 @@ if game.ReplicatedStorage:WaitForChild("GameData"):WaitForChild("Floor").Value =
 							end
 							--print("Path Blocked")
 							if Path then
-								Path:Run(door.Door.Position)
+								pcall(function()Path:Run(Goal)end)
 							end
 						end)
 						Path.WaypointReached:Connect(function()
@@ -2375,7 +2375,7 @@ if game.ReplicatedStorage:WaitForChild("GameData"):WaitForChild("Floor").Value =
 								unhidefunc()
 							end
 							if Path then
-								Path:Run(door.Door.Position)
+								pcall(function()Path:Run(Goal)end)
 							end
 						end)
 						Path.Error:Connect(function(errorType)
@@ -2387,7 +2387,7 @@ if game.ReplicatedStorage:WaitForChild("GameData"):WaitForChild("Floor").Value =
 							--print("Path Error",errorType)
 							if errorType == SimplePath.ErrorType.TargetUnreachable then
 								if Path then
-									Path:Run(door.Door.Position)
+									pcall(function()Path:Run(Goal)end)
 								end
 							end
 							--Path:Run(Goal)
