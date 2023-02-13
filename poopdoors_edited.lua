@@ -1,6 +1,5 @@
 -- edited by mstudio45 | original by https://v3rmillion.net/member.php?action=profile&uid=1802731 
 -- https://v3rmillion.net/showthread.php?tid=1200475
--- loadstring(game:HttpGet(("https://raw.githubusercontent.com/mstudio45/poopdoors_edited/main/poopdoors_edited.lua"), true)()
 
 local NotificationHolder = loadstring(game:HttpGet("https://raw.githubusercontent.com/BocusLuke/UI/main/STX/Module.Lua"))()
 local Notification = loadstring(game:HttpGet("https://raw.githubusercontent.com/BocusLuke/UI/main/STX/Client.Lua"))()
@@ -1908,6 +1907,12 @@ window_anticheatbyppasses.button("method 2", function()
 				local Players = game:GetService("Players")
 				local IYMouse = game.Players.LocalPlayer:GetMouse()
 				local flyKeyDown,flyKeyUp
+
+				local function getRoot(char)
+					local rootPart = char:FindFirstChild('HumanoidRootPart') or char:FindFirstChild('Torso') or char:FindFirstChild('UpperTorso')
+					return rootPart
+				end
+				
 				local function sFLY(vfly)
 					repeat wait() until Players.LocalPlayer and Players.LocalPlayer.Character and getRoot(Players.LocalPlayer.Character) and Players.LocalPlayer.Character:FindFirstChildOfClass("Humanoid")
 					repeat wait() until IYMouse
@@ -1969,9 +1974,9 @@ window_anticheatbyppasses.button("method 2", function()
 						elseif KEY:lower() == 'd' then 
 							CONTROL.R = (vfly and vehicleflyspeed or iyflyspeed)
 						elseif QEfly and KEY:lower() == 'e' then
-							CONTROL.Q = (vfly and vehicleflyspeed or iyflyspeed)*2
+							--CONTROL.Q = (vfly and vehicleflyspeed or iyflyspeed)*2
 						elseif QEfly and KEY:lower() == 'q' then
-							CONTROL.E = -(vfly and vehicleflyspeed or iyflyspeed)*2
+							--CONTROL.E = -(vfly and vehicleflyspeed or iyflyspeed)*2
 						end
 						pcall(function() workspace.CurrentCamera.CameraType = Enum.CameraType.Track end)
 					end)
@@ -1985,9 +1990,9 @@ window_anticheatbyppasses.button("method 2", function()
 						elseif KEY:lower() == 'd' then
 							CONTROL.R = 0
 						elseif KEY:lower() == 'e' then
-							CONTROL.Q = 0
+							--CONTROL.Q = 0
 						elseif KEY:lower() == 'q' then
-							CONTROL.E = 0
+							--CONTROL.E = 0
 						end
 					end)
 					FLY()
@@ -2002,10 +2007,6 @@ window_anticheatbyppasses.button("method 2", function()
 					pcall(function() workspace.CurrentCamera.CameraType = Enum.CameraType.Custom end)
 				end
 
-				local function getRoot(char)
-					local rootPart = char:FindFirstChild('HumanoidRootPart') or char:FindFirstChild('Torso') or char:FindFirstChild('UpperTorso')
-					return rootPart
-				end
 				local speaker = game.Players.LocalPlayer
 				local ch = speaker.Character
 				local prt=Instance.new("Model")
