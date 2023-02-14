@@ -1317,7 +1317,7 @@ else
 end--]]
 
 window_roomsdoors:AddToggle({
-	Name = "No Seek arms and fire",
+	Name = "No Seek Arms & Fire",
 	Value = false,
 	Callback = function(val, oldval)
 		flags.noseekarmsfire = val
@@ -1345,7 +1345,7 @@ end)
 
 if fireproximityprompt then
 	window_roomsdoors:AddButton({
-		Name = "Skip current room",
+		Name = "Skip Current Room",
 		Callback = function()
 			pcall(function()
 				local key = false
@@ -1393,7 +1393,7 @@ else
 end
 
 window_roomsdoors:AddButton({
-	Name = "Skip room 50",
+	Name = "Skip Room 50",
 	Callback = function()
 		pcall(function()
 			if LatestRoom.Value == 50 then
@@ -1406,7 +1406,7 @@ window_roomsdoors:AddButton({
 
 if fireproximityprompt then
 	window_roomsdoors:AddToggle({
-		Name = "Auto skip room",
+		Name = "Auto Room-Skip",
 		Value = false,
 		Callback = function(val, oldval)
 			flags.autoskiprooms = val
@@ -1860,7 +1860,7 @@ end
 
 if fireproximityprompt then
 	window_misc:AddToggle({
-		Name = "Book aura",
+		Name = "Book Aura",
 		Value = false,
 		Callback = function(val, oldval)
 			flags.bookcollecter = val
@@ -1932,7 +1932,7 @@ end
 
 if fireproximityprompt then
 	window_misc:AddToggle({
-		Name = "Breaker aura",
+		Name = "Breaker Aura",
 		Value = false,
 		Callback = function(val, oldval)
 			flags.breakercollecter = val
