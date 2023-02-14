@@ -2274,7 +2274,7 @@ function PathModule.visualize(waypoints)
 	return visualWaypoints
 end
 function PathModule.new(char, goal, agentParameters, jumpingAllowed)
-	if not goal then return end
+	if not goal then PathInProgress = false;return end
 	if not (char and char:IsA("Model") and char.PrimaryPart) then return end
 	
 	local waypoints
@@ -2311,7 +2311,6 @@ function PathModule.new(char, goal, agentParameters, jumpingAllowed)
 			local s,e= pcall(function() v:Destroy() end)
 			if e then pcall(function() v.Parent = nil end) end
 		end)
-		
 		return true
 	else
 		return false
@@ -2536,8 +2535,13 @@ if game.ReplicatedStorage:WaitForChild("GameData"):WaitForChild("Floor").Value =
 		Name = "Auto A-1000 [BETA]",
 		Value = false,
 		Callback = function(val, oldval)
+			if Path == true or Path == false or Path ~= nil then
+				warnmessage("AUTO A-1000", "Please wait...", 5)
+			end
+			repeat task.wait() until Path == true or Path == false or Path == nil
+			
 			if flags.noa90 == false then
-				warnmessage("AUTO A-1000", "Disable A90 before using auto a-1000.", 5)
+				warnmessage("AUTO A-1000", "Disable A-90 before using Auto A-1000.", 5)
 				return
 			end
 			flags.autorooms = val
@@ -2637,8 +2641,16 @@ if game.ReplicatedStorage:WaitForChild("GameData"):WaitForChild("Floor").Value =
 
 							--print("Going to",getrecentroom(1).Name..".")
 							normalmessage("AUTO A-1000", "Going to "..getrecentroom(1).Name..".", 2.5)
+							
+							pcall(function() door.WalkToPart:Destroy() end)
+							local newPart = Instance.new("Part", Wardrobe)
+							newPart.Anchored = true
+							newPart.CFrame = door.Door.CFrame:ToWorldSpace(CFrame.new(0, -4, -4))
+							newPart.Name = "WalkToPart"
+							newPart.CanCollide = false
+							newPart.Transparency = 1
 
-							Path = PathModule.new(game.Players.LocalPlayer.Character, door.Door.Position, { AgentCanJump = false }, false)
+							Path = PathModule.new(game.Players.LocalPlayer.Character, newPart.Position, { AgentCanJump = false }, false)
 							repeat task.wait()
 								if Path == false then
 									local room = workspace.CurrentRooms[tostring(game:GetService("ReplicatedStorage").GameData.LatestRoom.Value-1)]
@@ -2651,7 +2663,13 @@ if game.ReplicatedStorage:WaitForChild("GameData"):WaitForChild("Floor").Value =
 											end
 										end
 									end
-									Path = PathModule.new(game.Players.LocalPlayer.Character, door.Door.Position, { AgentCanJump = false }, false)
+									pcall(function() door.WalkToPart:Destroy() end)
+									local newParte = Instance.new("Part", Wardrobe)
+									newParte.Anchored = true
+									newParte.Name = "WalkToPart"
+									newParte.CanCollide = false
+									newParte.Transparency = 1
+									Path = PathModule.new(game.Players.LocalPlayer.Character, newParte.Position, { AgentCanJump = false }, false)
 								end
 							until Path == true or hide == true or flags.noa90 == false
 							Path = nil
@@ -2662,7 +2680,7 @@ if game.ReplicatedStorage:WaitForChild("GameData"):WaitForChild("Floor").Value =
 				end
 				entconnect:Disconnect()
 				if flags.noa90 == false then
-					warnmessage("AUTO A-1000", "Disable A90 before using auto a-1000.", 5)
+					warnmessage("AUTO A-1000", "Disable A-90 before using Auto A-1000.", 5)
 				end
 			end
 		end
