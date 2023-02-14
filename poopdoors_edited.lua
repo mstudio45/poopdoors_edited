@@ -1180,9 +1180,9 @@ end)
 
 
 if hookmetamethod and newcclosure and getnamecallmethod then
-	window_entities:AddLabel({ Name = "do not click when playing the" })
+	window_entities:AddLabel({ Name = "Do not click when playing the" })
 	window_entities:AddLabel({ Name = "heartbeat minigame if you have" })
-	window_entities:AddLabel({ Name = "'always win heartbeat' on" })
+	window_entities:AddLabel({ Name = "'always win heartbeat' on!" })
 	window_entities:AddToggle({
 		Name = "Always win Heartbeat minigame",
 		Value = false,
@@ -1511,7 +1511,7 @@ window_misc:AddToggle({
 	end
 })
 window_misc:AddToggle({
-	Name = "Delete Puzzle doors",
+	Name = "Delete Puzzle Doors",
 	Value = false,
 	Callback = function(val, oldval)
 		flags.nopuzzle = val
@@ -1563,7 +1563,7 @@ window_misc:AddToggle({
 	end
 })
 window_misc:AddToggle({
-	Name = "Delete Skeleten doors",
+	Name = "Delete Skeleten Doors",
 	Value = false,
 	Callback = function(val, oldval)
 		flags.noskeledoors = val
@@ -1591,7 +1591,7 @@ window_misc:AddToggle({
 	end
 })
 window_misc:AddToggle({
-	Name = "Auto library code",
+	Name = "Auto Library Code",
 	Value = false,
 	Callback = function(val, oldval)
 		flags.getcode = val
@@ -1640,7 +1640,7 @@ window_misc:AddToggle({
 	end
 })
 window_misc:AddToggle({
-	Name = "A-000 Door no locks",
+	Name = "A-000 Door No Locks",
 	Value = false,
 	Callback = function(val, oldval)
 		flags.roomsnolock = val
@@ -2021,10 +2021,10 @@ end
 
 
 window_anticheatbyppasses:AddLabel({ Name = "Method 1 Info:"})
-window_anticheatbyppasses:AddLabel({ Name = "this method will make it so"})
+window_anticheatbyppasses:AddLabel({ Name = "This method will make it so"})
 window_anticheatbyppasses:AddLabel({ Name = " you CANT pick up ANYTHING so"})
-window_anticheatbyppasses:AddLabel({ Name = " only do this in multiplayer" })
-window_anticheatbyppasses:AddLabel({ Name = "if you use this in rooms you" })
+window_anticheatbyppasses:AddLabel({ Name = " only do this in multiplayer." })
+window_anticheatbyppasses:AddLabel({ Name = "If you use this in rooms you" })
 window_anticheatbyppasses:AddLabel({ Name = " will NOT get the a-1000 badge!" })
 window_anticheatbyppasses:AddButton({
 	Name = "Method 1",
