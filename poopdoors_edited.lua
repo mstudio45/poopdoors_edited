@@ -2301,6 +2301,7 @@ function PathModule.new(char, goal, agentParameters, jumpingAllowed)
 		local Visualizers = PathModule.visualize(waypoints)
 
 		for i, v in pairs(waypoints) do
+			if POOPDOORSLOADED == false then return end
 			if not v then return end
 			if jumpingAllowed == true then if v.Action == Enum.PathWaypointAction.Jump then Humanoid:ChangeState(Enum.HumanoidStateType.Jumping) end end
 			Humanoid:MoveTo(v.Position)
