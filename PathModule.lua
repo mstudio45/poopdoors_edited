@@ -64,7 +64,7 @@ function PathModule.new(char, goal, agentParameters, jumpingAllowed, offset)
 			if POOPDOORSLOADED == false then return end
 			if not v then return end
 
-			if plr.Character.HumanoidRootPart.Anchored ~= true then
+			if char.HumanoidRootPart.Anchored ~= true then
 				if jumpingAllowed == true then if v.Action == Enum.PathWaypointAction.Jump then Humanoid:ChangeState(Enum.HumanoidStateType.Jumping) end end
 				Humanoid:MoveTo(v.Position)
 				Humanoid.MoveToFinished:Wait()
@@ -77,4 +77,5 @@ function PathModule.new(char, goal, agentParameters, jumpingAllowed, offset)
 		return false
 	end
 end
+
 return PathModule
