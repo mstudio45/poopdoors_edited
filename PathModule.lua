@@ -77,3 +77,4 @@ function PathModule.new(char, goal, agentParameters, jumpingAllowed, offset)
 		return false
 	end
 end
+return PathModule
