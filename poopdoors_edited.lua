@@ -2443,10 +2443,10 @@ if game.ReplicatedStorage:WaitForChild("GameData"):WaitForChild("Floor").Value =
 			end
 		end
 	end) 
-	
+
 	local autoa1000 = nil
 	autoa1000 = window_rooms:AddToggle({
-		Name = "Auto A-1000 [BETA]",
+		Name = "Auto A-1000",
 		Value = false,
 		Callback = function(val, oldval)
 			if flags.noa90 == false then
@@ -2479,7 +2479,7 @@ if game.ReplicatedStorage:WaitForChild("GameData"):WaitForChild("Floor").Value =
 						if Part then
 							if (Part.Name == "Rooms_Locker" or Part.Name == "Rooms_Locker_Fridge") then
 								hiding = true
-								if plr:DistanceFromCharacter(Part.Base.Position) <= 9 and plr.Character.HumanoidRootPart.Anchored == false then
+								if plr:DistanceFromCharacter(Part.Door.Position) <= 9 and plr.Character.HumanoidRootPart.Anchored == false then
 									fireproximityprompt(Part.HidePrompt)
 								end
 							end
@@ -2500,6 +2500,11 @@ if game.ReplicatedStorage:WaitForChild("GameData"):WaitForChild("Floor").Value =
 								unhidefunc()
 							end
 						end
+					end
+					
+					if game.Players.LocalPlayer.Character.Humanoid.Health < 1 then
+						flags.autorooms = false
+						autoa1000:RawSet(false)
 					end
 				end)
 
