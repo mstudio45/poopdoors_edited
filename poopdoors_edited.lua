@@ -54,7 +54,7 @@ function warnmessage(title, text, timee)
 	)
 end
 
-local currentver = "1.3.2"
+local currentver = "1.3.3"
 local gui_data = nil
 local s,e = pcall(function()
 	gui_data = game:HttpGet(("https://raw.githubusercontent.com/mstudio45/poopdoors_edited/main/gui_data.json"), true)
@@ -94,7 +94,6 @@ normalmessage("POOPDOORS EDITED v"..currentver, "Loading script...", 2)
 if gui_data ~= nil then
 	normalmessage("INFO", gui_data.changelog, 20)
 end
-normalmessage("POOPDOORS EDITED v"..currentver, "DM mstudio45#5590 if you have any issues with the script.", 20)
 
 -- credits alan1508 on v3erm
 do task.spawn(function()if hookfunction then local a;a=hookfunction(game:GetService("ContentProvider").PreloadAsync,function(b,c,d)if table.find(c,game:GetService("CoreGui"))then local e=function(e,f)if e:match("^rbxasset://")or e:match("^rbxthumb://")then return d(e,f)end end;warn("Anticheat Check Detected")return a(b,c,e)end;return a(b,c,d)end)end end)end
