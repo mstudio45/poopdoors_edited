@@ -2495,12 +2495,6 @@ if game.ReplicatedStorage:WaitForChild("GameData"):WaitForChild("Floor").Value =
 									end
 								end
 							end
-
-							--[[if A60_A120.Main.Position.Y < -4 or not (workspace:FindFirstChild("A60") or workspace:FindFirstChild("A120")) or not A60_A120 or A60_A120 == nil then 
-								if plr.Character.HumanoidRootPart.Anchored == true then 
-									unhidefunc();goingToHide = false 
-								end 
-							end--]]
 						else
 							if plr.Character.HumanoidRootPart.Anchored == true then 
 								repeat task.wait() until not (workspace:FindFirstChild("A60") or workspace:FindFirstChild("A120"))
