@@ -2296,6 +2296,11 @@ local Wardrobes = {}
 local Wardrobe = nil
 local CurrentWardrobe = nil
 local inRooms = false
+
+local window_rooms = GUI:CreateSection({
+	Name = "The Rooms"
+})
+
 if game.ReplicatedStorage:WaitForChild("GameData"):WaitForChild("Floor").Value == "Rooms" then
 	-- anti afk by geodude#2619
 	task.spawn(function()
@@ -2314,9 +2319,6 @@ if game.ReplicatedStorage:WaitForChild("GameData"):WaitForChild("Floor").Value =
 	end)
 
 	inRooms = true
-	local window_rooms = GUI:CreateSection({
-		Name = "The Rooms"
-	})
 
 	local a90remote = nil
 	task.spawn(function() pcall(function() a90remote = game.ReplicatedStorage:WaitForChild("EntityInfo"):WaitForChild("A90") end) end)
@@ -2563,6 +2565,10 @@ if game.ReplicatedStorage:WaitForChild("GameData"):WaitForChild("Floor").Value =
 			end
 		end
 	end)
+end
+
+if inRooms == false then
+	window_rooms:AddLabel({ Name = "You need to be in Rooms for this section." })
 end
 
 function closegui()
