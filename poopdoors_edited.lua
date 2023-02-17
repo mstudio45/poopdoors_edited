@@ -2493,7 +2493,7 @@ if game.ReplicatedStorage:WaitForChild("GameData"):WaitForChild("Floor").Value =
 					if flags.autorooms == true then
 						plr.Character.HumanoidRootPart.CanCollide = false
 						plr.Character.Collision.CanCollide = false
-						plr.Character.Collision.Size = Vector3.new(8, plr.Character.Collision.Size.Y, 8)
+						plr.Character.Collision.Size = Vector3.new(5, plr.Character.Collision.Size.Y, 5) -- 8
 						plr.Character.Humanoid.WalkSpeed = 21
 
 						local Part = getWalkPart()
@@ -2542,10 +2542,10 @@ if game.ReplicatedStorage:WaitForChild("GameData"):WaitForChild("Floor").Value =
 					local Part = getWalkPart()
 					repeat task.wait() until goingToHide == false and plr.Character.HumanoidRootPart.Anchored == false
 					if plr.Character.HumanoidRootPart.Anchored == false then
+						local doorpart = nil;if Part:FindFirstChild("Door") then doorpart = Part.Door else doorpart = Part.PrimaryPart end
 						if isLocker(Part) then
 							task.spawn(function()
 								repeat
-									local doorpart = nil;if Part:FindFirstChild("Door") then doorpart = Part.Door else doorpart = Part.PrimaryPart end
 									if plr:DistanceFromCharacter(doorpart.Position) <= 9 then
 										if plr.Character.HumanoidRootPart.Anchored == false then
 											fireproximityprompt(Part.HidePrompt)
@@ -2553,12 +2553,12 @@ if game.ReplicatedStorage:WaitForChild("GameData"):WaitForChild("Floor").Value =
 									end
 									task.wait()									
 								until (Part.HiddenPlayer.Value ~= nil and Part.HiddenPlayer.Value.Name == plr.Name)
-							end)
+							end)		
 						end
 
 						Path = PathModule.new(
 							plr.Character, 
-							Part.Door.Position, 
+							doorpart.Position, 
 							{ 
 								WaypointSpacing = 1, 
 								AgentRadius = 0.5, 
