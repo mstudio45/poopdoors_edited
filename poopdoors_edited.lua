@@ -1,7 +1,7 @@
 -- edited by mstudio45 | original by https://v3rmillion.net/member.php?action=profile&uid=1802731 
 -- https://v3rmillion.net/showthread.php?tid=1200475
 
-function waitframes(ii) for i = 1, ii do task.wait() end 	end
+function waitframes(ii) for i = 1, ii do task.wait() end end
 
 local NotificationHolder = loadstring(game:HttpGet("https://raw.githubusercontent.com/BocusLuke/UI/main/STX/Module.Lua"))()
 local Notification = loadstring(game:HttpGet("https://raw.githubusercontent.com/BocusLuke/UI/main/STX/Client.Lua"))()
@@ -94,27 +94,10 @@ normalmessage("POOPDOORS EDITED v"..currentver, "Loading script...", 2)
 if gui_data ~= nil then
 	normalmessage("INFO", gui_data.changelog, 20)
 end
+normalmessage("POOPDOORS EDITED v"..currentver, "DM mstudio45#5590 if you have any issues with the script.", 20)
 
 -- credits alan1508 on v3erm
-do
-	task.spawn(function()
-		if hookfunction then
-			local f;
-			f = hookfunction(game:GetService("ContentProvider").PreloadAsync, function(g, h, i)
-				if table.find(h, game:GetService("CoreGui")) then
-					local j = function(j, k)
-						if (j:match("^rbxasset://") or j:match("^rbxthumb://")) then
-							return i(j, k);
-						end
-					end;
-					warn("Anticheat Check Detected");
-					return f(g, h, j);
-				end
-				return f(g, h, i);
-			end);
-		end
-	end)
-end
+do task.spawn(function()if hookfunction then local a;a=hookfunction(game:GetService("ContentProvider").PreloadAsync,function(b,c,d)if table.find(c,game:GetService("CoreGui"))then local e=function(e,f)if e:match("^rbxasset://")or e:match("^rbxthumb://")then return d(e,f)end end;warn("Anticheat Check Detected")return a(b,c,e)end;return a(b,c,d)end)end end)end
 
 local PathModule = {}
 local PathfindingService = game:GetService("PathfindingService")
@@ -2369,7 +2352,7 @@ if game.ReplicatedStorage:WaitForChild("GameData"):WaitForChild("Floor").Value =
 	function loadWardrobes()
 		clearWardrobes()
 		local function check(assets)
-			for _,v in pairs(assets:GetChildren()) do
+			for _,v in pairs(assets:GetDescendants()) do
 				if (v.Name == "Rooms_Locker" or v.Name == "Rooms_Locker_Fridge") and v:FindFirstChild("HidePrompt") and not table.find(Wardrobes, v) then
 					if v.Door.Position.Y > -3 and v.HiddenPlayer.Value == nil then
 						table.insert(Wardrobes, v)
@@ -2378,11 +2361,11 @@ if game.ReplicatedStorage:WaitForChild("GameData"):WaitForChild("Floor").Value =
 			end
 		end
 
-		check(game:GetService("Workspace").CurrentRooms[game:GetService("ReplicatedStorage").GameData.LatestRoom.Value].Assets)
+		check(game:GetService("Workspace").CurrentRooms[game:GetService("ReplicatedStorage").GameData.LatestRoom.Value])
 		for i = 1, 2 do
-			check(game:GetService("Workspace").CurrentRooms[game:GetService("ReplicatedStorage").GameData.LatestRoom.Value-i].Assets)
+			check(game:GetService("Workspace").CurrentRooms[game:GetService("ReplicatedStorage").GameData.LatestRoom.Value-i])
 		end
-		check(game:GetService("Workspace").CurrentRooms[game:GetService("ReplicatedStorage").GameData.LatestRoom.Value].Assets)
+		check(game:GetService("Workspace").CurrentRooms[game:GetService("ReplicatedStorage").GameData.LatestRoom.Value])
 		
 		Wardrobe = Wardrobes[1]
 		if #Wardrobes == 1 then
@@ -2403,7 +2386,7 @@ if game.ReplicatedStorage:WaitForChild("GameData"):WaitForChild("Floor").Value =
 	function getWalkPart()
 		local P = nil
 		local A60_A120 = workspace:FindFirstChild("A60") or workspace:FindFirstChild("A120")
-		if A60_A120 and A60_A120.Main.Position.Y > -4 then
+		if A60_A120 and A60_A120.Main.Position.Y > -2 then
 			P = getWardrobe()
 		else
 			P = game:GetService("Workspace").CurrentRooms[game:GetService("ReplicatedStorage").GameData.LatestRoom.Value].Door
@@ -2491,27 +2474,24 @@ if game.ReplicatedStorage:WaitForChild("GameData"):WaitForChild("Floor").Value =
 				local goingToHide = false
 				local HideCheck = game:GetService("RunService").RenderStepped:Connect(function()
 					if flags.autorooms == true then
-						plr.Character.HumanoidRootPart.CanCollide = false
-						plr.Character.Collision.CanCollide = false
-						plr.Character.Collision.Size = Vector3.new(5, plr.Character.Collision.Size.Y, 5) -- 8
-						plr.Character.Humanoid.WalkSpeed = 21
+						game.Players.LocalPlayer.Character.HumanoidRootPart.CanCollide = false
+						game.Players.LocalPlayer.Character.Collision.CanCollide = false
+						game.Players.LocalPlayer.Character.Collision.Size = Vector3.new(8, game.Players.LocalPlayer.Character.Collision.Size.Y, 8)
+						game.Players.LocalPlayer.Character.Humanoid.WalkSpeed = 21
 
 						local Part = getWalkPart()
 						local A60_A120 = workspace:FindFirstChild("A60") or workspace:FindFirstChild("A120")
 						if A60_A120 then
 							if Part then
 								if isLocker(Part) then
-									if A60_A120.Main.Position.Y > -4 then
+									if A60_A120.Main.Position.Y > -2 then
 										local doorpart = nil;if Part:FindFirstChild("Door") then doorpart = Part.Door else doorpart = Part.PrimaryPart end
 										if plr:DistanceFromCharacter(doorpart.Position) <= 9 then
 											goingToHide = true
 											if plr.Character.HumanoidRootPart.Anchored == false then
 												fireproximityprompt(Part.HidePrompt)
 											end
-										else
-											if plr:DistanceFromCharacter(Part.Door.Position) <= 11.5 then
-												plr.Character:PivotTo(Part.Door.CFrame)
-											end
+										--else if plr:DistanceFromCharacter(Part.Door.Position) <= 11.5 then plr.Character:PivotTo(Part.Door.CFrame) end
 										end
 									end
 								end
@@ -2519,15 +2499,13 @@ if game.ReplicatedStorage:WaitForChild("GameData"):WaitForChild("Floor").Value =
 
 							--[[if --[[A60_A120.Main.Position.Y < -4 or not (workspace:FindFirstChild("A60") or workspace:FindFirstChild("A120")) or not A60_A120 or A60_A120 == nil then 
 								if plr.Character.HumanoidRootPart.Anchored == true then 
-									unhidefunc()
-									goingToHide = false 
+									unhidefunc();goingToHide = false 
 								end 
 							end--]]
 						else
 							if plr.Character.HumanoidRootPart.Anchored == true then 
 								repeat task.wait() until not (workspace:FindFirstChild("A60") or workspace:FindFirstChild("A120"))
-								unhidefunc()
-								goingToHide = false 
+								unhidefunc();goingToHide = false 
 							end
 						end
 
@@ -2538,7 +2516,7 @@ if game.ReplicatedStorage:WaitForChild("GameData"):WaitForChild("Floor").Value =
 				while flags.autorooms do
 					if flags.noa90 == false then flags.noa90 = true;removea90() end
 					
-					waitframes(2)
+					waitframes(1)
 					local Part = getWalkPart()
 					repeat task.wait() until goingToHide == false and plr.Character.HumanoidRootPart.Anchored == false
 					if plr.Character.HumanoidRootPart.Anchored == false then
@@ -2561,7 +2539,7 @@ if game.ReplicatedStorage:WaitForChild("GameData"):WaitForChild("Floor").Value =
 							doorpart.Position, 
 							{ 
 								WaypointSpacing = 1, 
-								AgentRadius = 0.5, 
+								AgentRadius = 0.8,
 								AgentCanJump = false 
 							}, 
 							false, 
@@ -2572,7 +2550,7 @@ if game.ReplicatedStorage:WaitForChild("GameData"):WaitForChild("Floor").Value =
 				end
 
 				task.spawn(function()
-					repeat task.wait() until flags.autorooms == false
+					repeat task.wait() until flags.autorooms == false and goingToHide == false
 					HideCheck:Disconnect()
 				end)
 			else
