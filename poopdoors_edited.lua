@@ -2509,7 +2509,7 @@ if game.ReplicatedStorage:WaitForChild("GameData"):WaitForChild("Floor").Value =
 												fireproximityprompt(Part.HidePrompt)
 											end
 										else
-											if plr:DistanceFromCharacter(Part.Door.Position) <= 12 then
+											if plr:DistanceFromCharacter(Part.Door.Position) <= 11.5 then
 												plr.Character:PivotTo(Part.Door.CFrame)
 											end
 										end
