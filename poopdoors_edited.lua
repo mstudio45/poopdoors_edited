@@ -6,7 +6,11 @@ function waitframes(ii) for i = 1, ii do task.wait() end 	end
 local NotificationHolder = loadstring(game:HttpGet("https://raw.githubusercontent.com/BocusLuke/UI/main/STX/Module.Lua"))()
 local Notification = loadstring(game:HttpGet("https://raw.githubusercontent.com/BocusLuke/UI/main/STX/Client.Lua"))()
 function message(text)
-	spawn(function()
+	task.spawn(function()
+		local notif = Instance.new("Sound");notif.Parent = game.SoundService;notif.SoundId = "rbxassetid://4590657391";notif.Volume = 3;notif:Play();notif.Stopped:Wait();notif:Destroy()
+	end)
+
+	task.spawn(function()
 		local msg = Instance.new("Message",workspace)
 		msg.Text = tostring(text)
 		task.wait(5)
@@ -17,6 +21,10 @@ function message(text)
 end
 
 function normalmessage(title, text, timee)
+	task.spawn(function()
+		local notif = Instance.new("Sound");notif.Parent = game.SoundService;notif.SoundId = "rbxassetid://4590657391";notif.Volume = 3;notif:Play();notif.Stopped:Wait();notif:Destroy()
+	end)
+
 	Notification:Notify(
 		{Title = title, Description = text},
 		{OutlineColor = Color3.fromRGB(80, 80, 80),Time = timee or 5, Type = "default"}
@@ -24,6 +32,10 @@ function normalmessage(title, text, timee)
 end
 
 function confirmnotification(title, text, timee, callback)
+	task.spawn(function()
+		local notif = Instance.new("Sound");notif.Parent = game.SoundService;notif.SoundId = "rbxassetid://4590657391";notif.Volume = 3;notif:Play();notif.Stopped:Wait();notif:Destroy()
+	end)
+
 	Notification:Notify(
 		{Title = title, Description = text},
 		{OutlineColor = Color3.fromRGB(80, 80, 80), Time = timee or 10, Type = "option"},
@@ -32,6 +44,9 @@ function confirmnotification(title, text, timee, callback)
 end 
 
 function warnmessage(title, text, timee)
+	task.spawn(function()
+		local notif = Instance.new("Sound");notif.Parent = game.SoundService;notif.SoundId = "rbxassetid://4590657391";notif.Volume = 5;notif:Play();notif.Stopped:Wait();notif:Destroy()
+	end)
 	Notification:Notify(
 		{Title = title, Description = text},
 		{OutlineColor = Color3.fromRGB(80, 80, 80),Time = timee or 5, Type = "image"},
@@ -39,7 +54,7 @@ function warnmessage(title, text, timee)
 	)
 end
 
-local currentver = "1.3.1"
+local currentver = "1.3.2"
 local gui_data = nil
 local s,e = pcall(function()
 	gui_data = game:HttpGet(("https://raw.githubusercontent.com/mstudio45/poopdoors_edited/main/gui_data.json"), true)
@@ -116,7 +131,7 @@ local VisualizeColors = {
 	Finish = Color3.fromRGB(0, 255, 0)
 }
 
-function PathModule.visualize(waypoints)
+function PathModule.visualize(waypoints, waypointSpacing)
 	for _, waypoint in ipairs(waypoints) do
 		local visualWaypointClone = Instance.new("Part")
 		visualWaypointClone.Size = Vector3.new(0.3, 0.3, 0.3)
@@ -125,7 +140,6 @@ function PathModule.visualize(waypoints)
 		visualWaypointClone.Material = Enum.Material.Neon
 		visualWaypointClone.Shape = Enum.PartType.Ball
 		visualWaypointClone.Position = waypoint.Position + Vector3.new(0, 3, 0)
-		visualWaypointClone.Parent = VisualizerFolder
 		visualWaypointClone.Color =
 			(
 				waypoint == waypoints[#waypoints] and VisualizeColors.Finish
@@ -134,6 +148,7 @@ function PathModule.visualize(waypoints)
 				or (waypoint.Action == Enum.PathWaypointAction.Jump and VisualizeColors.Jump)
 				or VisualizeColors.Normal
 			)
+		visualWaypointClone.Parent = VisualizerFolder
 	end
 end
 function PathModule.new(char, goal, agentParameters, jumpingAllowed, offset)
@@ -164,10 +179,9 @@ function PathModule.new(char, goal, agentParameters, jumpingAllowed, offset)
 		PathModule.visualize(waypoints)
 
 		for i, v in pairs(waypoints) do
-			if POOPDOORSLOADED == false then return end
-			if not v then return end
+			if POOPDOORSLOADED == false or not v then return end
 
-			if char.HumanoidRootPart.Anchored ~= true then
+			if char.HumanoidRootPart.Anchored == false then
 				if jumpingAllowed == true then if v.Action == Enum.PathWaypointAction.Jump then Humanoid:ChangeState(Enum.HumanoidStateType.Jumping) end end
 				Humanoid:MoveTo(v.Position)
 				Humanoid.MoveToFinished:Wait()
@@ -1313,7 +1327,7 @@ workspace.ChildAdded:Connect(function(inst)
 						--message(inst.Name:gsub("Moving",""):lower().." is coming go hide")
 						warnmessage("ENTITIES", inst.Name:gsub("Moving","").." is coming. Hide!", 7)
 						inst.Destroying:Wait()
-						warnmessage("ENTITIES", "It's now safe to leave the hiding spot.", 7)
+						warnmessage("ENTITIES", "It's now completely safe to leave the hiding spot.", 7)
 					end
 				end
 			end
@@ -2301,6 +2315,22 @@ local Wardrobe = nil
 local CurrentWardrobe = nil
 local inRooms = false
 if game.ReplicatedStorage:WaitForChild("GameData"):WaitForChild("Floor").Value == "Rooms" then
+	-- anti afk by geodude#2619
+	task.spawn(function()
+	--	pcall(function()
+			local GC = getconnections or get_signal_cons
+			if GC then
+				for i,v in pairs(GC(plr.Idled)) do
+					if v["Disable"] then
+						v["Disable"](v)
+					elseif v["Disconnect"] then
+						v["Disconnect"](v)
+					end
+				end
+			end
+		--end)
+	end)
+
 	inRooms = true
 	local window_rooms = GUI:CreateSection({
 		Name = "The Rooms"
@@ -2352,7 +2382,8 @@ if game.ReplicatedStorage:WaitForChild("GameData"):WaitForChild("Floor").Value =
 		for i = 1, 2 do
 			check(game:GetService("Workspace").CurrentRooms[game:GetService("ReplicatedStorage").GameData.LatestRoom.Value-i].Assets)
 		end
-
+		check(game:GetService("Workspace").CurrentRooms[game:GetService("ReplicatedStorage").GameData.LatestRoom.Value].Assets)
+		
 		Wardrobe = Wardrobes[1]
 		if #Wardrobes == 1 then
 			Wardrobe = Wardrobes[1]
@@ -2365,16 +2396,14 @@ if game.ReplicatedStorage:WaitForChild("GameData"):WaitForChild("Floor").Value =
 		end
 	end
 	function getWardrobe()
-		if Wardrobes == nil or Wardrobe == nil then
-			loadWardrobes()
-		end
+		loadWardrobes()
 		return Wardrobe
 	end
 
 	function getWalkPart()
 		local P = nil
 		local A60_A120 = workspace:FindFirstChild("A60") or workspace:FindFirstChild("A120")
-		if A60_A120 then
+		if A60_A120 and A60_A120.Main.Position.Y > -4 then
 			P = getWardrobe()
 		else
 			P = game:GetService("Workspace").CurrentRooms[game:GetService("ReplicatedStorage").GameData.LatestRoom.Value].Door
@@ -2382,7 +2411,7 @@ if game.ReplicatedStorage:WaitForChild("GameData"):WaitForChild("Floor").Value =
 		return P
 	end
 
-	function hidefunc()
+	--[[function hidefunc()
 		loadWardrobes()
 
 		task.spawn(function()
@@ -2407,7 +2436,7 @@ if game.ReplicatedStorage:WaitForChild("GameData"):WaitForChild("Floor").Value =
 	GuiService.MenuClosed:Connect(function()
 		robloxMenuOpened = false
 	end)
-	
+
 	local UnhideDebounce = false
 	local VirtualInputManager = game:GetService("VirtualInputManager")
 	function closerobloxgui()
@@ -2418,7 +2447,7 @@ if game.ReplicatedStorage:WaitForChild("GameData"):WaitForChild("Floor").Value =
 	function unhidefunc()
 		if UnhideDebounce == true then return end
 		plr.DevComputerMovementMode = Enum.DevComputerMovementMode.KeyboardMouse
-		
+
 		UnhideDebounce = true		
 		if robloxMenuOpened == true then
 			closerobloxgui()
@@ -2432,17 +2461,12 @@ if game.ReplicatedStorage:WaitForChild("GameData"):WaitForChild("Floor").Value =
 		task.wait(3)
 		UnhideDebounce = false
 		plr.DevComputerMovementMode = Enum.DevComputerMovementMode.Scriptable
-	end
-	
-	LatestRoom:GetPropertyChangedSignal("Value"):Connect(function()
-		if flags.autorooms == true then
-			if LatestRoom.Value ~= 1000 then
-				plr.DevComputerMovementMode = Enum.DevComputerMovementMode.Scriptable
-			else
-				plr.DevComputerMovementMode = Enum.DevComputerMovementMode.KeyboardMouse
-			end
-		end
-	end) 
+	end--]]
+	function unhidefunc() plr.Character:SetAttribute("Hiding",false) end
+
+	function isLocker(Part)
+		return (Part.Name == "Rooms_Locker" or Part.Name == "Rooms_Locker_Fridge")
+	end 
 
 	local autoa1000 = nil
 	autoa1000 = window_rooms:AddToggle({
@@ -2464,81 +2488,89 @@ if game.ReplicatedStorage:WaitForChild("GameData"):WaitForChild("Floor").Value =
 
 			flags.autorooms = val
 			if val then
-				plr.DevComputerMovementMode = Enum.DevComputerMovementMode.Scriptable
-				
-				local hiding = false
+				local goingToHide = false
 				local HideCheck = game:GetService("RunService").RenderStepped:Connect(function()
-					plr.Character.HumanoidRootPart.CanCollide = false
-					plr.Character.Collision.CanCollide = false
-					plr.Character.Collision.Size = Vector3.new(5, plr.Character.Collision.Size.Y, 5)
-					plr.Character.Humanoid.WalkSpeed = 21
+					if flags.autorooms == true then
+						plr.Character.HumanoidRootPart.CanCollide = false
+						plr.Character.Collision.CanCollide = false
+						plr.Character.Collision.Size = Vector3.new(8, plr.Character.Collision.Size.Y, 8)
+						plr.Character.Humanoid.WalkSpeed = 21
 
-					local Part = getWalkPart()
-					local A60_A120 = workspace:FindFirstChild("A60") or workspace:FindFirstChild("A120")
-					if A60_A120 then
-						if Part then
-							if (Part.Name == "Rooms_Locker" or Part.Name == "Rooms_Locker_Fridge") then
-								hiding = true
-								if plr:DistanceFromCharacter(Part.Door.Position) <= 9 and plr.Character.HumanoidRootPart.Anchored == false then
-									fireproximityprompt(Part.HidePrompt)
+						local Part = getWalkPart()
+						local A60_A120 = workspace:FindFirstChild("A60") or workspace:FindFirstChild("A120")
+						if A60_A120 then
+							if Part then
+								if isLocker(Part) then
+									if A60_A120.Main.Position.Y > -4 then
+										if plr:DistanceFromCharacter(Part.Door.Position) <= 9 then
+											goingToHide = true
+											if plr.Character.HumanoidRootPart.Anchored == false then
+												fireproximityprompt(Part.HidePrompt)
+											end
+										else
+											if plr:DistanceFromCharacter(Part.Door.Position) <= 12 then
+												plr.Character:PivotTo(Part.Door.CFrame)
+											end
+										end
+									end
 								end
 							end
-						end
-						
-						if not workspace:FindFirstChild("A60") or workspace:FindFirstChild("A120") then
-							if plr.Character.HumanoidRootPart.Anchored == true then
-								if UnhideDebounce == false then
-									hiding = false
+
+							--[[if --[[A60_A120.Main.Position.Y < -4 or not (workspace:FindFirstChild("A60") or workspace:FindFirstChild("A120")) or not A60_A120 or A60_A120 == nil then 
+								if plr.Character.HumanoidRootPart.Anchored == true then 
 									unhidefunc()
-								end
-							end
-						end
-					else
-						if plr.Character.HumanoidRootPart.Anchored == true then
-							if UnhideDebounce == false then
-								hiding = false
+									goingToHide = false 
+								end 
+							end--]]
+						else
+							if plr.Character.HumanoidRootPart.Anchored == true then 
+								repeat task.wait() until not (workspace:FindFirstChild("A60") or workspace:FindFirstChild("A120"))
 								unhidefunc()
+								goingToHide = false 
 							end
 						end
-					end
-					
-					if game.Players.LocalPlayer.Character.Humanoid.Health < 1 then
-						flags.autorooms = false
-						autoa1000:RawSet(false)
+
+						if game.Players.LocalPlayer.Character.Humanoid.Health < 1 then autoa1000:Set(false) end
 					end
 				end)
 
-				local Finished
 				while flags.autorooms do
-					if flags.noa90 == false then break end
-
+					if flags.noa90 == false then flags.noa90 = true;removea90() end
+					
+					waitframes(2)
 					local Part = getWalkPart()
-					if plr.Character.HumanoidRootPart.Anchored == true then
-						unhidefunc()
-					end
+					repeat task.wait() until goingToHide == false and plr.Character.HumanoidRootPart.Anchored == false
 					if plr.Character.HumanoidRootPart.Anchored == false then
-						if (Part.Name == "Rooms_Locker" or Part.Name == "Rooms_Locker_Fridge") then
+						if isLocker(Part) then
 							task.spawn(function()
 								repeat
-									if (plr.Character.HumanoidRootPart.Position - Path.Door.Position).Magnitude < 1.3 and plr.Character.HumanoidRootPart.Anchored == false then
-										fireproximityprompt(Part.HidePrompt)
+									if plr:DistanceFromCharacter(Part.Door.Position) <= 9 then
+										if plr.Character.HumanoidRootPart.Anchored == false then
+											fireproximityprompt(Part.HidePrompt)
+										end
 									end
-									local breake = false;pcall(function() if Part.HiddenPlayer.Value ~= nil then if Part.HiddenPlayer.Value.Name == plr.Name then breake = true;return end end end) if breake == true then break end
+									task.wait()									
 								until (Part.HiddenPlayer.Value ~= nil and Part.HiddenPlayer.Value.Name == plr.Name)
-								unhidefunc()
 							end)
-							Path = PathModule.new(plr.Character, Part.Door.CFrame:ToWorldSpace(CFrame.new(0,0,-2)).p, { WaypointSpacing = 2, AgentRadius = 1.25, AgentCanJump = false }, false, Vector3.new(0, 3, 0))
-						else
-							Path = PathModule.new(plr.Character, Part.Door.CFrame:ToWorldSpace(CFrame.new(0,0,-2)).p, { WaypointSpacing = 2, AgentRadius = 1.25, AgentCanJump = false }, false, Vector3.new(0, 3, 0))
 						end
+
+						Path = PathModule.new(
+							plr.Character, 
+							Part.Door.Position, 
+							{ 
+								WaypointSpacing = 1, 
+								AgentRadius = 0.5, 
+								AgentCanJump = false 
+							}, 
+							false, 
+							Vector3.new(0, 3, 0)
+						)
 						repeat task.wait() until Path == true or Path == false
 					end
-
-					task.wait()
 				end
-				
+
 				task.spawn(function()
-					repeat task.wait() until hiding == false
+					repeat task.wait() until flags.autorooms == false
 					HideCheck:Disconnect()
 				end)
 			else
@@ -2546,6 +2578,18 @@ if game.ReplicatedStorage:WaitForChild("GameData"):WaitForChild("Floor").Value =
 			end
 		end
 	})
+	
+	LatestRoom:GetPropertyChangedSignal("Value"):Connect(function()
+		if flags.autorooms == true then
+			if LatestRoom.Value ~= 1000 then
+				plr.DevComputerMovementMode = Enum.DevComputerMovementMode.Scriptable
+			else
+				plr.DevComputerMovementMode = Enum.DevComputerMovementMode.KeyboardMouse
+				autoa1000:Set(false)
+				normalmessage("AUTO A-1000", "Finished walking to A-1000!\nThanks for using POOPDOORS EDITED Auto A-1000.", 10)
+			end
+		end
+	end)
 end
 
 function closegui()
@@ -2561,7 +2605,9 @@ function closegui()
 		end
 	end)
 
+	VisualizerFolder:Destroy()
 	pcall(function() getgenv().POOPDOORSLOADED = false;POOPDOORSLOADED = false end)
+
 	task.wait(.1)
 	normalmessage("POOPDOORS EDITED v"..currentver, "GUI closed!")
 end
