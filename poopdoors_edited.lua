@@ -2568,7 +2568,7 @@ if game.ReplicatedStorage:WaitForChild("GameData"):WaitForChild("Floor").Value =
 end
 
 if inRooms == false then
-	window_rooms:AddLabel({ Name = "You need to be in Rooms for this section." })
+	window_rooms:AddLabel({ Name = "You need to be in Rooms for this\nsection." })
 end
 
 function closegui()
