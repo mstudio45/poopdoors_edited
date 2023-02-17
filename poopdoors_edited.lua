@@ -2502,7 +2502,8 @@ if game.ReplicatedStorage:WaitForChild("GameData"):WaitForChild("Floor").Value =
 							if Part then
 								if isLocker(Part) then
 									if A60_A120.Main.Position.Y > -4 then
-										if plr:DistanceFromCharacter(Part.Door.Position) <= 9 then
+										local doorpart = nil;if Part:FindFirstChild("Door") then doorpart = Part.Door else doorpart = Part.PrimaryPart end
+										if plr:DistanceFromCharacter(doorpart.Position) <= 9 then
 											goingToHide = true
 											if plr.Character.HumanoidRootPart.Anchored == false then
 												fireproximityprompt(Part.HidePrompt)
@@ -2544,7 +2545,8 @@ if game.ReplicatedStorage:WaitForChild("GameData"):WaitForChild("Floor").Value =
 						if isLocker(Part) then
 							task.spawn(function()
 								repeat
-									if plr:DistanceFromCharacter(Part.Door.Position) <= 9 then
+									local doorpart = nil;if Part:FindFirstChild("Door") then doorpart = Part.Door else doorpart = Part.PrimaryPart end
+									if plr:DistanceFromCharacter(doorpart.Position) <= 9 then
 										if plr.Character.HumanoidRootPart.Anchored == false then
 											fireproximityprompt(Part.HidePrompt)
 										end
