@@ -2824,7 +2824,7 @@ function closegui()
 	normalmessage("POOPDOORS EDITED v"..currentver, "GUI closed!")
 end
 window_guisettings:AddButton({
-	Name = "Close gui",
+	Name = "Close Gui",
 	Callback = function()
 		Library.unload()
 	end
