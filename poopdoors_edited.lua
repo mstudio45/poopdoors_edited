@@ -550,18 +550,41 @@ if isfolder and makefolder and listfiles and writefile then
 				end
 			end
 			
-			if notifs == true then normalmessage("CONFIGS", "Loaded config called '"..name.."'.", 5) end
+			if notifs == true then normalmessage("CONFIGS", "Successfully loaded config called '"..name.."'.", 5) end
 		else
 			if notifs == true then warnmessage("CONFIGS", "Config called '"..name.."' doesn't exists.", 5) end
 		end
 	end
-	
+	function deleteConfig(name, notifs)
+		if notifs == nil then notifs = true end
+		if notifs == true then normalmessage("CONFIGS", "Trying to delete config called '"..name.."'.", 5) end
+		if isfile(POOPDOORS_EDITED_FOLDER_NAME.."/"..name..".json") then
+			local s,e
+			repeat task.wait()
+				s,e = pcall(function()
+					delfile(POOPDOORS_EDITED_FOLDER_NAME.."/"..name..".json")
+				end)
+			until not e and s
+			
+			if notifs == true then normalmessage("CONFIGS", "Successfully deleted config called '"..name.."'.", 5) end
+		else
+			if notifs == true then warnmessage("CONFIGS", "Config called '"..name.."' doesn't exists.", 5) end
+		end
+	end
+
+
 	CONFIG:AddButton({
 		Name = "Load Config",
 		Callback = function()
 			loadConfig(ConfigDropdown:Get())
 		end
 	})
+        CONFIG:AddButton({ 
+               Name = "Delete Config", 
+               Callback = function() 
+                        deleteConfig(ConfigDropdown:Get())
+               end 
+        })
 	CONFIG:AddButton({ Name = "Reload Config List", Callback = function() reloadList(ConfigDropdown) end })
 	CONFIG:AddLabel({ Name = "" })
 	CONFIG:AddLabel({ Name = "Current Auto Load Config:" })
