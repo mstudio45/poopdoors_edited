@@ -567,6 +567,7 @@ if isfolder and makefolder and listfiles and writefile then
 			until not e and s
 			
 			if notifs == true then normalmessage("CONFIGS", "Successfully deleted config called '"..name.."'.", 5) end
+                        reloadList(ConfigDropdown)
 		else
 			if notifs == true then warnmessage("CONFIGS", "Config called '"..name.."' doesn't exists.", 5) end
 		end
