@@ -54,7 +54,7 @@ function warnmessage(title, text, timee)
 	)
 end
 
-local currentver = "1.4"
+local currentver = "1.5"
 local gui_data = nil
 local s,e = pcall(function()
 	gui_data = game:HttpGet(("https://raw.githubusercontent.com/mstudio45/poopdoors_edited/main/gui_data.json"), true)
@@ -335,25 +335,8 @@ task.spawn(function()
 end)
 
 local avoidingYvalue = 22.5
+
 local flags = {
-
-	speed = 0,
-	-- esp
-	espdoors = false,
-	espkeys = false,
-	espitems = false,
-	espbooks = false,
-	esprush = false,
-	espchest = false,
-	esplocker = false,
-	esphumans = false,
-	espgold = false,
-	goldespvalue = 0,
-
-	-- notifiers
-	hintrush = false,
-	predictentities = false,
-
 	-- general
 	light = false,
 	fullbright = false,
@@ -373,6 +356,26 @@ local flags = {
 	anticheatbypass = false,
 	noclip = false, --fly = false
 	autoskiprooms = false,
+	camfov = 70,
+	speed = 0,
+	walkspeedtoggle = false,
+	camfovtoggle = false,
+
+	-- esp
+	espdoors = false,
+	espkeys = false,
+	espitems = false,
+	espbooks = false,
+	esprush = false,
+	espchest = false,
+	esplocker = false,
+	esphumans = false,
+	espgold = false,
+	goldespvalue = 0,
+
+	-- notifiers
+	hintrush = false,
+	predictentities = false,
 
 	-- auras
 	draweraura = false,
@@ -385,6 +388,59 @@ local flags = {
 	autorooms_debug = false,
 	autorooms_blockcontrols = false,
 }
+local buttons = {
+	-- general
+	light = nil,
+	fullbright = nil,
+	instapp = nil,
+	noseek = nil,
+	nogates = nil,
+	nopuzzle = nil,
+	noa90 = nil,
+	noskeledoors = nil,
+	noscreech = nil,
+	getcode = nil,
+	roomsnolock = nil,
+	heartbeatwin = nil,
+	noseekarmsfire = nil,
+	avoidrushambush = nil,
+	autoplayagain = nil,
+	anticheatbypass = nil,
+	noclip = nil, --fly = false
+	autoskiprooms = nil,
+	camfov = nil,
+	speed = nil,
+	walkspeedtoggle = nil,
+	camfovtoggle = nil,
+	
+	-- esp
+	espdoors = nil,
+	espkeys = nil,
+	espitems = nil,
+	espbooks = nil,
+	esprush = nil,
+	espchest = nil,
+	esplocker = nil,
+	esphumans = nil,
+	espgold = nil,
+	goldespvalue = nil,
+
+	-- notifiers
+	hintrush = nil,
+	predictentities = nil,
+
+	-- auras
+	draweraura = nil,
+	keyaura = nil,
+	breakercollecter = nil,
+	bookcollecter = nil,
+
+	-- auto a-1000
+	autorooms = nil,
+	autorooms_debug = nil,
+	autorooms_blockcontrols = nil,
+}
+
 
 local DELFLAGS = {table.unpack(flags)}
 local esptable = {doors={},keys={},items={},books={},entity={},chests={},lockers={},people={},gold={}}
@@ -397,6 +453,141 @@ local GUIWindow = Library:CreateWindow({
 local GUI = GUIWindow:CreateTab({
 	Name = "Main"
 })
+
+-- Config system
+if isfolder and makefolder and listfiles and writefile then
+	local POOPDOORS_EDITED_FOLDER_NAME = "POOPDOORS_EDITED"
+	local function checkdir() if not isfolder(POOPDOORS_EDITED_FOLDER_NAME) then makefolder(POOPDOORS_EDITED_FOLDER_NAME) end end
+	checkdir()
+	
+	local filetablelist = {}	
+	function reloadList(ConfigDropdowne)
+		filetablelist = {}
+		for _,v in pairs(listfiles(POOPDOORS_EDITED_FOLDER_NAME)) do
+			local filename = v
+			filename = string.gsub(filename, "POOPDOORS_EDITED", "")
+			filename = filename:sub(2)
+			filename = string.gsub(filename, ".json", "")
+			table.insert(filetablelist, filename)
+		end
+		if ConfigDropdowne ~= nil then
+			ConfigDropdowne:UpdateList(filetablelist)
+		end
+	end
+	reloadList(nil)
+	
+	local CONFIGTAB = GUIWindow:CreateTab({
+		Name = "Configs"
+	})
+	local CONFIG = CONFIGTAB:CreateSection({
+		Name = "Configs"
+	})
+	local ConfigDropdown = CONFIG:AddDropdown({
+		Name = 'Select Config',
+		List = filetablelist
+	})
+	
+	function saveConfig(name, replace)
+		if replace == nil then replace = false end
+		
+		local fileexists = isfile(POOPDOORS_EDITED_FOLDER_NAME.."/"..name..".json")
+		normalmessage("CONFIGS", "Trying to save config called '"..name.."'.", 5)
+		if replace == false then
+			if not isfile(POOPDOORS_EDITED_FOLDER_NAME.."/"..name..".json") then
+				local s,e
+				repeat
+					s,e = pcall(function()
+						local jsonflags = game.HttpService:JSONEncode(flags)
+						writefile(POOPDOORS_EDITED_FOLDER_NAME.."/"..name..".json", jsonflags)
+					end)
+				until not e and s
+				normalmessage("CONFIGS", "Succesfully saved a config called '"..name.."'.", 5)
+				reloadList(ConfigDropdown)
+			else
+				warnmessage("CONFIGS", "Config called '"..name.."' already exists.", 5)
+				confirmnotification("CONFIGS", "Config called '"..name.."' already exists.\nDo you want to replace it?", 20, function(State)
+					if State == true then
+						task.spawn(function()
+							saveConfig(name, true)
+						end)
+					end
+				end)
+			end
+		else
+			local s,e
+			repeat
+				s,e = pcall(function()
+					local jsonflags = game.HttpService:JSONEncode(flags)
+					writefile(POOPDOORS_EDITED_FOLDER_NAME.."/"..name..".json", jsonflags)
+				end)
+			until not e and s
+			normalmessage("CONFIGS", "Succesfully overwrited a config called '"..name.."'.", 5)
+			reloadList(ConfigDropdown)
+		end
+	end
+	function loadConfig(name)
+		normalmessage("CONFIGS", "Trying to load config called '"..name.."'.", 5)
+		if isfile(POOPDOORS_EDITED_FOLDER_NAME.."/"..name..".json") then
+			local jsonecoded = readfile(POOPDOORS_EDITED_FOLDER_NAME.."/"..name..".json")
+			local flagsjson = game.HttpService:JSONDecode(jsonecoded)
+			
+			for name, value in pairs(flagsjson) do
+				if buttons[name] ~= nil then
+					--if typeof(value) == "boolean" then
+					buttons[name]:Set(value)
+					--end
+				else
+					if typeof(buttons[name]) == "boolean" then
+						flags[name] = value
+					end
+				end
+			end
+			
+			normalmessage("CONFIGS", "Loaded config called '"..name.."'.", 5)
+		else
+			warnmessage("CONFIGS", "Config called '"..name.."' doesn't exists.", 5)
+		end
+	end
+	
+	CONFIG:AddButton({
+		Name = "Load Config",
+		Callback = function()
+			loadConfig(ConfigDropdown:Get())
+		end
+	})
+	CONFIG:AddButton({ Name = "Reload Config List", Callback = function() reloadList(ConfigDropdown) end })
+	
+	local SaveCurrentName = CONFIG:AddTextbox({
+		Name = 'Config Name',
+		Value = "Config_"..tostring(#filetablelist+1),
+		Multiline = false
+	})
+	CONFIG:AddButton({ Name = "Reset Config Name", Callback = function() SaveCurrentName:Set("Config_"..tostring(#filetablelist+1)) end })
+	CONFIG:AddButton({
+		Name = "Save/Overwrite Config",
+		Callback = function()
+			local name = SaveCurrentName:Get()
+			--name = string.sub(name, " ", "_")
+			if string.len(name) < 1 then
+				warnmessage("CONFIGS", "Name is too short. Minimum character count is 1.", 5)
+				--name = "Config_"..tostring(#filetablelist+1)
+				return
+			end
+			if string.len(name) > 20-1 then
+				warnmessage("CONFIGS", "Name is too long. Maximum character count is 24.", 5)
+				return
+			end
+			--game.HttpService:JSONEncode(end_result)
+			saveConfig(name, false)
+		end
+	})
+	
+	reloadList(ConfigDropdown)
+else
+	warnmessage("CONFIGS", "You need to have file functions for Configs.", 10)
+end
+-- Config system
+
 
 --local window_player_tab = GUI:CreateTab({ Name = "Player" })
 local window_player = GUI:CreateSection({
@@ -448,7 +639,7 @@ window_credits:AddLabel({ Name = "UI Library suggestion:" });window_credits:AddL
 task.spawn(function()
 	repeat task.wait(1) until flags.anticheatbypass == true
 
-	window_player:AddToggle({
+	local nocliptoggle = window_player:AddToggle({
 		Name = "Noclip",
 		Value = false,
 		Callback = function(val, oldval)
@@ -472,9 +663,11 @@ task.spawn(function()
 			end
 		end
 	})
+	buttons.noclip = nocliptoggle
 end)
 
-window_player:AddToggle({
+
+local clientglowbtn = window_player:AddToggle({
 	Name = "Client Glow",
 	Value = false,
 	Callback = function(val, oldval)
@@ -491,8 +684,9 @@ window_player:AddToggle({
 		end
 	end
 })
+buttons.light = clientglowbtn
 
-window_player:AddToggle({
+local fullbrightbtn = window_player:AddToggle({
 	Name = "Fullbright",
 	Value = false,
 	Callback = function(val, oldval)
@@ -518,9 +712,10 @@ window_player:AddToggle({
 		end
 	end
 })
+buttons.fullbright = fullbrightbtn
 
 if fireproximityprompt then
-	window_player:AddToggle({
+	local instausebrn = window_player:AddToggle({
 		Name = "Instant Use",
 		Value = false,
 		Callback = function(val, oldval)
@@ -535,11 +730,11 @@ if fireproximityprompt then
 			holdconnect:Disconnect()
 		end
 	})
+	buttons.instapp = instausebrn
 else
 	warnmessage("POOPDOORS EDITED v"..currentver, "You need to have fireproximityprompt function for 'instant use'.", 7)
 end
 
-local walkspeedtoggle = false
 local walkspeedslider = window_player:AddSlider({
 	Name = "Walkspeed",
 	Value = 16,
@@ -548,31 +743,23 @@ local walkspeedslider = window_player:AddSlider({
 
 	Callback = function(val, oldval)
 		flags.speed = val
-		if walkspeedtoggle == true then
+		if flags.walkspeedtoggle == true then
 			hum.WalkSpeed = val
 		end
 	end
 })
-window_player:AddToggle({
+buttons.speed = walkspeedslider
+local walkspeedtglbtn = window_player:AddToggle({
 	Name = "Toggle Walkspeed",
 	Value = false,
 	Callback = function(val, oldval)
-		walkspeedtoggle = val
+		flags.walkspeedtoggle = val
 		if not val then
 			hum.WalkSpeed = 16
 		end
 	end
 })
-
-task.spawn(function()
-	while task.wait() do
-		if walkspeedtoggle == true then
-			if hum.WalkSpeed < flags.speed then
-				hum.WalkSpeed = flags.speed
-			end
-		end
-	end
-end)
+buttons.walkspeedtoggle = walkspeedtglbtn
 
 window_player:AddButton({
 	Name = "Reset Character",
@@ -596,6 +783,44 @@ window_player.button("rejoin revive", function()
 	end
 end)--]]
 
+local camfovslider = window_player:AddSlider({
+	Name = "FOV",
+	Value = 70,
+	Min = 50,
+	Max = 120,
+
+	Callback = function(val, oldval)
+		flags.camfov = val
+	end
+})
+buttons.camfov = camfovslider
+local togglefovbrn = window_player:AddToggle({
+	Name = "Toggle FOV",
+	Value = false,
+	Callback = function(val, oldval)
+		flags.camfovtoggle = val
+		if not val then
+			waitframes(2)
+			game.Workspace.CurrentCamera.FieldOfView = 70
+		end
+	end
+})
+buttons.camfovtoggle = togglefovbrn
+task.spawn(function()
+	game:GetService("RunService").RenderStepped:Connect(function()
+		if flags.walkspeedtoggle == true then
+			if hum.WalkSpeed < flags.speed then
+				hum.WalkSpeed = flags.speed
+			end
+		end
+		if flags.camfovtoggle == true then
+			pcall(function()
+				game.Workspace.CurrentCamera.FieldOfView = flags.camfov
+			end)
+		end
+	end)
+end)
+
 window_esp:AddButton({
 	Name = "Clear ESP",
 	Callback = function()
@@ -612,7 +837,7 @@ window_esp:AddButton({
 	end
 })
 
-window_esp:AddToggle({
+local espdoorsbtn = window_esp:AddToggle({
 	Name = "Door ESP",
 	Value = false,
 	Callback = function(val, oldval)
@@ -666,7 +891,8 @@ window_esp:AddToggle({
 		end
 	end
 })
-window_esp:AddToggle({
+buttons.espdoors = espdoorsbtn
+local espkeysbtn = window_esp:AddToggle({
 	Name = "Key/Lever ESP",
 	Value = false,
 	Callback = function(val, oldval)
@@ -737,7 +963,8 @@ window_esp:AddToggle({
 		end
 	end
 })
-window_esp:AddToggle({
+buttons.espkeys = espkeysbtn
+local espitemsbtn = window_esp:AddToggle({
 	Name = "Item ESP",
 	Value = false,
 	Callback = function(val, oldval)
@@ -805,7 +1032,8 @@ window_esp:AddToggle({
 		end
 	end
 })
-window_esp:AddToggle({
+buttons.espitems = espitemsbtn
+local espbooksbtn = window_esp:AddToggle({
 	Name = "Book/Breaker ESP",
 	Value = false,
 	Callback = function(val, oldval)
@@ -873,8 +1101,9 @@ window_esp:AddToggle({
 		end
 	end
 })
+buttons.espbooks = espkeysbtn
 local entitynames = {"RushMoving","AmbushMoving","Snare","A60","A120"}
-window_esp:AddToggle({
+local esprusbtn = window_esp:AddToggle({
 	Name = "Entity ESP",
 	Value = false,
 	Callback = function(val, oldval)
@@ -948,7 +1177,8 @@ window_esp:AddToggle({
 		end
 	end
 })
-window_esp:AddToggle({
+buttons.esprush = esprusbtn
+local esplockerbrn = window_esp:AddToggle({
 	Name = "Wardrobe/Locker ESP",
 	Value = false,
 	Callback = function(val, oldval)
@@ -1022,7 +1252,8 @@ window_esp:AddToggle({
 		end
 	end
 })
-window_esp:AddToggle({
+buttons.esplocker = esplockerbrn
+local espchesbtn = window_esp:AddToggle({
 	Name = "Chest ESP",
 	Value = false,
 	Callback = function(val, oldval)
@@ -1091,7 +1322,8 @@ window_esp:AddToggle({
 		end
 	end
 })
-window_esp:AddToggle({
+buttons.espchest = espchesbtn
+local esphumansbtn = window_esp:AddToggle({
 	Name = "Player ESP",
 	Value = false,
 	Callback = function(val, oldval)
@@ -1148,7 +1380,8 @@ window_esp:AddToggle({
 		end
 	end
 })
-window_esp:AddToggle({
+buttons.esphumans = esphumansbtn
+local espgoldbtn = window_esp:AddToggle({
 	Name = "Gold ESP",
 	Value = false,
 	Callback = function(val, oldval)
@@ -1217,34 +1450,35 @@ window_esp:AddToggle({
 		end
 	end
 })
-window_esp:AddSlider({
+buttons.espgold = espgoldbtn
+local goldespvaluebtn = window_esp:AddSlider({
 	Name = "Minimum Gold for Gold ESP",
 	Value = 5,
 	Min = 5,
 	Max = 150,
 
 	Callback = function(val, oldval)
-		flags.speed = val
-		if walkspeedtoggle == true then
-			hum.WalkSpeed = val
-		end
+		flags.goldespvalue = val
 	end
 })
+buttons.goldespvalue = goldespvaluebtn
 
-window_entities:AddToggle({
+local hintrushbtn = window_entities:AddToggle({
 	Name = "Notify Entities",
 	Value = false,
 	Callback = function(val, oldval)
 		flags.hintrush = val
 	end
 })
-window_entities:AddToggle({
+buttons.hintrush = hintrushbtn
+local predictentitiesbtn = window_entities:AddToggle({
 	Name = "Event Prediction",
 	Value = false,
 	Callback = function(val, oldval)
 		flags.predictentities = val
 	end
 })
+buttons.predictentities = predictentitiesbtn
 game:GetService("ReplicatedStorage").GameData.LatestRoom.Changed:Connect(function(value)
 	if flags.predictentities == true then
 		local ChaseStartVal = game:GetService("ReplicatedStorage").GameData.ChaseStart.Value - value;
@@ -1255,7 +1489,7 @@ game:GetService("ReplicatedStorage").GameData.LatestRoom.Changed:Connect(functio
 	end
 end)
 
-window_entities:AddToggle({
+local noseekbtn = window_entities:AddToggle({
 	Name = "Disable Seek chase",
 	Value = false,
 	Callback = function(val, oldval)
@@ -1276,12 +1510,13 @@ window_entities:AddToggle({
 		end
 	end
 })
+buttons.noseek = noseekbtn
 
 local screechremote = nil
 if entityinfo ~= nil then
 	screechremote = entityinfo:FindFirstChild("Screech")
 end
-window_entities:AddToggle({
+local noscreechbtn = window_entities:AddToggle({
 	Name = "Harmless Screech",
 	Value = false,
 	Callback = function(val, oldval)
@@ -1299,20 +1534,21 @@ workspace.CurrentCamera.ChildAdded:Connect(function(child)
 		child:Destroy()
 	end
 end)
-
+buttons.noscreech = noseekbtn
 
 if hookmetamethod and newcclosure and getnamecallmethod then
 	window_entities:AddLabel({ Name = "Do not click when playing the" })
 	window_entities:AddLabel({ Name = "heartbeat minigame if you have" })
 	window_entities:AddLabel({ Name = "'always win heartbeat' on!" })
-	window_entities:AddToggle({
+	local heartbeatwinbtn = window_entities:AddToggle({
 		Name = "Always win Heartbeat minigame",
 		Value = false,
 		Callback = function(val, oldval)
 			flags.heartbeatwin = val
 		end
 	})
-
+	buttons.heartbeatwin = heartbeatwinbtn
+	
 	local old
 	old = hookmetamethod(game,"__namecall",newcclosure(function(self,...)
 		local args = {...}
@@ -1329,13 +1565,14 @@ else
 	warnmessage("POOPDOORS EDITED v"..currentver, "You need to have hookmetamethod and newcclosure and getnamecallmethod functions for 'always win heartbeat'.", 7)
 end
 
-window_entities:AddToggle({
+local avoidrushambushbtn = window_entities:AddToggle({
 	Name = "Avoid Rush & Ambush",
 	Value = false,
 	Callback = function(val, oldval)
 		flags.avoidrushambush = val
 	end
 })
+buttons.avoidrushambush = avoidrushambushbtn
 workspace.ChildAdded:Connect(function(inst)
 	spawn(function()
 		if flags.avoidrushambush == false then
@@ -1395,7 +1632,7 @@ workspace.ChildAdded:Connect(function(inst)
 	end
 end)
 
-window_roomsdoors:AddToggle({
+local noseekarmsfirebtn =  window_roomsdoors:AddToggle({
 	Name = "No Seek Arms & Fire",
 	Value = false,
 	Callback = function(val, oldval)
@@ -1421,6 +1658,7 @@ game:GetService("Workspace").CurrentRooms.ChildAdded:Connect(function(descendant
 		end
 	end
 end)
+buttons.noseekarmsfire = noseekarmsfirebtn
 
 if fireproximityprompt then
 	window_roomsdoors:AddButton({
@@ -1484,7 +1722,7 @@ window_roomsdoors:AddButton({
 })
 
 if fireproximityprompt then
-	window_roomsdoors:AddToggle({
+	local autoskiproomsbtn = window_roomsdoors:AddToggle({
 		Name = "Auto Room-Skip",
 		Value = false,
 		Callback = function(val, oldval)
@@ -1536,11 +1774,12 @@ if fireproximityprompt then
 			end)
 		end
 	})
+	buttons.autoskiprooms = autoskiproomsbtn
 else
 	warnmessage("POOPDOORS EDITED v"..currentver, "You need to have fireproximityprompt function for 'skip room'.", 7)
 end
 
-window_misc:AddToggle({
+local nogatesbtn = window_misc:AddToggle({
 	Name = "Delete Gates",
 	Value = false,
 	Callback = function(val, oldval)
@@ -1589,7 +1828,8 @@ window_misc:AddToggle({
 		end
 	end
 })
-window_misc:AddToggle({
+buttons.nogates = nogatesbtn
+local nopuzzlebtn = window_misc:AddToggle({
 	Name = "Delete Puzzle Doors",
 	Value = false,
 	Callback = function(val, oldval)
@@ -1641,7 +1881,8 @@ window_misc:AddToggle({
 		end
 	end
 })
-window_misc:AddToggle({
+buttons.nopuzzle = nopuzzlebtn
+local noskeledoorsbtn = window_misc:AddToggle({
 	Name = "Delete Skeleten Doors",
 	Value = false,
 	Callback = function(val, oldval)
@@ -1669,7 +1910,8 @@ window_misc:AddToggle({
 		end
 	end
 })
-window_misc:AddToggle({
+buttons.noskeledoors = noskeledoorsbtn
+local getcodebtn = window_misc:AddToggle({
 	Name = "Auto Library Code",
 	Value = false,
 	Callback = function(val, oldval)
@@ -1718,7 +1960,8 @@ window_misc:AddToggle({
 		end
 	end
 })
-window_misc:AddToggle({
+buttons.getcode = getcodebtn
+local roomsnolockbtn = window_misc:AddToggle({
 	Name = "A-000 Door No Locks",
 	Value = false,
 	Callback = function(val, oldval)
@@ -1752,9 +1995,10 @@ window_misc:AddToggle({
 		end
 	end
 })
+buttons.roomsnolock = roomsnolockbtn
 
 if fireproximityprompt then
-	window_misc:AddToggle({
+	local draweraurabtn = window_misc:AddToggle({
 		Name = "Loot Aura",
 		Value = false,
 		Callback = function(val, oldval)
@@ -1933,12 +2177,13 @@ if fireproximityprompt then
 			end
 		end
 	})
+	buttons.draweraura = draweraurabtn
 else
 	warnmessage("POOPDOORS EDITED v"..currentver, "You need to have fireproximityprompt function for 'loot aura'.", 7)
 end
 
 if fireproximityprompt then
-	window_misc:AddToggle({
+	local bookcollecterbtn = window_misc:AddToggle({
 		Name = "Book Aura",
 		Value = false,
 		Callback = function(val, oldval)
@@ -2005,12 +2250,13 @@ if fireproximityprompt then
 			end
 		end
 	})
+	buttons.bookcollecter = bookcollecterbtn
 else
 	warnmessage("POOPDOORS EDITED v"..currentver, "You need to have fireproximityprompt function for 'book aura'.", 7)
 end
 
 if fireproximityprompt then
-	window_misc:AddToggle({
+	local breakercollecterbtn = window_misc:AddToggle({
 		Name = "Breaker Aura",
 		Value = false,
 		Callback = function(val, oldval)
@@ -2077,6 +2323,7 @@ if fireproximityprompt then
 			end
 		end
 	})
+	buttons.breakercollecter = breakercollecterbtn
 else
 	warnmessage("POOPDOORS EDITED v"..currentver, "You need to have fireproximityprompt function for 'book aura'.", 7)
 end
@@ -2097,7 +2344,6 @@ if #game.Players:GetChildren() <= 1 or #game.Players:GetChildren() == 0 then
 		end
 	})
 end
-
 
 window_anticheatbyppasses:AddLabel({ Name = "Method 1 Info:"})
 window_anticheatbyppasses:AddLabel({ Name = "This method will make it so"})
@@ -2124,183 +2370,6 @@ window_anticheatbyppasses:AddButton({
 		end)
 	end
 })
-
---[[window_anticheatbyppasses.label("method 2 info:",30)
-window_anticheatbyppasses.label("with this method you will not see proximity prompts but some still works",50)
-window_anticheatbyppasses.label("if you want to use this method run it after the elevator is closed",30)
-window_anticheatbyppasses.label("credits: Renzoo#5106", 10)
-window_anticheatbyppasses.label("Roblox did a thing that you lose net ownership when you die so this method is patched (invisfling too)",70)
-window_anticheatbyppasses.button("method 2 (patched)", function()
-	confirmnotification("AC BYPASS", "Are you sure you want to bypass anticheat with method 2?", 15, function(state)
-		if state == true then
-			function getRoot(char)
-				local rootPart = char:FindFirstChild('HumanoidRootPart') or char:FindFirstChild('Torso') or char:FindFirstChild('UpperTorso')
-				return rootPart
-			end
-
-			local RunService = game:GetService("RunService")
-			local Players = game:GetService("Players")
-			local IYMouse = game.Players.LocalPlayer:GetMouse()
-			FLYING = false
-			QEfly = true
-			iyflyspeed = 1
-			vehicleflyspeed = 1
-			function sFLY(vfly)
-				repeat wait() until Players.LocalPlayer and Players.LocalPlayer.Character and getRoot(Players.LocalPlayer.Character) and Players.LocalPlayer.Character:FindFirstChildOfClass("Humanoid")
-				repeat wait() until IYMouse
-				if flyKeyDown or flyKeyUp then flyKeyDown:Disconnect() flyKeyUp:Disconnect() end
-
-				local T = getRoot(Players.LocalPlayer.Character)
-				local CONTROL = {F = 0, B = 0, L = 0, R = 0, Q = 0, E = 0}
-				local lCONTROL = {F = 0, B = 0, L = 0, R = 0, Q = 0, E = 0}
-				local SPEED = 0
-
-				local function FLY()
-					FLYING = true
-					local BG = Instance.new('BodyGyro')
-					local BV = Instance.new('BodyVelocity')
-					BG.P = 9e4
-					BG.Parent = T
-					BV.Parent = T
-					BG.maxTorque = Vector3.new(9e9, 9e9, 9e9)
-					BG.cframe = T.CFrame
-					BV.velocity = Vector3.new(0, 0, 0)
-					BV.maxForce = Vector3.new(9e9, 9e9, 9e9)
-					task.spawn(function()
-						repeat wait()
-							if not vfly and Players.LocalPlayer.Character:FindFirstChildOfClass('Humanoid') then
-								Players.LocalPlayer.Character:FindFirstChildOfClass('Humanoid').PlatformStand = true
-							end
-							if CONTROL.L + CONTROL.R ~= 0 or CONTROL.F + CONTROL.B ~= 0 or CONTROL.Q + CONTROL.E ~= 0 then
-								SPEED = 50
-							elseif not (CONTROL.L + CONTROL.R ~= 0 or CONTROL.F + CONTROL.B ~= 0 or CONTROL.Q + CONTROL.E ~= 0) and SPEED ~= 0 then
-								SPEED = 0
-							end
-							if (CONTROL.L + CONTROL.R) ~= 0 or (CONTROL.F + CONTROL.B) ~= 0 or (CONTROL.Q + CONTROL.E) ~= 0 then
-								BV.velocity = ((workspace.CurrentCamera.CoordinateFrame.lookVector * (CONTROL.F + CONTROL.B)) + ((workspace.CurrentCamera.CoordinateFrame * CFrame.new(CONTROL.L + CONTROL.R, (CONTROL.F + CONTROL.B + CONTROL.Q + CONTROL.E) * 0.2, 0).p) - workspace.CurrentCamera.CoordinateFrame.p)) * SPEED
-								lCONTROL = {F = CONTROL.F, B = CONTROL.B, L = CONTROL.L, R = CONTROL.R}
-							elseif (CONTROL.L + CONTROL.R) == 0 and (CONTROL.F + CONTROL.B) == 0 and (CONTROL.Q + CONTROL.E) == 0 and SPEED ~= 0 then
-								BV.velocity = ((workspace.CurrentCamera.CoordinateFrame.lookVector * (lCONTROL.F + lCONTROL.B)) + ((workspace.CurrentCamera.CoordinateFrame * CFrame.new(lCONTROL.L + lCONTROL.R, (lCONTROL.F + lCONTROL.B + CONTROL.Q + CONTROL.E) * 0.2, 0).p) - workspace.CurrentCamera.CoordinateFrame.p)) * SPEED
-							else
-								BV.velocity = Vector3.new(0, 0, 0)
-							end
-							BG.cframe = workspace.CurrentCamera.CoordinateFrame
-						until not FLYING
-						CONTROL = {F = 0, B = 0, L = 0, R = 0, Q = 0, E = 0}
-						lCONTROL = {F = 0, B = 0, L = 0, R = 0, Q = 0, E = 0}
-						SPEED = 0
-						BG:Destroy()
-						BV:Destroy()
-						if Players.LocalPlayer.Character:FindFirstChildOfClass('Humanoid') then
-							Players.LocalPlayer.Character:FindFirstChildOfClass('Humanoid').PlatformStand = false
-						end
-					end)
-				end
-				flyKeyDown = IYMouse.KeyDown:Connect(function(KEY)
-					if KEY:lower() == 'w' then
-						CONTROL.F = (vfly and vehicleflyspeed or iyflyspeed)
-					elseif KEY:lower() == 's' then
-						CONTROL.B = - (vfly and vehicleflyspeed or iyflyspeed)
-					elseif KEY:lower() == 'a' then
-						CONTROL.L = - (vfly and vehicleflyspeed or iyflyspeed)
-					elseif KEY:lower() == 'd' then 
-						CONTROL.R = (vfly and vehicleflyspeed or iyflyspeed)
-					elseif QEfly and KEY:lower() == 'e' then
-						CONTROL.Q = (vfly and vehicleflyspeed or iyflyspeed)*2
-					elseif QEfly and KEY:lower() == 'q' then
-						CONTROL.E = -(vfly and vehicleflyspeed or iyflyspeed)*2
-					end
-					pcall(function() workspace.CurrentCamera.CameraType = Enum.CameraType.Track end)
-				end)
-				flyKeyUp = IYMouse.KeyUp:Connect(function(KEY)
-					if KEY:lower() == 'w' then
-						CONTROL.F = 0
-					elseif KEY:lower() == 's' then
-						CONTROL.B = 0
-					elseif KEY:lower() == 'a' then
-						CONTROL.L = 0
-					elseif KEY:lower() == 'd' then
-						CONTROL.R = 0
-					elseif KEY:lower() == 'e' then
-						CONTROL.Q = 0
-					elseif KEY:lower() == 'q' then
-						CONTROL.E = 0
-					end
-				end)
-				FLY()
-			end
-
-			function NOFLY()
-				FLYING = false
-				if flyKeyDown or flyKeyUp then flyKeyDown:Disconnect() flyKeyUp:Disconnect() end
-				if Players.LocalPlayer.Character:FindFirstChildOfClass('Humanoid') then
-					Players.LocalPlayer.Character:FindFirstChildOfClass('Humanoid').PlatformStand = false
-				end
-				pcall(function() workspace.CurrentCamera.CameraType = Enum.CameraType.Custom end)
-			end
-
-			task.spawn(function()
-				local speaker = game.Players.LocalPlayer
-				local ch = speaker.Character
-				local prt=Instance.new("Model")
-				prt.Parent = speaker.Character
-
-				local z1 = Instance.new("Part")
-				z1.Name="Torso"
-				z1.CanCollide = false
-				z1.Anchored = true
-
-				local z2 = Instance.new("Part")
-				z2.Name="Head"
-				z2.Parent = prt
-				z2.Anchored = true
-				z2.CanCollide = false
-
-				local z3 =Instance.new("Humanoid")
-				z3.Name="Humanoid"
-				z3.Parent = prt
-
-				z1.Position = Vector3.new(0,9999,0)
-				speaker.Character=prt
-				task.wait(3)
-				speaker.Character=ch
-				task.wait(3)
-				local Hum = Instance.new("Humanoid")
-				z2:Clone()
-				Hum.Parent = speaker.Character
-
-				hum = hum
-
-				local root = getRoot(speaker.Character)
-				for i,v in pairs(speaker.Character:GetChildren()) do
-					if v ~= root and  v.Name ~= "Humanoid" then
-						v:Destroy()
-					end
-				end
-				root.Transparency = 0
-				root.Color = Color3.new(1, 1, 1)
-
-				local invisflingStepped
-				invisflingStepped = RunService.Stepped:Connect(function()
-					if speaker.Character and getRoot(speaker.Character) then
-						getRoot(speaker.Character).CanCollide = false
-					else
-						invisflingStepped:Disconnect()
-					end
-				end)
-				task.spawn(function()
-					iyflyspeed = 1.5
-					sFLY()
-				end)
-				workspace.CurrentCamera.CameraSubject = root
-				game:GetService("StarterGui"):SetCoreGuiEnabled(Enum.CoreGuiType.All, true)
-				game:GetService("StarterGui"):SetCore("ResetButtonCallback", true)
-				normalmessage("AC BYPASS", "Done!", 5)
-			end)
-		end
-	end)
-end)
---]]
 
 
 if syn then
@@ -2356,14 +2425,14 @@ if game.ReplicatedStorage:WaitForChild("GameData"):WaitForChild("Floor").Value =
 		--end)
 	end)
 	inRooms = true
-	
+
 	local Pathfinding_Highlights = game.Workspace:FindFirstChild("Pathfinding_Highlights")
 	if Pathfinding_Highlights == nil then
 		Pathfinding_Highlights = Instance.new("Folder", workspace)
 		Pathfinding_Highlights.Name = "Pathfinding_Highlights"
 	end
 	Pathfinding_Highlights:ClearAllChildren()
-	
+
 	local a90remote = nil
 	task.spawn(function() pcall(function() a90remote = game.ReplicatedStorage:WaitForChild("EntityInfo"):WaitForChild("A90") end) end)
 	function removea90()
@@ -2387,7 +2456,9 @@ if game.ReplicatedStorage:WaitForChild("GameData"):WaitForChild("Floor").Value =
 	plr.PlayerGui:WaitForChild("MainUI"):WaitForChild("Jumpscare").ChildAdded:Connect(function(a)if a.Name=="Jumpscare_A90"then if flags.noa90==true then pcall(function()a:Destroy()end)end end end)
 	plr.PlayerGui.MainUI.Initiator.Main_Game.RemoteListener.Modules.ChildAdded:Connect(function(a)if a.Name=="A90"then if flags.noa90==true then pcall(function()a:Destroy()end)end end end)
 	game.ReplicatedStorage:WaitForChild("EntityInfo").ChildAdded:Connect(function(a)if a.Name=="A90"then if flags.noa90==true then pcall(function()a:Destroy()end)end end end)
-
+	
+	buttons.noa90 = true
+	
 	function clearWardrobes()
 		Wardrobes = {}
 		Wardrobe = nil
@@ -2398,7 +2469,7 @@ if game.ReplicatedStorage:WaitForChild("GameData"):WaitForChild("Floor").Value =
 		clearWardrobes()
 		local function check(assets)
 			for _,v in pairs(assets:GetDescendants()) do
-				if v.Name == "Rooms_Locker" or v.Name == "Rooms_Locker_Fridge" then
+				if v.Name == "Rooms_Locker" then
 					if v:FindFirstChild("Door") and v:FindFirstChild("HidePrompt") then
 						if v.HiddenPlayer.Value == nil  then
 							if v.Door.Position.Y > -3 then
@@ -2499,7 +2570,7 @@ if game.ReplicatedStorage:WaitForChild("GameData"):WaitForChild("Floor").Value =
 	function unhidefunc() plr.Character:SetAttribute("Hiding",false) end
 
 	function isLocker(Part)
-		return (Part.Name == "Rooms_Locker" or Part.Name == "Rooms_Locker_Fridge")
+		return Part.Name == "Rooms_Locker"
 	end 
 
 	local autoa1000 = nil
@@ -2554,6 +2625,10 @@ if game.ReplicatedStorage:WaitForChild("GameData"):WaitForChild("Floor").Value =
 						end
 
 						if game.Players.LocalPlayer.Character.Humanoid.Health < 1 then autoa1000:Set(false) end
+					end
+					
+					if flags.autorooms_blockcontrols == false then
+						plr.DevComputerMovementMode = Enum.DevComputerMovementMode.KeyboardMouse
 					end
 				end)
 
@@ -2629,14 +2704,15 @@ if game.ReplicatedStorage:WaitForChild("GameData"):WaitForChild("Floor").Value =
 			end
 		end
 	})
-
-	window_rooms:AddToggle({
+	buttons.autorooms = autoa1000
+	local autorooms_debugbtn = window_rooms:AddToggle({
 		Name = "Auto A-1000 - Debug Notifications",
 		Value = false,
 		Callback = function(val, oldval)
 			flags.autorooms_debug = val
 		end
 	})
+	buttons.autorooms_debug= autorooms_debugbtn
 	local autoa1000blockcontrols = window_rooms:AddToggle({
 		Name = "Auto A-1000 - Block Controls",
 		Value = false,
@@ -2644,8 +2720,9 @@ if game.ReplicatedStorage:WaitForChild("GameData"):WaitForChild("Floor").Value =
 			flags.autorooms_blockcontrols = val
 		end
 	})
+	buttons.autorooms_blockcontrols = autoa1000blockcontrols
 	autoa1000blockcontrols:Set(true)
-
+	
 	LatestRoom:GetPropertyChangedSignal("Value"):Connect(function()
 		if flags.autorooms == true then
 			if LatestRoom.Value ~= 1000 then
@@ -2671,7 +2748,8 @@ end
 
 function closegui()
 	flags = DELFLAGS
-	walkspeedtoggle = false
+	--flags.camfov = 70
+	--flags.walkspeedtoggle = false
 	pcall(function()
 		for _,e in pairs(esptable) do
 			for _,v in pairs(e) do
