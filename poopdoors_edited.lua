@@ -482,7 +482,11 @@ if isfolder and makefolder and listfiles and writefile then
 		Name = "Configs"
 	})
 	local CONFIG = CONFIGTAB:CreateSection({
-		Name = "Configs"
+		Name = "Load"
+	})
+	local CONFIG_SAVE = CONFIGTAB:CreateSection({
+		Name = "Save",
+		Side = "Right"
 	})
 	local ConfigDropdown = CONFIG:AddDropdown({
 		Name = 'Select Config',
@@ -574,13 +578,13 @@ if isfolder and makefolder and listfiles and writefile then
 	end })
 	CONFIG:AddButton({ Name = "Reload Config List", Callback = function() reloadList(ConfigDropdown) end })
 	
-	local SaveCurrentName = CONFIG:AddTextbox({
+	local SaveCurrentName = CONFIG_SAVE:AddTextbox({
 		Name = 'Config Name',
 		Value = "Config_"..tostring(#filetablelist+1),
 		Multiline = false
 	})
-	CONFIG:AddButton({ Name = "Reset Config Name", Callback = function() SaveCurrentName:Set("Config_"..tostring(#filetablelist+1)) end })
-	CONFIG:AddButton({
+	CONFIG_SAVE:AddButton({ Name = "Reset Config Name", Callback = function() SaveCurrentName:Set("Config_"..tostring(#filetablelist+1)) end })
+	CONFIG_SAVE:AddButton({
 		Name = "Save/Overwrite Config",
 		Callback = function()
 			local name = SaveCurrentName:Get()
