@@ -2569,7 +2569,7 @@ if game.ReplicatedStorage:WaitForChild("GameData"):WaitForChild("Floor").Value =
 						unhidefunc()
 					end
 
-					local Highlight = Instance.new("Highlight", Part.Door)
+					local Highlight = Instance.new("Highlight", Pathfinding_Highlights)
 					Highlight.FillColor = Color3.fromRGB(85, 255, 0)
 					Highlight.Adornee = Part.Door
 
