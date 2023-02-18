@@ -1,5 +1,5 @@
 {
-	"ver": "1.3.3",
-	"changelog": "Fixed some bugs in Auto A-1000.\nDM mstudio45#5590 if you have any issues.",
+	"ver": "1.4",
+	"changelog": "Auto A-1000 FIXED!",
 	"loadstring": "https://raw.githubusercontent.com/mstudio45/poopdoors_edited/main/poopdoors_edited.lua"
 }
