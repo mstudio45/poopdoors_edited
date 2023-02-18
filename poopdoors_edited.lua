@@ -562,6 +562,8 @@ if isfolder and makefolder and listfiles and writefile then
 			loadConfig(ConfigDropdown:Get())
 		end
 	})
+	CONFIG:AddButton({ Name = "Reload Config List", Callback = function() reloadList(ConfigDropdown) end })
+	CONFIG:AddLabel({ Name = "" })
 	CONFIG:AddLabel({ Name = "Current Auto Load Config:" })
 	local curautoloadtextlabel = CONFIG:AddLabel({ Name = "Current Auto Load Config:" })
 	CONFIG:AddButton({ 
@@ -575,8 +577,21 @@ if isfolder and makefolder and listfiles and writefile then
 			until not e and s
 			curautoloadtextlabel:Set(ConfigDropdown:Get())
 			normalmessage("CONFIGS", "Config called '"..ConfigDropdown:Get().."' will automaticly load now.", 5)
-	end })
-	CONFIG:AddButton({ Name = "Reload Config List", Callback = function() reloadList(ConfigDropdown) end })
+		end 
+	})
+	CONFIG:AddButton({ 
+		Name = "Reset Load Config", 
+		Callback = function() 
+			local s,e
+			repeat
+				s,e = pcall(function()
+					delfile(POOPDOORS_EDITED_FOLDER_NAME.."/autostart.txt")
+				end)
+			until not e and s
+			normalmessage("CONFIGS", "Config called '"..curautoloadtextlabel:Get().."' will not automaticly load anymore.", 5)
+			curautoloadtextlabel:Set("None")
+		end 
+	})
 	
 	local SaveCurrentName = CONFIG_SAVE:AddTextbox({
 		Name = 'Config Name',
