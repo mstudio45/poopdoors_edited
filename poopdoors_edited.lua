@@ -565,7 +565,7 @@ if isfolder and makefolder and listfiles and writefile then
 	CONFIG:AddButton({ Name = "Reload Config List", Callback = function() reloadList(ConfigDropdown) end })
 	CONFIG:AddLabel({ Name = "" })
 	CONFIG:AddLabel({ Name = "Current Auto Load Config:" })
-	local curautoloadtextlabel = CONFIG:AddLabel({ Name = "Current Auto Load Config:" })
+	local curautoloadtextlabel = CONFIG:AddLabel({ Name = "None" })
 	CONFIG:AddButton({ 
 		Name = "Auto Load Config", 
 		Callback = function() 
