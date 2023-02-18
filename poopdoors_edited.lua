@@ -200,7 +200,7 @@ end
 local esptableinstances = {}
 function esp(what,color,core,name)
 	local parts
-	
+
 	local esp_folder = GlobalESPFolder:FindFirstChild(name)
 	if game.Players:FindFirstChild(name) then
 		esp_folder = GlobalESPFolder:FindFirstChild("PlayerESP")
@@ -215,7 +215,7 @@ function esp(what,color,core,name)
 		esp_folder.Parent = GlobalESPFolder
 		esp_folder.Name = name
 	end
-	
+
 	if typeof(what) == "Instance" then
 		if what:IsA("Model") then
 			parts = what:GetChildren()
@@ -336,7 +336,7 @@ end)
 
 local avoidingYvalue = 22.5
 local flags = {
-	
+
 	speed = 0,
 	-- esp
 	espdoors = false,
@@ -349,11 +349,11 @@ local flags = {
 	esphumans = false,
 	espgold = false,
 	goldespvalue = 0,
-	
+
 	-- notifiers
 	hintrush = false,
 	predictentities = false,
-	
+
 	-- general
 	light = false,
 	fullbright = false,
@@ -373,13 +373,13 @@ local flags = {
 	anticheatbypass = false,
 	noclip = false, --fly = false
 	autoskiprooms = false,
-	
+
 	-- auras
 	draweraura = false,
 	keyaura = false,
 	breakercollecter = false,
 	bookcollecter = false,
-	
+
 	-- auto a-1000
 	autorooms = false,
 	autorooms_debug = false,
@@ -2355,9 +2355,15 @@ if game.ReplicatedStorage:WaitForChild("GameData"):WaitForChild("Floor").Value =
 		end
 		--end)
 	end)
-
 	inRooms = true
-
+	
+	local Pathfinding_Highlights = game.Workspace:FindFirstChild("Pathfinding_Highlights")
+	if Pathfinding_Highlights == nil then
+		Pathfinding_Highlights = Instance.new("Folder", workspace)
+		Pathfinding_Highlights.Name = "Pathfinding_Highlights"
+	end
+	Pathfinding_Highlights:ClearAllChildren()
+	
 	local a90remote = nil
 	task.spawn(function() pcall(function() a90remote = game.ReplicatedStorage:WaitForChild("EntityInfo"):WaitForChild("A90") end) end)
 	function removea90()
@@ -2428,14 +2434,14 @@ if game.ReplicatedStorage:WaitForChild("GameData"):WaitForChild("Floor").Value =
 
 	function getWalkPart()
 		local P = nil
-		
+
 		local A60_A120 = workspace:FindFirstChild("A60") or workspace:FindFirstChild("A120")
 		if A60_A120 then -- and A60_A120.Main.Position.Y > -4 then
 			P = getWardrobe()
 		else
 			P = game:GetService("Workspace").CurrentRooms[game:GetService("ReplicatedStorage").GameData.LatestRoom.Value].Door
 		end
-		
+
 		return P
 	end
 
@@ -2495,7 +2501,7 @@ if game.ReplicatedStorage:WaitForChild("GameData"):WaitForChild("Floor").Value =
 	function isLocker(Part)
 		return (Part.Name == "Rooms_Locker" or Part.Name == "Rooms_Locker_Fridge")
 	end 
-	
+
 	local autoa1000 = nil
 	autoa1000 = window_rooms:AddToggle({
 		Name = "Auto A-1000",
@@ -2550,23 +2556,23 @@ if game.ReplicatedStorage:WaitForChild("GameData"):WaitForChild("Floor").Value =
 						if game.Players.LocalPlayer.Character.Humanoid.Health < 1 then autoa1000:Set(false) end
 					end
 				end)
-				
-				local Highlight = Instance.new("Highlight", workspace)
+
+				local Highlight = Instance.new("Highlight", Pathfinding_Highlights)
 				Highlight.FillColor = Color3.fromRGB(85, 255, 0)
-				
+
 				while flags.autorooms do
 					task.wait();if flags.noa90 == false then flags.noa90 = true;removea90() end
 					--repeat task.wait() until goingToHide == false and plr.Character.HumanoidRootPart.Anchored == false
-										
+
 					local Part = getWalkPart()
 					if goingToHide == false or not isLocker(Part) then
 						unhidefunc()
 					end
-					
+
 					local Highlight = Instance.new("Highlight", Part.Door)
 					Highlight.FillColor = Color3.fromRGB(85, 255, 0)
 					Highlight.Adornee = Part.Door
-					
+
 					task.spawn(function()
 						if flags.autorooms_debug == true then
 							if isLocker(Part) then
@@ -2576,13 +2582,13 @@ if game.ReplicatedStorage:WaitForChild("GameData"):WaitForChild("Floor").Value =
 							end
 						end
 					end)
-					
+
 					local Path = PathfindingService:CreatePath({ 
 						WaypointSpacing = 1, 
 						AgentRadius = 0.8,
 						AgentCanJump = false 
 					})
-					
+
 					local HRP = game.Players.LocalPlayer.Character:FindFirstChild("HumanoidRootPart")
 					local Humanoid = game.Players.LocalPlayer.Character:FindFirstChildWhichIsA("Humanoid")
 					if not HRP then HRP = game.Players.LocalPlayer.Character.PrimaryPart end
@@ -2602,15 +2608,18 @@ if game.ReplicatedStorage:WaitForChild("GameData"):WaitForChild("Floor").Value =
 								Humanoid.MoveToFinished:Wait()
 							end
 						end
-						
+
 						if isLocker(Part) then
 							repeat task.wait() until HRP.Anchored == false or plr.Character:GetAttribute("Hiding") == false
 						end
 					end
-					
-					pcall(function() Highlight:Destroy() end)
+
+					pcall(function() Highlight.OutlineTransparency = 1 end)
+					pcall(function() Highlight.FillTransparency = 1 end)
+					pcall(function() Highlight.Adornee = nil end)
+					Pathfinding_Highlights:ClearAllChildren()
 				end
-				
+
 				task.spawn(function()
 					repeat task.wait() until flags.autorooms == false and goingToHide == false
 					HideCheck:Disconnect()
@@ -2620,7 +2629,7 @@ if game.ReplicatedStorage:WaitForChild("GameData"):WaitForChild("Floor").Value =
 			end
 		end
 	})
-	
+
 	window_rooms:AddToggle({
 		Name = "Auto A-1000 - Debug Notifications",
 		Value = false,
@@ -2636,7 +2645,7 @@ if game.ReplicatedStorage:WaitForChild("GameData"):WaitForChild("Floor").Value =
 		end
 	})
 	autoa1000blockcontrols:Set(true)
-	
+
 	LatestRoom:GetPropertyChangedSignal("Value"):Connect(function()
 		if flags.autorooms == true then
 			if LatestRoom.Value ~= 1000 then
