@@ -453,7 +453,7 @@ local GUIWindow = Library:CreateWindow({
 local GUI = GUIWindow:CreateTab({
 	Name = "Main"
 })
-
+local scriptLoaded = false
 -- Config system
 if isfolder and makefolder and listfiles and writefile then
 	local POOPDOORS_EDITED_FOLDER_NAME = "POOPDOORS_EDITED"
@@ -468,7 +468,9 @@ if isfolder and makefolder and listfiles and writefile then
 			filename = string.gsub(filename, "POOPDOORS_EDITED", "")
 			filename = filename:sub(2)
 			filename = string.gsub(filename, ".json", "")
-			table.insert(filetablelist, filename)
+			if not filename:match("autostart.txt") then
+				table.insert(filetablelist, filename)
+			end
 		end
 		if ConfigDropdowne ~= nil then
 			ConfigDropdowne:UpdateList(filetablelist)
@@ -525,8 +527,9 @@ if isfolder and makefolder and listfiles and writefile then
 			reloadList(ConfigDropdown)
 		end
 	end
-	function loadConfig(name)
-		normalmessage("CONFIGS", "Trying to load config called '"..name.."'.", 5)
+	function loadConfig(name, notifs)
+		if notifs == nil then notifs = true end
+		if notifs == true then normalmessage("CONFIGS", "Trying to load config called '"..name.."'.", 5) end
 		if isfile(POOPDOORS_EDITED_FOLDER_NAME.."/"..name..".json") then
 			local jsonecoded = readfile(POOPDOORS_EDITED_FOLDER_NAME.."/"..name..".json")
 			local flagsjson = game.HttpService:JSONDecode(jsonecoded)
@@ -543,9 +546,9 @@ if isfolder and makefolder and listfiles and writefile then
 				end
 			end
 			
-			normalmessage("CONFIGS", "Loaded config called '"..name.."'.", 5)
+			if notifs == true then normalmessage("CONFIGS", "Loaded config called '"..name.."'.", 5) end
 		else
-			warnmessage("CONFIGS", "Config called '"..name.."' doesn't exists.", 5)
+			if notifs == true then warnmessage("CONFIGS", "Config called '"..name.."' doesn't exists.", 5) end
 		end
 	end
 	
@@ -555,6 +558,20 @@ if isfolder and makefolder and listfiles and writefile then
 			loadConfig(ConfigDropdown:Get())
 		end
 	})
+	CONFIG:AddLabel({ Name = "Current Auto Load Config:" })
+	local curautoloadtextlabel = CONFIG:AddLabel({ Name = "Current Auto Load Config:" })
+	CONFIG:AddButton({ 
+		Name = "Auto Load Config", 
+		Callback = function() 
+			local s,e
+			repeat
+				s,e = pcall(function()
+					writefile(POOPDOORS_EDITED_FOLDER_NAME.."/autostart.txt", ConfigDropdown:Get())
+				end)
+			until not e and s
+			curautoloadtextlabel:Set(ConfigDropdown:Get())
+			normalmessage("CONFIGS", "Config called '"..ConfigDropdown:Get().."' will automaticly load now.", 5)
+	end })
 	CONFIG:AddButton({ Name = "Reload Config List", Callback = function() reloadList(ConfigDropdown) end })
 	
 	local SaveCurrentName = CONFIG:AddTextbox({
@@ -583,6 +600,26 @@ if isfolder and makefolder and listfiles and writefile then
 	})
 	
 	reloadList(ConfigDropdown)
+	task.spawn(function()
+		repeat task.wait() until scriptLoaded == true
+		if isfile(POOPDOORS_EDITED_FOLDER_NAME.."/autostart.txt") then
+			local autostart_name = readfile(POOPDOORS_EDITED_FOLDER_NAME.."/autostart.txt")
+			if isfile(POOPDOORS_EDITED_FOLDER_NAME.."/"..autostart_name..".json") then
+				curautoloadtextlabel:Set(autostart_name)
+				loadConfig(autostart_name, false)
+				task.wait(2.5)
+				normalmessage("CONFIGS", "Config called '"..autostart_name.."' automaticly loaded.", 5)
+			else
+				curautoloadtextlabel:Set("None")
+				local s,e
+				repeat
+					s,e = pcall(function()
+						delfile(POOPDOORS_EDITED_FOLDER_NAME.."/autostart.txt")
+					end)
+				until not e and s
+			end
+		end
+	end)
 else
 	warnmessage("CONFIGS", "You need to have file functions for Configs.", 10)
 end
@@ -2779,4 +2816,5 @@ task.spawn(function()
 	closegui()
 end)
 
+scriptLoaded = true
 normalmessage("POOPDOORS EDITED v"..currentver, "Script loaded!")
