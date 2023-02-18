@@ -54,7 +54,7 @@ function warnmessage(title, text, timee)
 	)
 end
 
-local currentver = "1.3.3"
+local currentver = "1.4"
 local gui_data = nil
 local s,e = pcall(function()
 	gui_data = game:HttpGet(("https://raw.githubusercontent.com/mstudio45/poopdoors_edited/main/gui_data.json"), true)
@@ -187,10 +187,35 @@ local hum = char:FindFirstChildOfClass("Humanoid") or char:WaitForChild("Humanoi
 local LatestRoom = game:GetService("ReplicatedStorage").GameData.LatestRoom
 local Players = game:GetService("Players")
 
+local function changeBrightness(color)
+	local h, s, v = color:ToHSV()
+	return Color3.fromHSV(h, s, v/2)
+end
+
+local GlobalESPFolder = game.CoreGui:FindFirstChild("ESPFolder")
+if GlobalESPFolder == nil then
+	GlobalESPFolder = Instance.new("Folder", game.CoreGui)
+	GlobalESPFolder.Name = "ESPFolder"
+end
 local esptableinstances = {}
 function esp(what,color,core,name)
 	local parts
-
+	
+	local esp_folder = GlobalESPFolder:FindFirstChild(name)
+	if game.Players:FindFirstChild(name) then
+		esp_folder = GlobalESPFolder:FindFirstChild("PlayerESP")
+		if not esp_folder then
+			esp_folder = Instance.new("Folder")
+			esp_folder.Parent = GlobalESPFolder
+			esp_folder.Name = "PlayerESP"
+		end
+	end
+	if not esp_folder then
+		esp_folder = Instance.new("Folder")
+		esp_folder.Parent = GlobalESPFolder
+		esp_folder.Name = name
+	end
+	
 	if typeof(what) == "Instance" then
 		if what:IsA("Model") then
 			parts = what:GetChildren()
@@ -214,9 +239,9 @@ function esp(what,color,core,name)
 			box.Color3 = color
 			box.Transparency = 0.7
 			box.Adornee = v
-			box.Parent = game.CoreGui
+			box.Parent = esp_folder
 
-			table.insert(boxes,box)
+			table.insert(boxes, box)
 
 			task.spawn(function()
 				while box do
@@ -232,7 +257,7 @@ function esp(what,color,core,name)
 	end
 
 	if core and name then
-		bill = Instance.new("BillboardGui",game.CoreGui)
+		bill = Instance.new("BillboardGui", esp_folder)
 		bill.AlwaysOnTop = true
 		bill.Size = UDim2.new(0,400,0,100)
 		bill.Adornee = core
@@ -261,6 +286,7 @@ function esp(what,color,core,name)
 				if bill.Adornee == nil or not bill.Adornee:IsDescendantOf(workspace) then
 					bill.Enabled = false
 					bill.Adornee = nil
+					--pcall(function() table.remove(boxes, table.find(boxes, bill)) end)
 					bill:Destroy() 
 				end  
 				task.wait()
@@ -310,7 +336,9 @@ end)
 
 local avoidingYvalue = 22.5
 local flags = {
+	
 	speed = 0,
+	-- esp
 	espdoors = false,
 	espkeys = false,
 	espitems = false,
@@ -321,7 +349,12 @@ local flags = {
 	esphumans = false,
 	espgold = false,
 	goldespvalue = 0,
+	
+	-- notifiers
 	hintrush = false,
+	predictentities = false,
+	
+	-- general
 	light = false,
 	fullbright = false,
 	instapp = false,
@@ -333,20 +366,24 @@ local flags = {
 	noscreech = false,
 	getcode = false,
 	roomsnolock = false,
-	draweraura = false,
-	keyaura = false,
-	autorooms = false,
 	heartbeatwin = false,
 	noseekarmsfire = false,
 	avoidrushambush = false,
 	autoplayagain = false,
-	bookcollecter = false,
 	anticheatbypass = false,
-	noeyesdamage = false,
-	predictentities = false,
 	noclip = false, --fly = false
+	autoskiprooms = false,
+	
+	-- auras
+	draweraura = false,
+	keyaura = false,
 	breakercollecter = false,
-	autoskiprooms = false
+	bookcollecter = false,
+	
+	-- auto a-1000
+	autorooms = false,
+	autorooms_debug = false,
+	autorooms_blockcontrols = false,
 }
 
 local DELFLAGS = {table.unpack(flags)}
@@ -571,6 +608,7 @@ window_esp:AddButton({
 				end
 			end
 		end)
+		GlobalESPFolder:ClearAllChildren()
 	end
 })
 
@@ -2304,17 +2342,17 @@ local window_rooms = GUI:CreateSection({
 if game.ReplicatedStorage:WaitForChild("GameData"):WaitForChild("Floor").Value == "Rooms" then
 	-- anti afk by geodude#2619
 	task.spawn(function()
-	--	pcall(function()
-			local GC = getconnections or get_signal_cons
-			if GC then
-				for i,v in pairs(GC(plr.Idled)) do
-					if v["Disable"] then
-						v["Disable"](v)
-					elseif v["Disconnect"] then
-						v["Disconnect"](v)
-					end
+		--	pcall(function()
+		local GC = getconnections or get_signal_cons
+		if GC then
+			for i,v in pairs(GC(plr.Idled)) do
+				if v["Disable"] then
+					v["Disable"](v)
+				elseif v["Disconnect"] then
+					v["Disconnect"](v)
 				end
 			end
+		end
 		--end)
 	end)
 
@@ -2354,26 +2392,30 @@ if game.ReplicatedStorage:WaitForChild("GameData"):WaitForChild("Floor").Value =
 		clearWardrobes()
 		local function check(assets)
 			for _,v in pairs(assets:GetDescendants()) do
-				if (v.Name == "Rooms_Locker" or v.Name == "Rooms_Locker_Fridge") and v:FindFirstChild("HidePrompt") and not table.find(Wardrobes, v) then
-					if v.Door.Position.Y > -3 and v.HiddenPlayer.Value == nil then
-						table.insert(Wardrobes, v)
+				if v.Name == "Rooms_Locker" or v.Name == "Rooms_Locker_Fridge" then
+					if v:FindFirstChild("Door") and v:FindFirstChild("HidePrompt") then
+						if v.HiddenPlayer.Value == nil  then
+							if v.Door.Position.Y > -3 then
+								if not table.find(Wardrobes, v) then
+									table.insert(Wardrobes, v)
+								end
+							end
+						end
 					end
 				end
 			end
 		end
 
 		check(game:GetService("Workspace").CurrentRooms[game:GetService("ReplicatedStorage").GameData.LatestRoom.Value])
-		for i = 1, 2 do
-			check(game:GetService("Workspace").CurrentRooms[game:GetService("ReplicatedStorage").GameData.LatestRoom.Value-i])
-		end
-		check(game:GetService("Workspace").CurrentRooms[game:GetService("ReplicatedStorage").GameData.LatestRoom.Value])
-		
-		Wardrobe = Wardrobes[1]
-		if #Wardrobes == 1 then
-			Wardrobe = Wardrobes[1]
-		else
-			for i,v in pairs(Wardrobes) do
-				if (game.Players.LocalPlayer.Character.PrimaryPart.Position - v.Door.Position).Magnitude < (Wardrobe.Door.Position - game.Players.LocalPlayer.Character.PrimaryPart.Position).Magnitude then
+		check(game:GetService("Workspace").CurrentRooms[game:GetService("ReplicatedStorage").GameData.LatestRoom.Value-1])
+		check(game:GetService("Workspace").CurrentRooms[game:GetService("ReplicatedStorage").GameData.LatestRoom.Value-2])
+		check(game:GetService("Workspace").CurrentRooms[game:GetService("ReplicatedStorage").GameData.LatestRoom.Value]) -- check again
+
+		for i,v in pairs(Wardrobes) do
+			if Wardrobe == nil then
+				Wardrobe = v
+			else
+				if (game.Players.LocalPlayer.Character.HumanoidRootPart.Position - v.Door.Position).Magnitude < (Wardrobe.Door.Position - game.Players.LocalPlayer.Character.HumanoidRootPart.Position).Magnitude then
 					Wardrobe = v
 				end
 			end
@@ -2386,12 +2428,14 @@ if game.ReplicatedStorage:WaitForChild("GameData"):WaitForChild("Floor").Value =
 
 	function getWalkPart()
 		local P = nil
+		
 		local A60_A120 = workspace:FindFirstChild("A60") or workspace:FindFirstChild("A120")
-		if A60_A120 and A60_A120.Main.Position.Y > -2 then
+		if A60_A120 then -- and A60_A120.Main.Position.Y > -4 then
 			P = getWardrobe()
 		else
 			P = game:GetService("Workspace").CurrentRooms[game:GetService("ReplicatedStorage").GameData.LatestRoom.Value].Door
 		end
+		
 		return P
 	end
 
@@ -2451,7 +2495,7 @@ if game.ReplicatedStorage:WaitForChild("GameData"):WaitForChild("Floor").Value =
 	function isLocker(Part)
 		return (Part.Name == "Rooms_Locker" or Part.Name == "Rooms_Locker_Fridge")
 	end 
-
+	
 	local autoa1000 = nil
 	autoa1000 = window_rooms:AddToggle({
 		Name = "Auto A-1000",
@@ -2485,14 +2529,13 @@ if game.ReplicatedStorage:WaitForChild("GameData"):WaitForChild("Floor").Value =
 						if A60_A120 then
 							if Part then
 								if isLocker(Part) then
-									if A60_A120.Main.Position.Y > -2 then
-										local doorpart = nil;if Part:FindFirstChild("Door") then doorpart = Part.Door else doorpart = Part.PrimaryPart end
-										if plr:DistanceFromCharacter(doorpart.Position) <= 9 then
+									if A60_A120.Main.Position.Y > -4 then
+										if plr:DistanceFromCharacter(Part.Door.Position) <= 9 then
 											goingToHide = true
 											if plr.Character.HumanoidRootPart.Anchored == false then
 												fireproximityprompt(Part.HidePrompt)
 											end
-										--else if plr:DistanceFromCharacter(Part.Door.Position) <= 11.5 then plr.Character:PivotTo(Part.Door.CFrame) end
+											--else if plr:DistanceFromCharacter(Part.Door.Position) <= 11.5 then plr.Character:PivotTo(Part.Door.CFrame) end
 										end
 									end
 								end
@@ -2507,43 +2550,67 @@ if game.ReplicatedStorage:WaitForChild("GameData"):WaitForChild("Floor").Value =
 						if game.Players.LocalPlayer.Character.Humanoid.Health < 1 then autoa1000:Set(false) end
 					end
 				end)
-
+				
+				local Highlight = Instance.new("Highlight", workspace)
+				Highlight.FillColor = Color3.fromRGB(85, 255, 0)
+				
 				while flags.autorooms do
-					if flags.noa90 == false then flags.noa90 = true;removea90() end
-					
-					waitframes(1)
+					task.wait();if flags.noa90 == false then flags.noa90 = true;removea90() end
+					--repeat task.wait() until goingToHide == false and plr.Character.HumanoidRootPart.Anchored == false
+										
 					local Part = getWalkPart()
-					repeat task.wait() until goingToHide == false and plr.Character.HumanoidRootPart.Anchored == false
-					if plr.Character.HumanoidRootPart.Anchored == false then
-						local doorpart = nil;if Part:FindFirstChild("Door") then doorpart = Part.Door else doorpart = Part.PrimaryPart end
-						if isLocker(Part) then
-							task.spawn(function()
-								repeat
-									if plr:DistanceFromCharacter(doorpart.Position) <= 9 then
-										if plr.Character.HumanoidRootPart.Anchored == false then
-											fireproximityprompt(Part.HidePrompt)
-										end
-									end
-									task.wait()									
-								until (Part.HiddenPlayer.Value ~= nil and Part.HiddenPlayer.Value.Name == plr.Name)
-							end)		
-						end
-
-						Path = PathModule.new(
-							plr.Character, 
-							doorpart.Position, 
-							{ 
-								WaypointSpacing = 1, 
-								AgentRadius = 0.8,
-								AgentCanJump = false 
-							}, 
-							false, 
-							Vector3.new(0, 3, 0)
-						)
-						repeat task.wait() until Path == true or Path == false
+					if goingToHide == false or not isLocker(Part) then
+						unhidefunc()
 					end
-				end
+					
+					local Highlight = Instance.new("Highlight", Part.Door)
+					Highlight.FillColor = Color3.fromRGB(85, 255, 0)
+					Highlight.Adornee = Part.Door
+					
+					task.spawn(function()
+						if flags.autorooms_debug == true then
+							if isLocker(Part) then
+								normalmessage("AUTO A-1000 [DEBUG]", "Trying to go to "..Part.Name..".", 5)
+							else
+								normalmessage("AUTO A-1000 [DEBUG]", "Trying to go to next door ("..(game:GetService("ReplicatedStorage").GameData.LatestRoom.Value + 1)..").", 5)
+							end
+						end
+					end)
+					
+					local Path = PathfindingService:CreatePath({ 
+						WaypointSpacing = 1, 
+						AgentRadius = 0.8,
+						AgentCanJump = false 
+					})
+					
+					local HRP = game.Players.LocalPlayer.Character:FindFirstChild("HumanoidRootPart")
+					local Humanoid = game.Players.LocalPlayer.Character:FindFirstChildWhichIsA("Humanoid")
+					if not HRP then HRP = game.Players.LocalPlayer.Character.PrimaryPart end
 
+					local Success, ErrorMessage = pcall(function()
+						Path:ComputeAsync(HRP.Position - Vector3.new(0, 3, 0), Part.Door.Position)
+					end)
+
+					if Success and Path.Status == Enum.PathStatus.Success then 
+						local waypoints = Path:GetWaypoints()
+						VisualizerFolder:ClearAllChildren()
+						PathModule.visualize(waypoints)
+
+						for i, v in pairs(waypoints) do
+							if HRP.Anchored == false then
+								Humanoid:MoveTo(v.Position)
+								Humanoid.MoveToFinished:Wait()
+							end
+						end
+						
+						if isLocker(Part) then
+							repeat task.wait() until HRP.Anchored == false or plr.Character:GetAttribute("Hiding") == false
+						end
+					end
+					
+					pcall(function() Highlight:Destroy() end)
+				end
+				
 				task.spawn(function()
 					repeat task.wait() until flags.autorooms == false and goingToHide == false
 					HideCheck:Disconnect()
@@ -2554,15 +2621,37 @@ if game.ReplicatedStorage:WaitForChild("GameData"):WaitForChild("Floor").Value =
 		end
 	})
 	
+	window_rooms:AddToggle({
+		Name = "Auto A-1000 - Debug Notifications",
+		Value = false,
+		Callback = function(val, oldval)
+			flags.autorooms_debug = val
+		end
+	})
+	local autoa1000blockcontrols = window_rooms:AddToggle({
+		Name = "Auto A-1000 - Block Controls",
+		Value = false,
+		Callback = function(val, oldval)
+			flags.autorooms_blockcontrols = val
+		end
+	})
+	autoa1000blockcontrols:Set(true)
+	
 	LatestRoom:GetPropertyChangedSignal("Value"):Connect(function()
 		if flags.autorooms == true then
 			if LatestRoom.Value ~= 1000 then
-				plr.DevComputerMovementMode = Enum.DevComputerMovementMode.Scriptable
+				if flags.autorooms_blockcontrols == true then
+					plr.DevComputerMovementMode = Enum.DevComputerMovementMode.Scriptable
+				else
+					plr.DevComputerMovementMode = Enum.DevComputerMovementMode.KeyboardMouse
+				end
 			else
 				plr.DevComputerMovementMode = Enum.DevComputerMovementMode.KeyboardMouse
 				autoa1000:Set(false)
 				normalmessage("AUTO A-1000", "Finished walking to A-1000!\nThanks for using POOPDOORS EDITED Auto A-1000.", 10)
 			end
+		else
+			plr.DevComputerMovementMode = Enum.DevComputerMovementMode.KeyboardMouse
 		end
 	end)
 end
@@ -2585,6 +2674,7 @@ function closegui()
 	end)
 
 	VisualizerFolder:Destroy()
+	GlobalESPFolder:Destroy()
 	pcall(function() getgenv().POOPDOORSLOADED = false;POOPDOORSLOADED = false end)
 
 	task.wait(.1)
