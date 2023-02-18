@@ -501,7 +501,7 @@ if isfolder and makefolder and listfiles and writefile then
 		if replace == false then
 			if not isfile(POOPDOORS_EDITED_FOLDER_NAME.."/"..name..".json") then
 				local s,e
-				repeat
+				repeat task.wait()
 					s,e = pcall(function()
 						local jsonflags = game.HttpService:JSONEncode(flags)
 						writefile(POOPDOORS_EDITED_FOLDER_NAME.."/"..name..".json", jsonflags)
@@ -521,7 +521,7 @@ if isfolder and makefolder and listfiles and writefile then
 			end
 		else
 			local s,e
-			repeat
+			repeat task.wait()
 				s,e = pcall(function()
 					local jsonflags = game.HttpService:JSONEncode(flags)
 					writefile(POOPDOORS_EDITED_FOLDER_NAME.."/"..name..".json", jsonflags)
@@ -570,7 +570,7 @@ if isfolder and makefolder and listfiles and writefile then
 		Name = "Auto Load Config", 
 		Callback = function() 
 			local s,e
-			repeat
+			repeat task.wait()
 				s,e = pcall(function()
 					writefile(POOPDOORS_EDITED_FOLDER_NAME.."/autostart.txt", ConfigDropdown:Get())
 				end)
@@ -583,7 +583,7 @@ if isfolder and makefolder and listfiles and writefile then
 		Name = "Reset Load Config", 
 		Callback = function() 
 			local s,e
-			repeat
+			repeat task.wait()
 				s,e = pcall(function()
 					delfile(POOPDOORS_EDITED_FOLDER_NAME.."/autostart.txt")
 				end)
@@ -631,7 +631,7 @@ if isfolder and makefolder and listfiles and writefile then
 			else
 				curautoloadtextlabel:Set("None")
 				local s,e
-				repeat
+				repeat task.wait()
 					s,e = pcall(function()
 						delfile(POOPDOORS_EDITED_FOLDER_NAME.."/autostart.txt")
 					end)
