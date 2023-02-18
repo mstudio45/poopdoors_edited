@@ -52,7 +52,8 @@ end
 local teleported = false
 repeat
 	for _,v in pairs(game:GetService("Workspace").Lobby.LobbyElevators:GetChildren()) do
-		pcall(function()
+		--pcall(function()
+
 			if v.DoorHitbox.BillboardGui.Title.Text == "0 / 1" or v.DoorHitbox.BillboardGui.Title.Text == "0 / 12" then
 				repeat
 					game.Players.LocalPlayer.Character:PivotTo(v.DoorHitbox.CFrame)
@@ -61,7 +62,7 @@ repeat
 				teleported = true
 				break
 			end
-		end)
+		--end)
 	end
 	task.wait(1)
 	if teleported == false then
