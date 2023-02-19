@@ -2521,6 +2521,7 @@ window_misc:AddButton({
 				end
 			end)
 			bruteforcinglibrarycode = false
+			normalmessage("ROOM 50", "Bruteforcing is done.", "", 10)
 			--	end
 			--end)
 		end
