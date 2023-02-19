@@ -1,5 +1,5 @@
 {
-	"ver": "1.5",
-	"changelog": "Auto A-1000 FIXED!\nAdded 'Config' tab for saving presets.",
+	"ver": "1.6",
+	"changelog": "New Notifications\nOptimizations\nJoin our discord for full changelog (Credits Tab).",
 	"loadstring": "https://raw.githubusercontent.com/mstudio45/poopdoors_edited/main/poopdoors_edited.lua"
 }
