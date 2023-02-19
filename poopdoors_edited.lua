@@ -595,7 +595,7 @@ local esptable = {doors={},keys={},items={},books={},entity={},chests={},lockers
 
 local GUIWindow = Library:CreateWindow({
 	Name = "POOPDOORS EDITED v".. currentver,
-	Themeable = true
+	Themeable = false
 })
 
 local GUI = GUIWindow:CreateTab({
@@ -878,7 +878,6 @@ local CustomNewNotificationSoundId = newnotificationsettings:AddTextbox({
 	Value = "10469938989",
 	Multiline = false,
 	Callback = function(id)
-		if CustomNotificationSoundINotifs == true then oldnormalmessage("INFO", "Checking if sound exists. Please wait...", 10) end
 		local MarketplaceService = game:GetService("MarketplaceService")
 		local Success, Response = pcall(MarketplaceService.GetProductInfo, MarketplaceService, id)
 
@@ -940,10 +939,9 @@ local CustomOldNotificationSoundINotifs = false
 task	.spawn(function()task.wait(1)CustomOldNotificationSoundINotifs = true end)
 local CustomOldNotificationSoundID = oldnotificationsettings:AddTextbox({
 	Name = "Custom Notification Sound",
-	Value = "10469938989",
+	Value = "4590657391",
 	Multiline = false,
 	Callback = function(id)
-		if CustomOldNotificationSoundINotifs == true then oldnormalmessage("INFO", "Checking if sound exists. Please wait...", 10) end
 		local MarketplaceService = game:GetService("MarketplaceService")
 		local Success, Response = pcall(MarketplaceService.GetProductInfo, MarketplaceService, id)
 
@@ -1666,7 +1664,7 @@ local esplockerbrn = window_esp:AddToggle({
 				end
 
 				if v:IsA("Model") then
-					task.wait(.1)
+					task.wait()
 					if table.find(esptableinstances, v) then
 						return
 					end
@@ -1701,7 +1699,7 @@ local esplockerbrn = window_esp:AddToggle({
 			end
 
 			local function setup(room)
-				task.wait(.1)
+				task.wait()
 				local assets = room--:FindFirstChild("Assets")
 
 				if assets then
@@ -2506,6 +2504,28 @@ local getcodebtn = window_misc:AddToggle({
 	end
 })
 buttons.getcode = getcodebtn
+local bruteforcinglibrarycode = false
+window_misc:AddButton({
+	Name = "Bruteforce Library Code",
+	Callback = function()
+		if game:GetService("ReplicatedStorage").GameData.LatestRoom.Value == 50 then
+			if bruteforcinglibrarycode == true then return end
+			normalmessage("ROOM 50", "This might took a while.", "Please wait...", 10)
+			--confirmnotification("ROOM 50", "Are you sure? This can crash your game.\nDon't click anything until it unfreeze.", 10, function(State)
+			--	if State == true then
+			bruteforcinglibrarycode = true
+			task.spawn(function()
+				for i = 0, 99999 do
+					game:GetService("ReplicatedStorage").EntityInfo.PL:FireServer(tostring(i))
+					task.wait()
+				end
+			end)
+			bruteforcinglibrarycode = false
+			--	end
+			--end)
+		end
+	end
+})
 local roomsnolockbtn = window_misc:AddToggle({
 	Name = "A-000 Door No Locks",
 	Value = false,
