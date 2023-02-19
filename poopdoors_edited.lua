@@ -1,6 +1,7 @@
 -- edited by mstudio45 | original by https://v3rmillion.net/member.php?action=profile&uid=1802731 
 -- https://v3rmillion.net/showthread.php?tid=1200475
 
+local POOPDOORS_START_TIME = os.time()
 function waitframes(ii) for i = 1, ii do task.wait() end end
 
 local NotificationHolder = loadstring(game:HttpGet("https://raw.githubusercontent.com/BocusLuke/UI/main/STX/Module.Lua"))()
@@ -9,41 +10,93 @@ function message(text)
 	task.spawn(function()
 		local notif = Instance.new("Sound");notif.Parent = game.SoundService;notif.SoundId = "rbxassetid://4590657391";notif.Volume = 3;notif:Play();notif.Stopped:Wait();notif:Destroy()
 	end)
-
 	task.spawn(function()
 		local msg = Instance.new("Message",workspace)
 		msg.Text = tostring(text)
 		task.wait(5)
 		msg:Destroy()
-
-		--firesignal(entityinfo.Caption.OnClientEvent,tostring(text)) 
 	end)
 end
 
-function normalmessage(title, text, timee)
+function normalmessage(title, text, reason, timee, image, textlabel, waitforinsttodelete)
 	task.spawn(function()
-		local notif = Instance.new("Sound");notif.Parent = game.SoundService;notif.SoundId = "rbxassetid://4590657391";notif.Volume = 3;notif:Play();notif.Stopped:Wait();notif:Destroy()
-	end)
+		do
+			local LocalPlayer = game.Players.LocalPlayer;
+			local AchievementsFolder = require(game:GetService("ReplicatedStorage"):WaitForChild("Achievements"));
+			local MainUI = LocalPlayer.PlayerGui.MainUI;
+			local TweenService = game:GetService("TweenService");
 
-	Notification:Notify(
-		{Title = title, Description = text},
-		{OutlineColor = Color3.fromRGB(80, 80, 80),Time = timee or 5, Type = "default"}
-	)
+			if title == nil or typeof(title) ~= "string" or string.len(title) == 0 then return end
+			if text == nil or typeof(text) ~= "string" or string.len(text) == 0 then return end
+			if reason == nil or typeof(reason) ~= "string" or string.len(reason) == 0 then reason = "" end
+			if textlabel == nil or typeof(textlabel) ~= "string" then textlabel = "NOTIFICATION" end
+			if timee == nil or timee == 0 or typeof(timee) ~= "number" then timee = 5 end
+			if image == nil or typeof(image) ~= "string" then 
+				image = "6023426923" 
+			end
+
+			local AchievementFrame = MainUI.AchievementsHolder.Achievement:Clone();
+			AchievementFrame.Size = UDim2.new(0, 0, 0, 0);
+			AchievementFrame.Frame.Position = UDim2.new(1.1, 0, 0, 0);
+			AchievementFrame.Name = "LiveAchievement";
+			AchievementFrame.Visible = true;
+
+			AchievementFrame.Frame.TextLabel.Text = textlabel
+			if textlabel == "WARNING" then AchievementFrame.Frame.TextLabel.TextColor3 = Color3.fromRGB(175, 0, 0);AchievementFrame.Frame.UIStroke.Color = Color3.fromRGB(175, 0, 0);AchievementFrame.Frame.Glow.ImageColor3 = Color3.fromRGB(175, 0, 0); end
+			AchievementFrame.Frame.Details.Desc.Text = tostring(text)
+			AchievementFrame.Frame.Details.Title.Text = tostring(title)
+			AchievementFrame.Frame.Details.Reason.Text = tostring(reason or "")
+
+			AchievementFrame.Frame.ImageLabel.Image = "rbxassetid://"..tostring(image or "0")
+
+			AchievementFrame.Parent = MainUI.AchievementsHolder;
+			AchievementFrame.Sound:Play();
+			if textlabel == "WARNING" then AchievementFrame:TweenSize(UDim2.new(1, 0, 0.2, 0), "In", "Quad", 0.3, true); else AchievementFrame:TweenSize(UDim2.new(1, 0, 0.2, 0), "In", "Quad", 0.8, true); end
+			if textlabel == "WARNING" then wait(0.3) else wait(0.8) end
+			AchievementFrame.Frame:TweenPosition(UDim2.new(0, 0, 0, 0), "Out", "Quad", 0.5, true);
+			TweenService:Create(AchievementFrame.Frame.Glow, TweenInfo.new(1, Enum.EasingStyle.Quad, Enum.EasingDirection.In), {
+				ImageTransparency = 1
+			}):Play()
+			if waitforinsttodelete ~= nil and typeof(waitforinsttodelete) == "Instance" then
+				waitforinsttodelete.Destroying:Wait()
+				print("ok")
+			else
+				wait(timee)
+			end
+			AchievementFrame.Frame:TweenPosition(UDim2.new(1.1, 0, 0, 0), "In", "Quad", 0.5, true)
+			wait(0.5)
+			AchievementFrame:TweenSize(UDim2.new(1, 0, -0.1, 0), "InOut", "Quad", 0.5, true)
+			wait(0.5)
+			AchievementFrame:Destroy()
+		end
+	end)
+end
+function warnmessage(title, text, reason, timee, image, waitforinsttodelete)
+	normalmessage(title, text, reason, timee, image, "WARNING", waitforinsttodelete)
 end
 
 function confirmnotification(title, text, timee, callback)
 	task.spawn(function()
 		local notif = Instance.new("Sound");notif.Parent = game.SoundService;notif.SoundId = "rbxassetid://4590657391";notif.Volume = 3;notif:Play();notif.Stopped:Wait();notif:Destroy()
 	end)
-
 	Notification:Notify(
 		{Title = title, Description = text},
 		{OutlineColor = Color3.fromRGB(80, 80, 80), Time = timee or 10, Type = "option"},
 		{Image = "http://www.roblox.com/asset/?id=6023426923", ImageColor = Color3.fromRGB(255, 84, 84), Callback = callback or function(state)end}
 	)
+end
+
+function oldnormalmessage(title, text, timee)
+	task.spawn(function()
+		local notif = Instance.new("Sound");notif.Parent = game.SoundService;notif.SoundId = "rbxassetid://4590657391";notif.Volume = 3;notif:Play();notif.Stopped:Wait();notif:Destroy()
+	end)
+	Notification:Notify(
+		{Title = title, Description = text},
+		{OutlineColor = Color3.fromRGB(80, 80, 80),Time = timee or 5, Type = "default"}
+	)
 end 
 
-function warnmessage(title, text, timee)
+function oldwarnmessage(title, text, timee)
 	task.spawn(function()
 		local notif = Instance.new("Sound");notif.Parent = game.SoundService;notif.SoundId = "rbxassetid://4590657391";notif.Volume = 5;notif:Play();notif.Stopped:Wait();notif:Destroy()
 	end)
@@ -54,17 +107,17 @@ function warnmessage(title, text, timee)
 	)
 end
 
-local currentver = "1.5"
+local currentver = "1.6"
 local gui_data = nil
 local s,e = pcall(function()
 	gui_data = game:HttpGet(("https://raw.githubusercontent.com/mstudio45/poopdoors_edited/main/gui_data.json"), true)
 	gui_data = game:GetService("HttpService"):JSONDecode(gui_data)
 end)
 if e then
-	warnmessage("POOPDOORS EDITED v"..currentver, "Failed to get script data.", 10)
+	oldwarnmessage("POOPDOORS EDITED v"..currentver, "Failed to get script data.", 10)
 end
 
-if POOPDOORSLOADED == true then warnmessage("POOPDOORS EDITED v"..currentver, "GUI already loaded!", 10) return end
+if POOPDOORSLOADED == true then warnmessage("POOPDOORS EDITED v"..currentver, "GUI already loaded!", "", 10) return end
 if game.PlaceId ~= 6839171747 and game.PlaceId == 6516141723 then 
 	--warnmessage("POOPDOORS EDITED v"..currentver, "You need to join a game to run this script.", 10) 
 	confirmnotification("POOPDOORS EDITED v"..currentver, "Do you want to join a game?", 15, function(state)
@@ -77,12 +130,12 @@ if game.PlaceId ~= 6839171747 and game.PlaceId == 6516141723 then
 	return
 end
 if game.PlaceId ~= 6839171747 and game.PlaceId ~= 6516141723 then 
-	warnmessage("POOPDOORS EDITED v"..currentver, "You need to join DOORS to run this script.", 10) 
+	oldwarnmessage("POOPDOORS EDITED v"..currentver, "You need to join DOORS to run this script.", 10) 
 	return
 end
 if gui_data ~= nil then
 	if currentver ~= gui_data.ver or gui_data.ver ~= currentver then
-		warnmessage("POOPDOORS EDITED v"..currentver, "You are using an outdated version of this script. Loading latest version.", 10) 
+		warnmessage("POOPDOORS EDITED v"..currentver, "You are using an outdated version of this script", "Loading latest version.", 10) 
 		loadstring(game:HttpGet((gui_data.loadstring),true))()
 		return
 	else
@@ -90,9 +143,52 @@ if gui_data ~= nil then
 	end
 end
 pcall(function() getgenv().POOPDOORSLOADED = true end)
-normalmessage("POOPDOORS EDITED v"..currentver, "Loading script...", 2)
+normalmessage("POOPDOORS EDITED v"..currentver, "Loading script...", "", 2)
 if gui_data ~= nil then
-	normalmessage("INFO", gui_data.changelog, 20)
+	oldnormalmessage("INFO", gui_data.changelog, 20)
+end
+
+function JoinDiscord(InviteCodee)
+	InviteCodee = string.gsub(InviteCodee, "https://discord.gg/", "")
+	local Settings = {
+		InviteCode = InviteCodee --add your invite code here (without the "https://discord.gg/" part)
+	}
+	local HttpService = game:GetService("HttpService")
+	local RequestFunction
+	if syn and syn.request then
+		RequestFunction = syn.request
+	elseif request then
+		RequestFunction = request
+	elseif http and http.request then
+		RequestFunction = http.request
+	elseif http_request then
+		RequestFunction = http_request
+	end
+	local DiscordApiUrl = "http://127.0.0.1:%s/rpc?v=1"
+	if not RequestFunction then
+		return oldwarnmessage("POOPDOORS EDITED v"..currentver, "Your executor does not support http requests.", 5)
+	end
+	for i = 6453, 6464 do
+		local DiscordInviteRequest = function()
+			local Request = RequestFunction({
+				Url = string.format(DiscordApiUrl, tostring(i)),
+				Method = "POST",
+				Body = HttpService:JSONEncode({
+					nonce = HttpService:GenerateGUID(false),
+					args = {
+						invite = {code = Settings.InviteCode},
+						code = Settings.InviteCode
+					},
+					cmd = "INVITE_BROWSER"
+				}),
+				Headers = {
+					["Origin"] = "https://discord.com",
+					["Content-Type"] = "application/json"
+				}
+			})
+		end
+		spawn(DiscordInviteRequest)
+	end
 end
 
 -- credits alan1508 on v3erm
@@ -229,31 +325,69 @@ function esp(what,color,core,name)
 	local bill
 	local boxes = {}
 
-	for i,v in pairs(parts) do
-		if v:IsA("BasePart") then
-			local box = Instance.new("BoxHandleAdornment")
-			box.Size = v.Size
-			box.AlwaysOnTop = true
-			box.ZIndex = 1
-			box.AdornCullingMode = Enum.AdornCullingMode.Never
-			box.Color3 = color
-			box.Transparency = 0.7
-			box.Adornee = v
-			box.Parent = esp_folder
+	local s,e = pcall(function()
+		if typeof(parts) ~= "table" then parts = {parts} end
 
-			table.insert(boxes, box)
+		for i,v in pairs(parts) do
+			if typeof(v) == "table" then
+				for ii,vv in pairs(v) do
+					if vv:IsA("BasePart") then
+						local box = Instance.new("BoxHandleAdornment")
+						box.Size = v.Size
+						box.AlwaysOnTop = true
+						box.ZIndex = 1
+						box.AdornCullingMode = Enum.AdornCullingMode.Never
+						box.Color3 = color
+						box.Transparency = 0.7
+						box.Adornee = v
+						box.Parent = esp_folder
 
-			task.spawn(function()
-				while box do
-					if box.Adornee == nil or not box.Adornee:IsDescendantOf(workspace) then
-						box.Adornee = nil
-						box.Visible = false
-						box:Destroy()
-					end  
-					task.wait()
+						table.insert(boxes, box)
+
+						task.spawn(function()
+							while box do
+								if box.Adornee == nil or not box.Adornee:IsDescendantOf(workspace) then
+									box.Adornee = nil
+									box.Visible = false
+									box:Destroy()
+								end  
+								task.wait()
+							end
+						end)
+					end
 				end
-			end)
+			else
+				if v:IsA("BasePart") then
+					local box = Instance.new("BoxHandleAdornment")
+					box.Size = v.Size
+					box.AlwaysOnTop = true
+					box.ZIndex = 1
+					box.AdornCullingMode = Enum.AdornCullingMode.Never
+					box.Color3 = color
+					box.Transparency = 0.7
+					box.Adornee = v
+					box.Parent = esp_folder
+
+					table.insert(boxes, box)
+
+					task.spawn(function()
+						while box do
+							if box.Adornee == nil or not box.Adornee:IsDescendantOf(workspace) then
+								box.Adornee = nil
+								box.Visible = false
+								box:Destroy()
+							end  
+							task.wait()
+						end
+					end)
+				end
+			end
 		end
+	end)
+
+	if e then
+		warn(e)
+		print("box esp failed")
 	end
 
 	if core and name then
@@ -347,6 +481,7 @@ local flags = {
 	noa90 = false,
 	noskeledoors = false,
 	noscreech = false,
+	notimothy = false,
 	getcode = false,
 	roomsnolock = false,
 	heartbeatwin = false,
@@ -360,6 +495,7 @@ local flags = {
 	speed = 0,
 	walkspeedtoggle = false,
 	camfovtoggle = false,
+	autopulllever = false,
 
 	-- esp
 	espdoors = false,
@@ -372,6 +508,7 @@ local flags = {
 	esphumans = false,
 	espgold = false,
 	goldespvalue = 0,
+	fakeespdoors = false,
 
 	-- notifiers
 	hintrush = false,
@@ -399,6 +536,7 @@ local buttons = {
 	noa90 = nil,
 	noskeledoors = nil,
 	noscreech = nil,
+	notimothy = nil,
 	getcode = nil,
 	roomsnolock = nil,
 	heartbeatwin = nil,
@@ -412,7 +550,8 @@ local buttons = {
 	speed = nil,
 	walkspeedtoggle = nil,
 	camfovtoggle = nil,
-	
+	autopulllever = nil,
+
 	-- esp
 	espdoors = nil,
 	espkeys = nil,
@@ -424,6 +563,7 @@ local buttons = {
 	esphumans = nil,
 	espgold = nil,
 	goldespvalue = nil,
+	fakeespdoors = nil,
 
 	-- notifiers
 	hintrush = nil,
@@ -443,7 +583,7 @@ local buttons = {
 
 
 local DELFLAGS = {table.unpack(flags)}
-local esptable = {doors={},keys={},items={},books={},entity={},chests={},lockers={},people={},gold={}}
+local esptable = {doors={},keys={},items={},books={},entity={},chests={},lockers={},people={},gold={},fakedoors={}}
 
 local GUIWindow = Library:CreateWindow({
 	Name = "POOPDOORS EDITED v".. currentver,
@@ -455,11 +595,11 @@ local GUI = GUIWindow:CreateTab({
 })
 local scriptLoaded = false
 -- Config system
-if isfolder and makefolder and listfiles and writefile then
+if isfolder and makefolder and listfiles and writefile and delfile then
 	local POOPDOORS_EDITED_FOLDER_NAME = "POOPDOORS_EDITED"
 	local function checkdir() if not isfolder(POOPDOORS_EDITED_FOLDER_NAME) then makefolder(POOPDOORS_EDITED_FOLDER_NAME) end end
 	checkdir()
-	
+
 	local filetablelist = {}	
 	function reloadList(ConfigDropdowne)
 		filetablelist = {}
@@ -474,10 +614,11 @@ if isfolder and makefolder and listfiles and writefile then
 		end
 		if ConfigDropdowne ~= nil then
 			ConfigDropdowne:UpdateList(filetablelist)
+			ConfigDropdowne:Set(filetablelist[1])
 		end
 	end
 	reloadList(nil)
-	
+
 	local CONFIGTAB = GUIWindow:CreateTab({
 		Name = "Configs"
 	})
@@ -488,17 +629,21 @@ if isfolder and makefolder and listfiles and writefile then
 		Name = "Save",
 		Side = "Right"
 	})
+	local CONFIG_AUTO = CONFIGTAB:CreateSection({
+		Name = "Auto",
+		Side = "Right"
+	})
 	local ConfigDropdown = CONFIG:AddDropdown({
 		Name = 'Select Config',
 		List = filetablelist
 	})
-	
+
 	function saveConfig(name, replace)
 		if replace == nil then replace = false end
-		
+
 		local fileexists = isfile(POOPDOORS_EDITED_FOLDER_NAME.."/"..name..".json")
-		normalmessage("CONFIGS", "Trying to save config called '"..name.."'.", 5)
 		if replace == false then
+			oldnormalmessage("CONFIGS", "Trying to save config called '"..name.."'.", 5)
 			if not isfile(POOPDOORS_EDITED_FOLDER_NAME.."/"..name..".json") then
 				local s,e
 				repeat task.wait()
@@ -507,7 +652,7 @@ if isfolder and makefolder and listfiles and writefile then
 						writefile(POOPDOORS_EDITED_FOLDER_NAME.."/"..name..".json", jsonflags)
 					end)
 				until not e and s
-				normalmessage("CONFIGS", "Succesfully saved a config called '"..name.."'.", 5)
+				oldnormalmessage("CONFIGS", "Succesfully saved a config called '"..name.."'.", 5)
 				reloadList(ConfigDropdown)
 			else
 				warnmessage("CONFIGS", "Config called '"..name.."' already exists.", 5)
@@ -520,6 +665,7 @@ if isfolder and makefolder and listfiles and writefile then
 				end)
 			end
 		else
+			oldnormalmessage("CONFIGS", "Trying to overwrite config called '"..name.."'.", 5)
 			local s,e
 			repeat task.wait()
 				s,e = pcall(function()
@@ -527,17 +673,17 @@ if isfolder and makefolder and listfiles and writefile then
 					writefile(POOPDOORS_EDITED_FOLDER_NAME.."/"..name..".json", jsonflags)
 				end)
 			until not e and s
-			normalmessage("CONFIGS", "Succesfully overwrited a config called '"..name.."'.", 5)
+			oldnormalmessage("CONFIGS", "Succesfully overwrited a config called '"..name.."'.", 5)
 			reloadList(ConfigDropdown)
 		end
 	end
 	function loadConfig(name, notifs)
 		if notifs == nil then notifs = true end
-		if notifs == true then normalmessage("CONFIGS", "Trying to load config called '"..name.."'.", 5) end
+		if notifs == true then oldnormalmessage("CONFIGS", "Trying to load config called '"..name.."'.", 5) end
 		if isfile(POOPDOORS_EDITED_FOLDER_NAME.."/"..name..".json") then
 			local jsonecoded = readfile(POOPDOORS_EDITED_FOLDER_NAME.."/"..name..".json")
 			local flagsjson = game.HttpService:JSONDecode(jsonecoded)
-			
+
 			for name, value in pairs(flagsjson) do
 				if buttons[name] ~= nil then
 					--if typeof(value) == "boolean" then
@@ -549,15 +695,15 @@ if isfolder and makefolder and listfiles and writefile then
 					end
 				end
 			end
-			
-			if notifs == true then normalmessage("CONFIGS", "Successfully loaded config called '"..name.."'.", 5) end
+
+			if notifs == true then oldnormalmessage("CONFIGS", "Successfully loaded config called '"..name.."'.", 5) end
 		else
-			if notifs == true then warnmessage("CONFIGS", "Config called '"..name.."' doesn't exists.", 5) end
+			if notifs == true then oldwarnmessage("CONFIGS", "Config called '"..name.."' doesn't exists.", 5) end
 		end
 	end
 	function deleteConfig(name, notifs)
 		if notifs == nil then notifs = true end
-		if notifs == true then normalmessage("CONFIGS", "Trying to delete config called '"..name.."'.", 5) end
+		if notifs == true then oldnormalmessage("CONFIGS", "Trying to delete config called '"..name.."'.", 5) end
 		if isfile(POOPDOORS_EDITED_FOLDER_NAME.."/"..name..".json") then
 			local s,e
 			repeat task.wait()
@@ -565,14 +711,13 @@ if isfolder and makefolder and listfiles and writefile then
 					delfile(POOPDOORS_EDITED_FOLDER_NAME.."/"..name..".json")
 				end)
 			until not e and s
-			
-			if notifs == true then normalmessage("CONFIGS", "Successfully deleted config called '"..name.."'.", 5) end
-                        reloadList(ConfigDropdown)
+
+			if notifs == true then oldnormalmessage("CONFIGS", "Successfully deleted config called '"..name.."'.", 5) end
+			reloadList(ConfigDropdown)
 		else
-			if notifs == true then warnmessage("CONFIGS", "Config called '"..name.."' doesn't exists.", 5) end
+			if notifs == true then oldwarnmessage("CONFIGS", "Config called '"..name.."' doesn't exists.", 5) end
 		end
 	end
-
 
 	CONFIG:AddButton({
 		Name = "Load Config",
@@ -580,43 +725,20 @@ if isfolder and makefolder and listfiles and writefile then
 			loadConfig(ConfigDropdown:Get())
 		end
 	})
-        CONFIG:AddButton({ 
-               Name = "Delete Config", 
-               Callback = function() 
-                        deleteConfig(ConfigDropdown:Get())
-               end 
-        })
+	CONFIG:AddButton({
+		Name = "Overwrite Config",
+		Callback = function()
+			saveConfig(ConfigDropdown:Get(), true)
+		end
+	})
+	CONFIG:AddButton({ 
+		Name = "Delete Config", 
+		Callback = function() 
+			deleteConfig(ConfigDropdown:Get())
+		end 
+	})
 	CONFIG:AddButton({ Name = "Reload Config List", Callback = function() reloadList(ConfigDropdown) end })
-	CONFIG:AddLabel({ Name = "" })
-	CONFIG:AddLabel({ Name = "Current Auto Load Config:" })
-	local curautoloadtextlabel = CONFIG:AddLabel({ Name = "None" })
-	CONFIG:AddButton({ 
-		Name = "Auto Load Config", 
-		Callback = function() 
-			local s,e
-			repeat task.wait()
-				s,e = pcall(function()
-					writefile(POOPDOORS_EDITED_FOLDER_NAME.."/autostart.txt", ConfigDropdown:Get())
-				end)
-			until not e and s
-			curautoloadtextlabel:Set(ConfigDropdown:Get())
-			normalmessage("CONFIGS", "Config called '"..ConfigDropdown:Get().."' will automaticly load now.", 5)
-		end 
-	})
-	CONFIG:AddButton({ 
-		Name = "Reset Load Config", 
-		Callback = function() 
-			local s,e
-			repeat task.wait()
-				s,e = pcall(function()
-					delfile(POOPDOORS_EDITED_FOLDER_NAME.."/autostart.txt")
-				end)
-			until not e and s
-			normalmessage("CONFIGS", "Config called '"..curautoloadtextlabel:Get().."' will not automaticly load anymore.", 5)
-			curautoloadtextlabel:Set("None")
-		end 
-	})
-	
+
 	local SaveCurrentName = CONFIG_SAVE:AddTextbox({
 		Name = 'Config Name',
 		Value = "Config_"..tostring(#filetablelist+1),
@@ -624,7 +746,7 @@ if isfolder and makefolder and listfiles and writefile then
 	})
 	CONFIG_SAVE:AddButton({ Name = "Reset Config Name", Callback = function() SaveCurrentName:Set("Config_"..tostring(#filetablelist+1)) end })
 	CONFIG_SAVE:AddButton({
-		Name = "Save/Overwrite Config",
+		Name = "Save Config",
 		Callback = function()
 			local name = SaveCurrentName:Get()
 			--name = string.sub(name, " ", "_")
@@ -641,7 +763,36 @@ if isfolder and makefolder and listfiles and writefile then
 			saveConfig(name, false)
 		end
 	})
-	
+
+	CONFIG_AUTO:AddLabel({ Name = "Current Auto Load Config:" })
+	local curautoloadtextlabel = CONFIG_AUTO:AddLabel({ Name = "None" })
+	CONFIG_AUTO:AddButton({ 
+		Name = "Auto Load Config", 
+		Callback = function() 
+			local s,e
+			repeat task.wait()
+				s,e = pcall(function()
+					writefile(POOPDOORS_EDITED_FOLDER_NAME.."/autostart.txt", ConfigDropdown:Get())
+				end)
+			until not e and s
+			curautoloadtextlabel:Set(ConfigDropdown:Get())
+			oldnormalmessage("CONFIGS", "Config called '"..ConfigDropdown:Get().."' will automaticly load now.", 5)
+		end 
+	})
+	CONFIG_AUTO:AddButton({ 
+		Name = "Reset Auto Loading Config", 
+		Callback = function() 
+			local s,e
+			repeat task.wait()
+				s,e = pcall(function()
+					delfile(POOPDOORS_EDITED_FOLDER_NAME.."/autostart.txt")
+				end)
+			until not e and s
+			oldnormalmessage("CONFIGS", "Config called '"..curautoloadtextlabel:Get().."' will not automaticly load anymore.", 5)
+			curautoloadtextlabel:Set("None")
+		end 
+	})
+
 	reloadList(ConfigDropdown)
 	task.spawn(function()
 		repeat task.wait() until scriptLoaded == true
@@ -651,7 +802,7 @@ if isfolder and makefolder and listfiles and writefile then
 				curautoloadtextlabel:Set(autostart_name)
 				loadConfig(autostart_name, false)
 				task.wait(2.5)
-				normalmessage("CONFIGS", "Config called '"..autostart_name.."' automaticly loaded.", 5)
+				oldnormalmessage("CONFIGS", "Config called '"..autostart_name.."' automaticly loaded.", 5)
 			else
 				curautoloadtextlabel:Set("None")
 				local s,e
@@ -715,6 +866,13 @@ window_credits:AddLabel({ Name = "Original V3RM post: 1200475" })
 window_credits:AddLabel({ Name = "Original by:" });window_credits:AddLabel({ Name = "zoophiliaphobic#6287" })
 window_credits:AddLabel({ Name = "Edited by: mstudio45" })
 window_credits:AddLabel({ Name = "UI Library suggestion:" });window_credits:AddLabel({ Name = "actu#2004" })
+window_credits:AddLabel({ Name = "Discord Invite: vC9kRbMVCq" })
+window_credits:AddButton({
+	Name = "Join POOPDOORS EDITED\nDiscord Server",
+	Callback = function()
+		JoinDiscord("vC9kRbMVCq")
+	end
+})
 
 task.spawn(function()
 	repeat task.wait(1) until flags.anticheatbypass == true
@@ -726,7 +884,8 @@ task.spawn(function()
 			flags.noclip = val
 
 			if val then
-				local Nocliprun = game:GetService("RunService").Stepped:Connect(function()
+				local Nocliprun =  nil
+				Nocliprun = game:GetService("RunService").Stepped:Connect(function()
 					if game.Players.LocalPlayer.Character ~= nil then
 						for _,v in pairs(game.Players.LocalPlayer.Character:GetDescendants()) do
 							if v:IsA("BasePart") then
@@ -736,10 +895,10 @@ task.spawn(function()
 							end
 						end
 					end
+					if flags.noclip == false then
+						if Nocliprun then Nocliprun:Disconnect() end
+					end
 				end)
-
-				repeat task.wait() until not flags.noclip
-				if Nocliprun then Nocliprun:Disconnect() end
 			end
 		end
 	})
@@ -776,15 +935,23 @@ local fullbrightbtn = window_player:AddToggle({
 			local oldAmbient = game:GetService("Lighting").Ambient
 			local oldColorShift_Bottom = game:GetService("Lighting").ColorShift_Bottom
 			local oldColorShift_Top = game:GetService("Lighting").ColorShift_Top
-			local function dofullbright()
-				game:GetService("Lighting").Ambient = Color3.new(1, 1, 1)
-				game:GetService("Lighting").ColorShift_Bottom = Color3.new(1, 1, 1)
-				game:GetService("Lighting").ColorShift_Top = Color3.new(1, 1, 1)
-			end
 
-			dofullbright()
-			local coneee = game:GetService("Lighting").LightingChanged:Connect(dofullbright)
+			local function doFullbright()
+				if flags.fullbright == true then
+					game:GetService("Lighting").Ambient = Color3.new(1, 1, 1)
+					game:GetService("Lighting").ColorShift_Bottom = Color3.new(1, 1, 1)
+					game:GetService("Lighting").ColorShift_Top = Color3.new(1, 1, 1)
+				else
+					game:GetService("Lighting").Ambient = oldAmbient
+					game:GetService("Lighting").ColorShift_Bottom = oldColorShift_Bottom
+					game:GetService("Lighting").ColorShift_Top = oldColorShift_Top
+				end
+			end
+			doFullbright()
+
+			local coneee = game:GetService("Lighting").LightingChanged:Connect(doFullbright)
 			repeat task.wait() until not flags.fullbright
+
 			coneee:Disconnect()
 			game:GetService("Lighting").Ambient = oldAmbient
 			game:GetService("Lighting").ColorShift_Bottom = oldColorShift_Bottom
@@ -886,6 +1053,7 @@ local togglefovbrn = window_player:AddToggle({
 	end
 })
 buttons.camfovtoggle = togglefovbrn
+
 task.spawn(function()
 	game:GetService("RunService").RenderStepped:Connect(function()
 		if flags.walkspeedtoggle == true then
@@ -972,6 +1140,71 @@ local espdoorsbtn = window_esp:AddToggle({
 	end
 })
 buttons.espdoors = espdoorsbtn
+local fakeespdoorsbtn = window_esp:AddToggle({
+	Name = "Fake Door (Dupe) ESP",
+	Value = false,
+	Callback = function(val, oldval)
+		flags.fakeespdoors = val
+
+		if val then
+			local function setup(room)
+				task.wait(.1)
+				local door = nil
+				local okvaluechange = nil
+
+				for _,v in pairs(room:GetDescendants()) do
+					if v.Name == "DoorFake" and v:FindFirstChild("Door") then
+						door = v.Door
+						break
+					end
+				end
+
+				if table.find(esptableinstances, door) then
+					return
+				end
+
+				task.wait(0.1)
+				local h = esp(door,Color3.fromRGB(170, 0, 0),door,"Fake Door (Dupe)")
+				table.insert(esptable.fakedoors,h)
+				table.insert(esptableinstances, door)
+
+				pcall(function()
+					door.AncestryChanged:Connect(function()
+						h.delete()
+					end)
+				end)
+				okvaluechange = game:GetService("ReplicatedStorage").GameData.LatestRoom:GetPropertyChangedSignal("Value"):Connect(function()
+					if tostring(game:GetService("ReplicatedStorage").GameData.LatestRoom.Value) ~= room.Name then
+						h.delete()
+						okvaluechange:Disconnect()
+					end
+				end)
+			end
+
+			local addconnect
+			addconnect = workspace.CurrentRooms.ChildAdded:Connect(function(room)
+				setup(room)
+			end)
+
+			for i,room in pairs(workspace.CurrentRooms:GetChildren()) do
+				task.spawn(function()
+					setup(room)
+				end) 
+				task.wait()
+			end
+
+			setup(workspace.CurrentRooms[tostring(game:GetService("ReplicatedStorage").GameData.LatestRoom.Value)])
+
+			repeat task.wait() until not flags.fakeespdoors
+			addconnect:Disconnect()
+
+			for i,v in pairs(esptable.fakedoors) do
+				v.delete()
+			end 
+		end
+	end
+})
+buttons.fakeespdoors = fakeespdoorsbtn
 local espkeysbtn = window_esp:AddToggle({
 	Name = "Key/Lever ESP",
 	Value = false,
@@ -979,13 +1212,14 @@ local espkeysbtn = window_esp:AddToggle({
 		flags.espkeys = val
 
 		if val then
-			local function check(v)
+			local function check(v, room)
 				if table.find(esptableinstances, v) then
 					return
 				end
 
 				if v:IsA("Model") and (v.Name == "LeverForGate" or v.Name == "KeyObtain") then
 					task.wait(0.1)
+					local okvaluechange = nil
 					if v.Name == "KeyObtain" then
 						local hitbox = v:WaitForChild("Hitbox")
 						local parts = hitbox:GetChildren()
@@ -994,6 +1228,12 @@ local espkeysbtn = window_esp:AddToggle({
 						local h = esp(parts,Color3.fromRGB(90,255,40),hitbox,"Key")
 						table.insert(esptable.keys,h)
 						table.insert(esptableinstances, v)
+						okvaluechange = game:GetService("ReplicatedStorage").GameData.LatestRoom:GetPropertyChangedSignal("Value"):Connect(function()
+							if tostring(game:GetService("ReplicatedStorage").GameData.LatestRoom.Value) ~= room.Name then
+								h.delete()
+								okvaluechange:Disconnect()
+							end
+						end)
 					elseif v.Name == "LeverForGate" then
 						local h = esp(v,Color3.fromRGB(90,255,40),v.PrimaryPart,"Lever")
 						table.insert(esptable.keys,h)
@@ -1001,6 +1241,12 @@ local espkeysbtn = window_esp:AddToggle({
 						v.PrimaryPart:WaitForChild("SoundToPlay").Played:Connect(function()
 							h.delete()
 						end) 
+						okvaluechange = game:GetService("ReplicatedStorage").GameData.LatestRoom:GetPropertyChangedSignal("Value"):Connect(function()
+							if tostring(game:GetService("ReplicatedStorage").GameData.LatestRoom.Value) ~= room.Name then
+								h.delete()
+								okvaluechange:Disconnect()
+							end
+						end)
 					end
 				end
 			end
@@ -1010,11 +1256,11 @@ local espkeysbtn = window_esp:AddToggle({
 				local assets = room:WaitForChild("Assets")
 
 				assets.DescendantAdded:Connect(function(v)
-					check(v) 
+					check(v, room) 
 				end)
 
 				for i,v in pairs(assets:GetDescendants()) do
-					check(v)
+					check(v, room)
 				end 
 			end
 
@@ -1181,7 +1427,7 @@ local espbooksbtn = window_esp:AddToggle({
 		end
 	end
 })
-buttons.espbooks = espkeysbtn
+buttons.espbooks = espbooksbtn
 local entitynames = {"RushMoving","AmbushMoving","Snare","A60","A120"}
 local esprusbtn = window_esp:AddToggle({
 	Name = "Entity ESP",
@@ -1240,9 +1486,8 @@ local esprusbtn = window_esp:AddToggle({
 			end)
 
 			for i,v in pairs(workspace.CurrentRooms:GetChildren()) do
-				task.spawn(function()
-					setup(v) 
-				end)
+				setup(v) 
+				task.wait()
 			end
 
 			setup(workspace.CurrentRooms[tostring(game:GetService("ReplicatedStorage").GameData.LatestRoom.Value)])
@@ -1265,24 +1510,41 @@ local esplockerbrn = window_esp:AddToggle({
 		flags.esplocker = val
 
 		if val then
-			local function check(v)
+			local function check(v, room)
 				if table.find(esptableinstances, v) then
 					return
 				end
 
 				if v:IsA("Model") then
-					task.wait(0.1)
+					task.wait(.1)
+					if table.find(esptableinstances, v) then
+						return
+					end
+
+					local okvaluechange = nil
 					if v.Name == "Wardrobe" then
 						pcall(function()
 							local h = esp(v.PrimaryPart,Color3.fromRGB(145,100,25),v.PrimaryPart,"Closet")
 							table.insert(esptable.lockers,h) 
 							table.insert(esptableinstances, v)
+							okvaluechange = game:GetService("ReplicatedStorage").GameData.LatestRoom:GetPropertyChangedSignal("Value"):Connect(function()
+								if tostring(game:GetService("ReplicatedStorage").GameData.LatestRoom.Value) ~= room.Name then
+									h.delete()
+									okvaluechange:Disconnect()
+								end
+							end)
 						end)
 					elseif (v.Name == "Rooms_Locker" or v.Name == "Rooms_Locker_Fridge") then
 						pcall(function()
 							local h = esp(v.PrimaryPart,Color3.fromRGB(145,100,25),v.PrimaryPart,"Locker")
 							table.insert(esptable.lockers,h) 
 							table.insert(esptableinstances, v)
+							okvaluechange = game:GetService("ReplicatedStorage").GameData.LatestRoom:GetPropertyChangedSignal("Value"):Connect(function()
+								if tostring(game:GetService("ReplicatedStorage").GameData.LatestRoom.Value) ~= room.Name then
+									h.delete()
+									okvaluechange:Disconnect()
+								end
+							end)
 						end)
 					end
 				end
@@ -1290,16 +1552,18 @@ local esplockerbrn = window_esp:AddToggle({
 
 			local function setup(room)
 				task.wait(.1)
-				local assets = room:WaitForChild("Assets")
+				local assets = room:FindFirstChild("Assets")
 
 				if assets then
 					local subaddcon
 					subaddcon = assets.DescendantAdded:Connect(function(v)
-						check(v) 
+						task.wait()
+						check(v, room) 
 					end)
 
 					for i,v in pairs(assets:GetDescendants()) do
-						check(v)
+						check(v, room)
+						task.wait()
 					end
 
 					task.spawn(function()
@@ -1314,13 +1578,13 @@ local esplockerbrn = window_esp:AddToggle({
 				setup(room)
 			end)
 
-			for i,v in pairs(workspace.CurrentRooms:GetChildren()) do
-				setup(v) 
-				task.wait()
-			end
-
 			if workspace.CurrentRooms[tostring(game:GetService("ReplicatedStorage").GameData.LatestRoom.Value)]:FindFirstChild("Assets") then
 				setup(workspace.CurrentRooms[tostring(game:GetService("ReplicatedStorage").GameData.LatestRoom.Value)])
+			end
+			if workspace.CurrentRooms:FindFirstChild(tostring(game:GetService("ReplicatedStorage").GameData.LatestRoom.Value+1)) then
+				if workspace.CurrentRooms[tostring(game:GetService("ReplicatedStorage").GameData.LatestRoom.Value+1)]:FindFirstChild("Assets") then
+					setup(workspace.CurrentRooms[tostring(game:GetService("ReplicatedStorage").GameData.LatestRoom.Value+1)])
+				end
 			end
 
 			repeat task.wait() until not flags.esplocker
@@ -1333,6 +1597,7 @@ local esplockerbrn = window_esp:AddToggle({
 	end
 })
 buttons.esplocker = esplockerbrn
+
 local espchesbtn = window_esp:AddToggle({
 	Name = "Chest ESP",
 	Value = false,
@@ -1340,22 +1605,35 @@ local espchesbtn = window_esp:AddToggle({
 		flags.espchest = val
 
 		if val then
-			local function check(v)
+			local function check(v, room)
 				if table.find(esptableinstances, v) then
 					return
 				end
 
 				if v:IsA("Model") then
 					task.wait(0.1)
+					local okvaluechange = nil
 					if v.Name == "ChestBox" then
 						warn(v.Name)
 						local h = esp(v,Color3.fromRGB(205,120,255),v.PrimaryPart,"Chest")
 						table.insert(esptable.chests,h) 
 						table.insert(esptableinstances, v)
+						okvaluechange = game:GetService("ReplicatedStorage").GameData.LatestRoom:GetPropertyChangedSignal("Value"):Connect(function()
+							if tostring(game:GetService("ReplicatedStorage").GameData.LatestRoom.Value) ~= room.Name then
+								h.delete()
+								okvaluechange:Disconnect()
+							end
+						end)
 					elseif v.Name == "ChestBoxLocked" then
 						local h = esp(v,Color3.fromRGB(255,120,205),v.PrimaryPart,"Locked Chest")
 						table.insert(esptable.chests,h) 
 						table.insert(esptableinstances, v)
+						okvaluechange = game:GetService("ReplicatedStorage").GameData.LatestRoom:GetPropertyChangedSignal("Value"):Connect(function()
+							if tostring(game:GetService("ReplicatedStorage").GameData.LatestRoom.Value) ~= room.Name then
+								h.delete()
+								okvaluechange:Disconnect()
+							end
+						end)
 					end
 				end
 			end
@@ -1364,11 +1642,11 @@ local espchesbtn = window_esp:AddToggle({
 				task.wait(.1)
 				local subaddcon
 				subaddcon = room.DescendantAdded:Connect(function(v)
-					check(v) 
+					check(v, room) 
 				end)
 
 				for i,v in pairs(room:GetDescendants()) do
-					check(v)
+					check(v, room)
 				end
 
 				task.spawn(function()
@@ -1477,7 +1755,7 @@ local espgoldbtn = window_esp:AddToggle({
 					task.wait(0.1)
 					local goldvalue = v:GetAttribute("GoldValue")
 
-					if goldvalue and goldvalue >= flags.goldespvalue then
+					if goldvalue and goldvalue >= (flags.goldespvalue or 5) then
 						local hitbox = v:WaitForChild("Hitbox")
 						local h = esp(hitbox:GetChildren(),Color3.fromRGB(255,255,0),hitbox,"GoldPile [".. tostring(goldvalue).."]")
 						table.insert(esptable.gold,h)
@@ -1497,6 +1775,7 @@ local espgoldbtn = window_esp:AddToggle({
 
 				for i,v in pairs(assets:GetDescendants()) do
 					check(v)
+					task.wait()
 				end
 
 				task.spawn(function()
@@ -1563,8 +1842,7 @@ game:GetService("ReplicatedStorage").GameData.LatestRoom.Changed:Connect(functio
 	if flags.predictentities == true then
 		local ChaseStartVal = game:GetService("ReplicatedStorage").GameData.ChaseStart.Value - value;
 		if ((0 < ChaseStartVal) and (ChaseStartVal < 4)) then
-			--'" .. tostring(A) .. "' rooms
-			warnmessage("EVENT PREDICTION", "There can be an event in or after Room "..tostring(game:GetService("ReplicatedStorage").GameData.LatestRoom.Value + ChaseStartVal).."!", 10);
+			oldwarnmessage("EVENT PREDICTION", "There can be an event in or after Room "..tostring(game:GetService("ReplicatedStorage").GameData.LatestRoom.Value + ChaseStartVal).."!", 10)
 		end
 	end
 end)
@@ -1592,29 +1870,39 @@ local noseekbtn = window_entities:AddToggle({
 })
 buttons.noseek = noseekbtn
 
-local screechremote = nil
-if entityinfo ~= nil then
-	screechremote = entityinfo:FindFirstChild("Screech")
-end
+local ScreechModule = plr.PlayerGui.MainUI.Initiator.Main_Game.RemoteListener.Modules:FindFirstChild("Screech")
 local noscreechbtn = window_entities:AddToggle({
 	Name = "Harmless Screech",
 	Value = false,
 	Callback = function(val, oldval)
 		flags.noscreech = val
 
-		if val and screechremote then
-			screechremote.Parent = nil
+		if val then
+			if not ScreechModule then ScreechModule = plr.PlayerGui.MainUI.Initiator.Main_Game.RemoteListener.Modules:FindFirstChild("Screech") end
+			ScreechModule.Parent = nil
 			repeat task.wait() until not flags.noscreech
-			screechremote.Parent = entityinfo
+			ScreechModule.Parent = plr.PlayerGui.MainUI.Initiator.Main_Game.RemoteListener.Modules
 		end	
 	end
 })
-workspace.CurrentCamera.ChildAdded:Connect(function(child)
-	if child.Name == "Screech" and flags.noscreech == true then
-		child:Destroy()
+buttons.noscreech = noscreechbtn
+
+local SpiderJumpscareModule = plr.PlayerGui.MainUI.Initiator.Main_Game.RemoteListener.Modules:FindFirstChild("SpiderJumpscare")
+local notimothybtn = window_entities:AddToggle({
+	Name = "No Timothy (Spider) Jumpscare",
+	Value = false,
+	Callback = function(val, oldval)
+		flags.notimothy = val
+
+		if val then
+			if not SpiderJumpscareModule then SpiderJumpscareModule = plr.PlayerGui.MainUI.Initiator.Main_Game.RemoteListener.Modules:FindFirstChild("SpiderJumpscare") end
+			SpiderJumpscareModule.Parent = nil
+			repeat task.wait() until not flags.notimothy
+			SpiderJumpscareModule.Parent = plr.PlayerGui.MainUI.Initiator.Main_Game.RemoteListener.Modules
+		end	
 	end
-end)
-buttons.noscreech = noseekbtn
+})
+buttons.notimothy = notimothybtn
 
 if hookmetamethod and newcclosure and getnamecallmethod then
 	window_entities:AddLabel({ Name = "Do not click when playing the" })
@@ -1628,7 +1916,7 @@ if hookmetamethod and newcclosure and getnamecallmethod then
 		end
 	})
 	buttons.heartbeatwin = heartbeatwinbtn
-	
+
 	local old
 	old = hookmetamethod(game,"__namecall",newcclosure(function(self,...)
 		local args = {...}
@@ -1662,9 +1950,15 @@ workspace.ChildAdded:Connect(function(inst)
 
 					if inst:IsDescendantOf(workspace) then
 						--message(inst.Name:gsub("Moving",""):lower().." is coming go hide")
-						warnmessage("ENTITIES", inst.Name:gsub("Moving","").." is coming. Hide!", 7)
-						inst.Destroying:Wait()
-						warnmessage("ENTITIES", "It's now completely safe to leave the hiding spot.", 7)
+						if inst.Name:gsub("Moving","") == "Rush" then
+							warnmessage("ENTITIES", inst.Name:gsub("Moving","").." is coming.", "Hide!", 0, "11102256553", inst)
+						elseif inst.Name:gsub("Moving","") == "Ambush" then
+							warnmessage("ENTITIES", inst.Name:gsub("Moving","").." is coming.", "Hide!", 0, "10938726652", inst)
+						else
+							warnmessage("ENTITIES", inst.Name:gsub("Moving","").." is coming.", "Hide!", 0, "0", inst)
+						end
+						--inst.Destroying:Wait()
+						--warnmessage("ENTITIES", "It's now completely safe to leave the hiding spot.", 7)
 					end
 				end
 			end
@@ -1677,6 +1971,13 @@ workspace.ChildAdded:Connect(function(inst)
 
 			if inst:IsDescendantOf(workspace) then
 				warnmessage("ENTITIES", "Avoiding "..inst.Name:gsub("Moving","")..". Please wait...", 10)
+				if inst.Name:gsub("Moving","") == "Rush" then
+					warnmessage("ENTITIES", "Avoiding "..inst.Name:gsub("Moving",""), "Please wait...", 0, "11102256553", inst)
+				elseif inst.Name:gsub("Moving","") == "Ambush" then
+					warnmessage("ENTITIES", "Avoiding "..inst.Name:gsub("Moving",""), "Please wait...", 0, "10938726652", inst)
+				else
+					warnmessage("ENTITIES", "Avoiding "..inst.Name:gsub("Moving",""), "Please wait...", 0, "0", inst)
+				end
 
 				local OldPos = game.Players.LocalPlayer.Character.HumanoidRootPart.Position
 				local oldwalkspeed = hum.WalkSpeed
@@ -1712,7 +2013,7 @@ workspace.ChildAdded:Connect(function(inst)
 	end
 end)
 
-local noseekarmsfirebtn =  window_roomsdoors:AddToggle({
+local noseekarmsfirebtn = window_roomsdoors:AddToggle({
 	Name = "No Seek Arms & Fire",
 	Value = false,
 	Callback = function(val, oldval)
@@ -1786,7 +2087,7 @@ if fireproximityprompt then
 		end
 	})
 else
-	warnmessage("POOPDOORS EDITED v"..currentver, "You need to have fireproximityprompt function for 'skip room'.", 7)	
+	oldwarnmessage("POOPDOORS EDITED v"..currentver, "You need to have fireproximityprompt function for 'skip room'.", 7)	
 end
 
 window_roomsdoors:AddButton({
@@ -1856,7 +2157,7 @@ if fireproximityprompt then
 	})
 	buttons.autoskiprooms = autoskiproomsbtn
 else
-	warnmessage("POOPDOORS EDITED v"..currentver, "You need to have fireproximityprompt function for 'skip room'.", 7)
+	oldwarnmessage("POOPDOORS EDITED v"..currentver, "You need to have fireproximityprompt function for 'skip room'.", 7)
 end
 
 local nogatesbtn = window_misc:AddToggle({
@@ -2028,9 +2329,15 @@ local getcodebtn = window_misc:AddToggle({
 					local code = table.concat(deciphercode())
 
 					if code:find("_") then
-						warnmessage("ROOM 50", "You are still missing some books! ('".. code.."').", 7)
+						warnmessage("ROOM 50", "You are still missing some books!", "The current code is: '".. code.."'", 7)
 					else
-						normalmessage("ROOM 50", "The code is '".. code.."'.", 10)
+						local a = Instance.new("Part", workspace)
+						a.CanCollide = false
+						a.Anchored = true
+						a.Transparency = 1
+						normalmessage("ROOM 50", "The code is '".. code.."'.", "", 0, "0", a)
+						repeat task.wait() until game:GetService("ReplicatedStorage").GameData.LatestRoom.Value ~= 50 or game:GetService("ReplicatedStorage").GameData.LatestRoom.Value ~= 51
+						a:Destroy()
 					end
 				end
 			end)
@@ -2089,8 +2396,42 @@ if fireproximityprompt then
 					local function check(v)
 						task.wait()
 						if v:IsA("Model") then
-							if v.PrimaryPart then
-								if v.Name == "DrawerContainer" then
+							--	if v.PrimaryPart then
+							task.wait()
+							if v.Name == "DrawerContainer" or v.Name == "RolltopContainer" then
+								if v.Name == "RolltopContainer" then
+									local prompt = v:WaitForChild("ActivateEventPrompt")
+									local interactions = prompt:GetAttribute("Interactions")
+
+									if not interactions then
+										task.spawn(function()
+											repeat task.wait(0.1)
+												--pcall(function()
+												local posok = false
+												pcall(function()
+													local posoks, posoke = pcall(function()
+														posok = (plr:DistanceFromCharacter(v.PrimaryPart.Position) <= 12)
+													end)
+													if posoke then
+														local part
+														for _,v in pairs(v:GetChildren()) do
+															local hasProperty = pcall(function() local t = v["Position"] end)
+															if hasProperty then
+																part = v
+																break
+															end
+														end
+														posok = (plr:DistanceFromCharacter(part.Position) <= 12)
+													end
+												end)
+												if posok then
+													fireproximityprompt(prompt)
+												end
+												--end)
+											until prompt:GetAttribute("Interactions") or not flags.draweraura
+										end)
+									end
+								else
 									local knob = v:WaitForChild("Knobs")
 
 									if knob then
@@ -2100,136 +2441,253 @@ if fireproximityprompt then
 										if not interactions then
 											task.spawn(function()
 												repeat task.wait(0.1)
-													if plr:DistanceFromCharacter(knob.Position) <= 12 then
-														fireproximityprompt(prompt)
-													end
-												until prompt:GetAttribute("Interactions") or not flags.draweraura
-											end)
-										end
-									end
-								elseif v.Name == "KeyObtain" then
-									pcall(function()
-										local prompt = v:WaitForChild("ModulePrompt")
-										local interactions = prompt:GetAttribute("Interactions")
-
-										if not interactions then
-											task.spawn(function()
-												repeat task.wait(0.1)
+													--pcall(function()
+													local posok = false
 													pcall(function()
-														if plr:DistanceFromCharacter(v.PrimaryPart.Position) <= 12 then
-															fireproximityprompt(prompt) 
+														local posoks, posoke = pcall(function()
+															posok = (plr:DistanceFromCharacter(v.PrimaryPart.Position) <= 12)
+														end)
+														if posoke then
+															local part
+															for _,v in pairs(v:GetChildren()) do
+																local hasProperty = pcall(function() local t = v["Position"] end)
+																if hasProperty then
+																	part = v
+																	break
+																end
+															end
+															posok = (plr:DistanceFromCharacter(part.Position) <= 12)
 														end
 													end)
+													if posok then
+														fireproximityprompt(prompt)
+													end
+													--end)
 												until prompt:GetAttribute("Interactions") or not flags.draweraura
 											end)
 										end
-									end)
-								elseif v.Name == "PickupItem" then
-									if game:GetService("ReplicatedStorage").GameData.LatestRoom.Value == 51 or game:GetService("ReplicatedStorage").GameData.LatestRoom.Value == 52 then
-										return
 									end
+								end
+							elseif v.Name == "KeyObtain" then
+								local prompt = v:WaitForChild("ModulePrompt")
+								local interactions = prompt:GetAttribute("Interactions")
 
-									pcall(function()
-										local prompt = v:WaitForChild("ModulePrompt")
-
-										local okcanckl = 0
-										task.spawn(function()
-											repeat task.wait(0.1)
-												if plr:DistanceFromCharacter(v.PrimaryPart.Position) <= 12 then
-													fireproximityprompt(prompt) 
-													okcanckl += 1
+								if not interactions then
+									task.spawn(function()
+										repeat task.wait(0.1)
+											--pcall(function()
+											local posok = false
+											pcall(function()
+												local posoks, posoke = pcall(function()
+													posok = (plr:DistanceFromCharacter(v.PrimaryPart.Position) <= 12)
+												end)
+												if posoke then
+													local part
+													for _,v in pairs(v:GetChildren()) do
+														local hasProperty = pcall(function() local t = v["Position"] end)
+														if hasProperty then
+															part = v
+															break
+														end
+													end
+													posok = (plr:DistanceFromCharacter(part.Position) <= 12)
 												end
-											until not v:IsDescendantOf(workspace) or not prompt:IsDescendantOf(workspace) or not flags.draweraura or okcanckl > 20
-										end)
+											end)
+											if posok then
+												fireproximityprompt(prompt) 
+											end
+											--end)
+										until prompt:GetAttribute("Interactions") or not flags.draweraura
 									end)
-								elseif v:GetAttribute("Pickup") or v:GetAttribute("PropType") then
-									if game:GetService("ReplicatedStorage").GameData.LatestRoom.Value == 51 or game:GetService("ReplicatedStorage").GameData.LatestRoom.Value == 52 then
-										return
-									end
+								end
+							elseif v.Name == "PickupItem" then
+								if game:GetService("ReplicatedStorage").GameData.LatestRoom.Value == 51 or game:GetService("ReplicatedStorage").GameData.LatestRoom.Value == 52 then
+									return
+								end
 
-									pcall(function()
-										local prompt = v:WaitForChild("ModulePrompt", 2)
-										if prompt == nil then
-											prompt = v:FindFirstChildWhichIsA("ProximityPrompt")
-											if prompt == nil then
-												for _,vvvvv in pairs(v:GetDescendants()) do
-													if vvvvv:IsA("ProximityPrompt") then
-														prompt = vvvvv
+								local prompt = v:WaitForChild("ModulePrompt")
+								local okcanckl = 0
+								task.spawn(function()
+									repeat task.wait(0.1)
+										--pcall(function()
+										local posok = false
+										pcall(function()
+											local posoks, posoke = pcall(function()
+												posok = (plr:DistanceFromCharacter(v.PrimaryPart.Position) <= 12)
+											end)
+											if posoke then
+												local part
+												for _,v in pairs(v:GetChildren()) do
+													local hasProperty = pcall(function() local t = v["Position"] end)
+													if hasProperty then
+														part = v
 														break
 													end
 												end
+												posok = (plr:DistanceFromCharacter(part.Position) <= 12)
+											end
+										end)
+										if posok then
+											fireproximityprompt(prompt) 
+											okcanckl += 1
+										end
+										--end)
+									until not v:IsDescendantOf(workspace) or not prompt:IsDescendantOf(workspace) or not flags.draweraura or okcanckl > 20
+								end)
+							elseif v:GetAttribute("Pickup") or v:GetAttribute("PropType") then
+								if game:GetService("ReplicatedStorage").GameData.LatestRoom.Value == 51 or game:GetService("ReplicatedStorage").GameData.LatestRoom.Value == 52 then
+									return
+								end
+
+								local prompt = v:WaitForChild("ModulePrompt", 2)
+								if prompt == nil then
+									prompt = v:FindFirstChildWhichIsA("ProximityPrompt")
+									if prompt == nil then
+										for _,vvvvv in pairs(v:GetDescendants()) do
+											if vvvvv:IsA("ProximityPrompt") then
+												prompt = vvvvv
+												break
 											end
 										end
+									end
+								end
 
-										task.spawn(function()
-											repeat task.wait(0.1)
-												pcall(function()
-													if plr:DistanceFromCharacter(v.PrimaryPart.Position) <= 12 then
-														fireproximityprompt(prompt) 
-													end
-												end)
-											until not v:IsDescendantOf(workspace) or not prompt:IsDescendantOf(workspace) or not flags.draweraura
-										end)
-									end)
-								elseif v.Name == "GoldPile" then
-									pcall(function()
-										local prompt = v:WaitForChild("LootPrompt")
-										local interactions = prompt:GetAttribute("Interactions")
-
-										if not interactions then
-											task.spawn(function()
-												repeat task.wait(0.1)
-													pcall(function()
-														if plr:DistanceFromCharacter(v.PrimaryPart.Position) <= 12 then
-															fireproximityprompt(prompt) 
-														end 
-													end)
-												until prompt:GetAttribute("Interactions") or not flags.draweraura
+								task.spawn(function()
+									repeat task.wait(0.1)
+										--pcall(function()
+										local posok = false
+										pcall(function()
+											local posoks, posoke = pcall(function()
+												posok = (plr:DistanceFromCharacter(v.PrimaryPart.Position) <= 12)
 											end)
+											if posoke then
+												local part
+												for _,v in pairs(v:GetChildren()) do
+													local hasProperty = pcall(function() local t = v["Position"] end)
+													if hasProperty then
+														part = v
+														break
+													end
+												end
+												posok = (plr:DistanceFromCharacter(part.Position) <= 12)
+											end
+										end)
+										if posok then
+											fireproximityprompt(prompt) 
 										end
+										--end)
+									until not v:IsDescendantOf(workspace) or not prompt:IsDescendantOf(workspace) or not flags.draweraura
+								end)
+							elseif v.Name == "GoldPile" then
+								local prompt = v:WaitForChild("LootPrompt")
+								local interactions = prompt:GetAttribute("Interactions")
+
+								if not interactions then
+									task.spawn(function()
+										repeat task.wait(0.1)
+											--pcall(function()
+											local posok = false
+											pcall(function()
+												local posoks, posoke = pcall(function()
+													posok = (plr:DistanceFromCharacter(v.PrimaryPart.Position) <= 12)
+												end)
+												if posoke then
+													local part
+													for _,v in pairs(v:GetChildren()) do
+														local hasProperty = pcall(function() local t = v["Position"] end)
+														if hasProperty then
+															part = v
+															break
+														end
+													end
+													posok = (plr:DistanceFromCharacter(part.Position) <= 12)
+												end
+											end)
+											if posok then
+												fireproximityprompt(prompt) 
+											end 
+											--end)
+										until prompt:GetAttribute("Interactions") or not flags.draweraura
 									end)
-								elseif v.Name:sub(1,8) == "ChestBox" then
-									local prompt = v:WaitForChild("ActivateEventPrompt")
-									local interactions = prompt:GetAttribute("Interactions")
+								end
+							elseif v.Name:sub(1,8) == "ChestBox" then
+								local prompt = v:WaitForChild("ActivateEventPrompt")
+								local interactions = prompt:GetAttribute("Interactions")
 
-									if not interactions then
-										task.spawn(function()
-											repeat task.wait(0.1)
-												pcall(function()
-													if plr:DistanceFromCharacter(v.PrimaryPart.Position) <= 12 then
-														fireproximityprompt(prompt)
-													end
+								if not interactions then
+									task.spawn(function()
+										repeat task.wait(0.1)
+											--pcall(function()
+											local posok = false
+											pcall(function()
+												local posoks, posoke = pcall(function()
+													posok = (plr:DistanceFromCharacter(v.PrimaryPart.Position) <= 12)
 												end)
-											until prompt:GetAttribute("Interactions") or not flags.draweraura
-										end)
-									end
-								elseif v.Name == "RolltopContainer" then
-									local prompt = v:WaitForChild("ActivateEventPrompt")
-									local interactions = prompt:GetAttribute("Interactions")
+												if posoke then
+													local part
+													for _,v in pairs(v:GetChildren()) do
+														local hasProperty = pcall(function() local t = v["Position"] end)
+														if hasProperty then
+															part = v
+															break
+														end
+													end
+													posok = (plr:DistanceFromCharacter(part.Position) <= 12)
+												end
+											end)
+											if posok then
+												fireproximityprompt(prompt)
+											end
+											--end)
+										until prompt:GetAttribute("Interactions") or not flags.draweraura
+									end)
+								end
+							elseif v.Name == "RolltopContainer" then
+								local prompt = v:WaitForChild("ActivateEventPrompt")
+								local interactions = prompt:GetAttribute("Interactions")
 
-									if not interactions then
-										task.spawn(function()
-											repeat task.wait(0.1)
-												pcall(function()
-													if plr:DistanceFromCharacter(v.PrimaryPart.Position) <= 12 then
-														fireproximityprompt(prompt)
-													end
+								if not interactions then
+									task.spawn(function()
+										repeat task.wait(0.1)
+											--pcall(function()
+											local posok = false
+											pcall(function()
+												local posoks, posoke = pcall(function()
+													posok = (plr:DistanceFromCharacter(v.PrimaryPart.Position) <= 12)
 												end)
-											until prompt:GetAttribute("Interactions") or not flags.draweraura
-										end)
-									end
-								end 
-							end
+												if posoke then
+													local part
+													for _,v in pairs(v:GetChildren()) do
+														local hasProperty = pcall(function() local t = v["Position"] end)
+														if hasProperty then
+															part = v
+															break
+														end
+													end
+													posok = (plr:DistanceFromCharacter(part.Position) <= 12)
+												end
+											end)
+											if posok then
+												fireproximityprompt(prompt)
+											end
+											--end)
+										until prompt:GetAttribute("Interactions") or not flags.draweraura
+									end)
+								end
+							end 
+							--end
 						end
 					end
 
 					local subaddcon
-					subaddcon = room.DescendantAdded:Connect(function(v)
-						check(v) 
+					subaddcon = room.DescendantAdded:Connect(function(ve)
+						check(ve) 
 					end)
 
-					for i,v in pairs(room:GetDescendants()) do
-						check(v)
+					for _,v in pairs(room:GetDescendants()) do
+						task.spawn(function()
+							check(v)
+						end)
 					end
 
 					task.spawn(function()
@@ -2248,9 +2706,7 @@ if fireproximityprompt then
 						setup(room) 
 					end
 				end
-				if workspace.CurrentRooms[tostring(game:GetService("ReplicatedStorage").GameData.LatestRoom.Value)]:FindFirstChild("Assets") then
-					setup(workspace.CurrentRooms[tostring(game:GetService("ReplicatedStorage").GameData.LatestRoom.Value)])
-				end
+				setup(workspace.CurrentRooms[tostring(game:GetService("ReplicatedStorage").GameData.LatestRoom.Value)])
 
 				repeat task.wait() until not flags.draweraura
 				addconnect:Disconnect()
@@ -2259,7 +2715,7 @@ if fireproximityprompt then
 	})
 	buttons.draweraura = draweraurabtn
 else
-	warnmessage("POOPDOORS EDITED v"..currentver, "You need to have fireproximityprompt function for 'loot aura'.", 7)
+	oldwarnmessage("POOPDOORS EDITED v"..currentver, "You need to have fireproximityprompt function for 'loot aura'.", 7)
 end
 
 if fireproximityprompt then
@@ -2273,21 +2729,38 @@ if fireproximityprompt then
 				local function setup(room)
 					local function check(v)
 						if v:IsA("Model") then
-							if v.PrimaryPart then
-								if v.Name == "LiveHintBook" then
-									local prompt = v:WaitForChild("ActivateEventPrompt")
+							--if v.PrimaryPart then
+							if v.Name == "LiveHintBook" then
+								local prompt = v:WaitForChild("ActivateEventPrompt")
 
-									local okcanckl = 0
-									task.spawn(function()
-										repeat task.wait(0.1)
-											if plr:DistanceFromCharacter(v.PrimaryPart.Position) <= 12 then
-												fireproximityprompt(prompt) 
-												okcanckl += 1
+								local okcanckl = 0
+								task.spawn(function()
+									repeat task.wait(0.1)
+										local posok = false
+										pcall(function()
+											local posoks, posoke = pcall(function()
+												posok = (plr:DistanceFromCharacter(v.PrimaryPart.Position) <= 12)
+											end)
+											if posoke then
+												local part
+												for _,v in pairs(v:GetChildren()) do
+													local hasProperty = pcall(function() local t = v["Position"] end)
+													if hasProperty then
+														part = v
+														break
+													end
+												end
+												posok = (plr:DistanceFromCharacter(part.Position) <= 12)
 											end
-										until not v:IsDescendantOf(workspace) or not prompt:IsDescendantOf(workspace) or not flags.bookcollecter or okcanckl > 50
-									end)
-								end
+										end)
+										if posok then
+											fireproximityprompt(prompt) 
+											okcanckl += 1
+										end
+									until not v:IsDescendantOf(workspace) or not prompt:IsDescendantOf(workspace) or not flags.bookcollecter or okcanckl > 50
+								end)
 							end
+							--end
 						end
 
 					end
@@ -2332,7 +2805,7 @@ if fireproximityprompt then
 	})
 	buttons.bookcollecter = bookcollecterbtn
 else
-	warnmessage("POOPDOORS EDITED v"..currentver, "You need to have fireproximityprompt function for 'book aura'.", 7)
+	oldwarnmessage("POOPDOORS EDITED v"..currentver, "You need to have fireproximityprompt function for 'book aura'.", 7)
 end
 
 if fireproximityprompt then
@@ -2346,21 +2819,38 @@ if fireproximityprompt then
 				local function setup(room)
 					local function check(v)
 						if v:IsA("Model") then
-							if v.PrimaryPart then
-								if v.Name == "LiveBreakerPolePickup" then
-									local prompt = v:WaitForChild("ActivateEventPrompt")
+							--if v.PrimaryPart then
+							if v.Name == "LiveBreakerPolePickup" then
+								local prompt = v:WaitForChild("ActivateEventPrompt")
 
-									local okcanckl = 0
-									task.spawn(function()
-										repeat task.wait(0.1)
-											if plr:DistanceFromCharacter(v.PrimaryPart.Position) <= 12 then
-												fireproximityprompt(prompt) 
-												okcanckl += 1
+								local okcanckl = 0
+								task.spawn(function()
+									repeat task.wait(0.1)
+										local posok = false
+										pcall(function()
+											local posoks, posoke = pcall(function()
+												posok = (plr:DistanceFromCharacter(v.PrimaryPart.Position) <= 12)
+											end)
+											if posoke then
+												local part
+												for _,v in pairs(v:GetChildren()) do
+													local hasProperty = pcall(function() local t = v["Position"] end)
+													if hasProperty then
+														part = v
+														break
+													end
+												end
+												posok = (plr:DistanceFromCharacter(part.Position) <= 12)
 											end
-										until not v:IsDescendantOf(workspace) or not prompt:IsDescendantOf(workspace) or not flags.breakercollecter or okcanckl > 50
-									end)
-								end
+										end)
+										if posok then
+											fireproximityprompt(prompt) 
+											okcanckl += 1
+										end
+									until not v:IsDescendantOf(workspace) or not prompt:IsDescendantOf(workspace) or not flags.breakercollecter or okcanckl > 50
+								end)
 							end
+							--end
 						end
 
 					end
@@ -2405,7 +2895,95 @@ if fireproximityprompt then
 	})
 	buttons.breakercollecter = breakercollecterbtn
 else
-	warnmessage("POOPDOORS EDITED v"..currentver, "You need to have fireproximityprompt function for 'book aura'.", 7)
+	oldwarnmessage("POOPDOORS EDITED v"..currentver, "You need to have fireproximityprompt function for 'book aura'.", 7)
+end
+
+if fireproximityprompt then
+	local autopullleverbtn = window_misc:AddToggle({
+		Name = "Lever Aura",
+		Value = false,
+		Callback = function(val, oldval)
+			flags.autopulllever = val
+
+			if val then
+				local function setup(room)
+					local function check(v)
+						--if v:IsA("Model") then
+						--	if v.PrimaryPart then
+						if v.Name == "LeverForGate" then
+							local prompt = v:WaitForChild("ActivateEventPrompt")
+
+							local okcanckl = 0
+							task.spawn(function()
+								repeat task.wait(0.1)
+									local posok = false
+									pcall(function()
+										local posoks, posoke = pcall(function()
+											posok = (plr:DistanceFromCharacter(v.PrimaryPart.Position) <= 12)
+										end)
+										if posoke then
+											local part
+											for _,v in pairs(v:GetChildren()) do
+												local hasProperty = pcall(function() local t = v["Position"] end)
+												if hasProperty then
+													part = v
+													break
+												end
+											end
+											posok = (plr:DistanceFromCharacter(part.Position) <= 12)
+										end
+									end)
+									if posok then
+										fireproximityprompt(prompt) 
+										okcanckl += 1
+									end
+								until not v:IsDescendantOf(workspace) or not prompt:IsDescendantOf(workspace) or not flags.autopulllever or okcanckl > 50
+							end)
+						end
+						--	end
+						--endd
+
+					end
+
+					local subaddcon
+					subaddcon = room.DescendantAdded:Connect(function(v)
+						check(v) 
+					end)
+
+					for i,v in pairs(room:GetDescendants()) do
+						check(v)
+					end
+
+					task.spawn(function()
+						repeat task.wait() until not flags.autopulllever
+						subaddcon:Disconnect() 
+					end)
+				end
+
+				if flags.autopulllever == true then
+					local addconnect
+					addconnect = workspace.CurrentRooms.ChildAdded:Connect(function(room)
+						setup(room)
+					end)
+
+					for i,room in pairs(workspace.CurrentRooms:GetChildren()) do
+						if room:FindFirstChild("Assets") then
+							setup(room) 
+						end
+					end
+					--	if workspace.CurrentRooms[tostring(game:GetService("ReplicatedStorage").GameData.LatestRoom.Value)]:FindFirstChild("Assets") then
+					setup(workspace.CurrentRooms[tostring(game:GetService("ReplicatedStorage").GameData.LatestRoom.Value)])
+					--	end
+
+					repeat task.wait() until not flags.autopulllever
+					addconnect:Disconnect()
+				end
+			end
+		end
+	})
+	buttons.autopulllever = autopullleverbtn
+else
+	oldwarnmessage("POOPDOORS EDITED v"..currentver, "You need to have fireproximityprompt function for 'lever aura'.", 7)
 end
 
 if #game.Players:GetChildren() <= 1 or #game.Players:GetChildren() == 0 then
@@ -2436,7 +3014,6 @@ window_anticheatbyppasses:AddButton({
 	Callback = function()
 		confirmnotification("AC BYPASS", "Are you sure you want to bypass anticheat with method 1?", 15, function(state)
 			if state == true then
-				normalmessage("AC BYPASS", "Anticheat bypassed with method 1!", 7)
 				flags.anticheatbypass = true
 				local newhum = hum:Clone()
 				newhum.Name = "humlol"
@@ -2446,6 +3023,7 @@ window_anticheatbyppasses:AddButton({
 
 				hum = newhum
 				walkspeedslider:SetMax(75)
+				normalmessage("AC BYPASS", "Anticheat bypassed with method 1!", "", 7)
 			end
 		end)
 	end
@@ -2513,32 +3091,24 @@ if game.ReplicatedStorage:WaitForChild("GameData"):WaitForChild("Floor").Value =
 	end
 	Pathfinding_Highlights:ClearAllChildren()
 
-	local a90remote = nil
-	task.spawn(function() pcall(function() a90remote = game.ReplicatedStorage:WaitForChild("EntityInfo"):WaitForChild("A90") end) end)
-	function removea90()
-		pcall(function()
-			a90remote = game.ReplicatedStorage:WaitForChild("EntityInfo"):WaitForChild("A90")
-			local jumpscare = plr.PlayerGui:WaitForChild("MainUI"):WaitForChild("Jumpscare"):FindFirstChild("Jumpscare_A90")
-			if jumpscare then jumpscare:Destroy() end
-			if a90remote then a90remote:Destroy() end
-			if plr.PlayerGui.MainUI.Initiator.Main_Game.RemoteListener.Modules:FindFirstChild("A90") then plr.PlayerGui.MainUI.Initiator.Main_Game.RemoteListener.Modules.A90:Destroy() end
-		end)
-	end
-	window_rooms:AddButton({
-		Name = "Disable (harmless) A-90",
-		Callback = function()
-			if flags.noa90 == true then return end
-			flags.noa90 = true
-			removea90()
-			normalmessage("A-90", "A-90 disabled.")
+	local A90Module = plr.PlayerGui.MainUI.Initiator.Main_Game.RemoteListener.Modules:FindFirstChild("A90")
+	local noa90btn = window_rooms:AddToggle({
+		Name = "Harmless A-90",
+		Callback = function(val, oldval)
+			flags.noa90 = val
+
+			if val then
+				if not A90Module then A90Module = plr.PlayerGui.MainUI.Initiator.Main_Game.RemoteListener.Modules:FindFirstChild("A90") end
+				if A90Module then
+					A90Module.Parent = nil
+					repeat task.wait() until not flags.noa90
+					A90Module.Parent = plr.PlayerGui.MainUI.Initiator.Main_Game.RemoteListener.Modules
+				end
+			end
 		end
 	})
-	plr.PlayerGui:WaitForChild("MainUI"):WaitForChild("Jumpscare").ChildAdded:Connect(function(a)if a.Name=="Jumpscare_A90"then if flags.noa90==true then pcall(function()a:Destroy()end)end end end)
-	plr.PlayerGui.MainUI.Initiator.Main_Game.RemoteListener.Modules.ChildAdded:Connect(function(a)if a.Name=="A90"then if flags.noa90==true then pcall(function()a:Destroy()end)end end end)
-	game.ReplicatedStorage:WaitForChild("EntityInfo").ChildAdded:Connect(function(a)if a.Name=="A90"then if flags.noa90==true then pcall(function()a:Destroy()end)end end end)
-	
-	buttons.noa90 = true
-	
+	buttons.noa90 = noa90btn
+
 	function clearWardrobes()
 		Wardrobes = {}
 		Wardrobe = nil
@@ -2665,7 +3235,7 @@ if game.ReplicatedStorage:WaitForChild("GameData"):WaitForChild("Floor").Value =
 			end
 
 			if Path == true or Path == false or Path ~= nil then 
-				warnmessage("AUTO A-1000", "Please wait...", 5)
+				oldwarnmessage("AUTO A-1000", "Please wait...", 5)
 				autoa1000:RawSet(flags.autorooms)
 				repeat task.wait() until Path == true or Path == false or Path == nil
 				autoa1000:RawSet(val)
@@ -2706,7 +3276,7 @@ if game.ReplicatedStorage:WaitForChild("GameData"):WaitForChild("Floor").Value =
 
 						if game.Players.LocalPlayer.Character.Humanoid.Health < 1 then autoa1000:Set(false) end
 					end
-					
+
 					if flags.autorooms_blockcontrols == false then
 						plr.DevComputerMovementMode = Enum.DevComputerMovementMode.KeyboardMouse
 					end
@@ -2731,9 +3301,9 @@ if game.ReplicatedStorage:WaitForChild("GameData"):WaitForChild("Floor").Value =
 					task.spawn(function()
 						if flags.autorooms_debug == true then
 							if isLocker(Part) then
-								normalmessage("AUTO A-1000 [DEBUG]", "Trying to go to "..Part.Name..".", 5)
+								oldnormalmessage("AUTO A-1000 [DEBUG]", "Trying to go to "..Part.Name..".", 5)
 							else
-								normalmessage("AUTO A-1000 [DEBUG]", "Trying to go to next door ("..(game:GetService("ReplicatedStorage").GameData.LatestRoom.Value + 1)..").", 5)
+								oldnormalmessage("AUTO A-1000 [DEBUG]", "Trying to go to next door ("..(game:GetService("ReplicatedStorage").GameData.LatestRoom.Value + 1)..").", 5)
 							end
 						end
 					end)
@@ -2769,9 +3339,7 @@ if game.ReplicatedStorage:WaitForChild("GameData"):WaitForChild("Floor").Value =
 						end
 					end
 
-					pcall(function() Highlight.OutlineTransparency = 1 end)
-					pcall(function() Highlight.FillTransparency = 1 end)
-					pcall(function() Highlight.Adornee = nil end)
+					pcall(function() Highlight.OutlineTransparency = 1 end);pcall(function() Highlight.FillTransparency = 1 end);pcall(function() Highlight.Adornee = nil end)
 					Pathfinding_Highlights:ClearAllChildren()
 				end
 
@@ -2802,7 +3370,7 @@ if game.ReplicatedStorage:WaitForChild("GameData"):WaitForChild("Floor").Value =
 	})
 	buttons.autorooms_blockcontrols = autoa1000blockcontrols
 	autoa1000blockcontrols:Set(true)
-	
+
 	LatestRoom:GetPropertyChangedSignal("Value"):Connect(function()
 		if flags.autorooms == true then
 			if LatestRoom.Value ~= 1000 then
@@ -2814,7 +3382,7 @@ if game.ReplicatedStorage:WaitForChild("GameData"):WaitForChild("Floor").Value =
 			else
 				plr.DevComputerMovementMode = Enum.DevComputerMovementMode.KeyboardMouse
 				autoa1000:Set(false)
-				normalmessage("AUTO A-1000", "Finished walking to A-1000!\nThanks for using POOPDOORS EDITED Auto A-1000.", 10)
+				normalmessage("AUTO A-1000", "Finished walking to A-1000!", "Thanks for using POOPDOORS EDITED Auto A-1000.", 10)
 			end
 		else
 			plr.DevComputerMovementMode = Enum.DevComputerMovementMode.KeyboardMouse
@@ -2853,6 +3421,16 @@ window_guisettings:AddButton({
 		Library.unload()
 	end
 })
+window_guisettings:AddButton({
+	Name = "Reload Gui",
+	Callback = function()
+		task.spawn(function()
+			repeat task.wait(.1) until POOPDOORSLOADED == false or POOPDOORSLOADED == nil
+			loadstring(game:HttpGet((gui_data.loadstring),true))()
+		end)
+		Library.unload()
+	end
+})
 
 task.spawn(function()
 	while WaitUntilTerminated() do task.wait() end
@@ -2860,4 +3438,8 @@ task.spawn(function()
 end)
 
 scriptLoaded = true
-normalmessage("POOPDOORS EDITED v"..currentver, "Script loaded!")
+normalmessage(
+	"POOPDOORS EDITED v"..currentver, "Script loaded!", 
+	"Took "..(os.time() - POOPDOORS_START_TIME).."ms.", 
+	5
+)
