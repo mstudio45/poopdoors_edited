@@ -2,6 +2,8 @@
 -- https://v3rmillion.net/showthread.php?tid=1200475
 
 local POOPDOORS_START_TIME = os.time()
+local customnotifid = "10469938989"
+local oldcustomnotifid = "4590657391"
 function waitframes(ii) for i = 1, ii do task.wait() end end
 
 local NotificationHolder = loadstring(game:HttpGet("https://raw.githubusercontent.com/BocusLuke/UI/main/STX/Module.Lua"))()
@@ -50,6 +52,8 @@ function normalmessage(title, text, reason, timee, image, textlabel, waitforinst
 			AchievementFrame.Frame.ImageLabel.Image = "rbxassetid://"..tostring(image or "0")
 
 			AchievementFrame.Parent = MainUI.AchievementsHolder;
+			AchievementFrame.Sound.SoundId = "rbxassetid://"..customnotifid
+			if textlabel == "WARNING" then AchievementFrame.Sound.Volume = 2 else AchievementFrame.Sound.Volume = 1 end
 			AchievementFrame.Sound:Play();
 			if textlabel == "WARNING" then AchievementFrame:TweenSize(UDim2.new(1, 0, 0.2, 0), "In", "Quad", 0.3, true); else AchievementFrame:TweenSize(UDim2.new(1, 0, 0.2, 0), "In", "Quad", 0.8, true); end
 			if textlabel == "WARNING" then wait(0.3) else wait(0.8) end
@@ -77,7 +81,7 @@ end
 
 function confirmnotification(title, text, timee, callback)
 	task.spawn(function()
-		local notif = Instance.new("Sound");notif.Parent = game.SoundService;notif.SoundId = "rbxassetid://4590657391";notif.Volume = 3;notif:Play();notif.Stopped:Wait();notif:Destroy()
+		local notif = Instance.new("Sound");notif.Parent = game.SoundService;notif.SoundId = "rbxassetid://"..oldcustomnotifid;notif.Volume = 1;notif:Play();notif.Stopped:Wait();notif:Destroy()
 	end)
 	Notification:Notify(
 		{Title = title, Description = text},
@@ -88,7 +92,7 @@ end
 
 function oldnormalmessage(title, text, timee)
 	task.spawn(function()
-		local notif = Instance.new("Sound");notif.Parent = game.SoundService;notif.SoundId = "rbxassetid://4590657391";notif.Volume = 3;notif:Play();notif.Stopped:Wait();notif:Destroy()
+		local notif = Instance.new("Sound");notif.Parent = game.SoundService;notif.SoundId = "rbxassetid://"..oldcustomnotifid;notif.Volume = 1;notif:Play();notif.Stopped:Wait();notif:Destroy()
 	end)
 	Notification:Notify(
 		{Title = title, Description = text},
@@ -98,7 +102,7 @@ end
 
 function oldwarnmessage(title, text, timee)
 	task.spawn(function()
-		local notif = Instance.new("Sound");notif.Parent = game.SoundService;notif.SoundId = "rbxassetid://4590657391";notif.Volume = 5;notif:Play();notif.Stopped:Wait();notif:Destroy()
+		local notif = Instance.new("Sound");notif.Parent = game.SoundService;notif.SoundId = "rbxassetid://"..oldcustomnotifid;notif.Volume = 2;notif:Play();notif.Stopped:Wait();notif:Destroy()
 	end)
 	Notification:Notify(
 		{Title = title, Description = text},
@@ -496,6 +500,8 @@ local flags = {
 	walkspeedtoggle = false,
 	camfovtoggle = false,
 	autopulllever = false,
+	customnotifid = "10469938989",
+	oldcustomnotifid = "4590657391",
 
 	-- esp
 	espdoors = false,
@@ -551,6 +557,8 @@ local buttons = {
 	walkspeedtoggle = nil,
 	camfovtoggle = nil,
 	autopulllever = nil,
+	customnotifid = nil,
+	oldcustomnotifid = nil,
 
 	-- esp
 	espdoors = nil,
@@ -580,7 +588,7 @@ local buttons = {
 	autorooms_debug = nil,
 	autorooms_blockcontrols = nil,
 }
-
+customnotifid = flags.customnotifid
 
 local DELFLAGS = {table.unpack(flags)}
 local esptable = {doors={},keys={},items={},books={},entity={},chests={},lockers={},people={},gold={},fakedoors={}}
@@ -595,6 +603,7 @@ local GUI = GUIWindow:CreateTab({
 })
 local scriptLoaded = false
 -- Config system
+local curautoloadtextlabel
 if isfolder and makefolder and listfiles and writefile and delfile then
 	local POOPDOORS_EDITED_FOLDER_NAME = "POOPDOORS_EDITED"
 	local function checkdir() if not isfolder(POOPDOORS_EDITED_FOLDER_NAME) then makefolder(POOPDOORS_EDITED_FOLDER_NAME) end end
@@ -655,7 +664,7 @@ if isfolder and makefolder and listfiles and writefile and delfile then
 				oldnormalmessage("CONFIGS", "Succesfully saved a config called '"..name.."'.", 5)
 				reloadList(ConfigDropdown)
 			else
-				warnmessage("CONFIGS", "Config called '"..name.."' already exists.", 5)
+				oldwarnmessage("CONFIGS", "Config called '"..name.."' already exists.", 5)
 				confirmnotification("CONFIGS", "Config called '"..name.."' already exists.\nDo you want to replace it?", 20, function(State)
 					if State == true then
 						task.spawn(function()
@@ -765,7 +774,7 @@ if isfolder and makefolder and listfiles and writefile and delfile then
 	})
 
 	CONFIG_AUTO:AddLabel({ Name = "Current Auto Load Config:" })
-	local curautoloadtextlabel = CONFIG_AUTO:AddLabel({ Name = "None" })
+	curautoloadtextlabel = CONFIG_AUTO:AddLabel({ Name = "None" })
 	CONFIG_AUTO:AddButton({ 
 		Name = "Auto Load Config", 
 		Callback = function() 
@@ -856,6 +865,135 @@ local window_experimentals = GUI:CreateSection({
 local window_guisettings_tab = GUIWindow:CreateTab({ Name = "GUI" })
 local window_guisettings = window_guisettings_tab:CreateSection({
 	Name = "GUI"
+})
+local newnotificationsettings = window_guisettings_tab:CreateSection({
+	Name = "New Notification Settings",
+	Side = "Right"
+})
+
+local CustomNotificationSoundINotifs = false
+task	.spawn(function()task.wait(1)CustomNotificationSoundINotifs = true end)
+local CustomNewNotificationSoundId = newnotificationsettings:AddTextbox({
+	Name = "Custom Notification Sound",
+	Value = "10469938989",
+	Multiline = false,
+	Callback = function(id)
+		if CustomNotificationSoundINotifs == true then oldnormalmessage("INFO", "Checking if sound exists. Please wait...", 10) end
+		local MarketplaceService = game:GetService("MarketplaceService")
+		local Success, Response = pcall(MarketplaceService.GetProductInfo, MarketplaceService, id)
+
+		if Success then
+			if Response.AssetTypeId == Enum.AssetType.Audio.Value then
+				flags.customnotifid = tostring(id)
+				customnotifid = flags.customnotifid
+				if CustomNotificationSoundINotifs == true then
+					oldnormalmessage("INFO", "Successfully set Custom New Notification Sound.", 10) 
+					if curautoloadtextlabel ~= nil then
+						confirmnotification("INFO", "Do you want to save it to a config called '"..curautoloadtextlabel:Get().."'? (RECOMMENDED)", 25, function(State)
+							if State == true then
+								task.spawn(function()
+									saveConfig(curautoloadtextlabel:Get(), true)
+								end)
+							end
+						end)
+					end
+				end
+			else
+				if CustomNotificationSoundINotifs == true then oldwarnmessage("INFO", "'"..tostring(id).."' is not an Sound.", 10) end
+			end
+		else
+			if CustomNotificationSoundINotifs == true then oldwarnmessage("INFO", "ID doesn't exists or failed to check ID.\nTry again.", 10) end
+		end
+	end
+})
+buttons.customnotifid = CustomNewNotificationSoundId
+newnotificationsettings:AddButton({
+	Name = "Reset Custom Notification Sound",
+	Callback = function()
+		flags.customnotifid = "10469938989"
+		CustomNewNotificationSoundId:RawSet("10469938989")
+		oldnormalmessage("INFO", "Custom New Notification Sound reseted to default.", 10) 
+		if curautoloadtextlabel ~= nil then
+			confirmnotification("INFO", "Do you want to save it to a config called '"..curautoloadtextlabel:Get().."'? (RECOMMENDED)", 25, function(State)
+				if State == true then
+					task.spawn(function()
+						saveConfig(curautoloadtextlabel:Get(), true)
+					end)
+				end
+			end)
+		end
+	end
+})
+newnotificationsettings:AddButton({
+	Name = "Test Notification",
+	Callback = function()
+		normalmessage("POOPDOORS EDITED v"..currentver, "This is a test!", "Hey.", 5, nil, "TEST NOTIFICATION")
+	end
+})
+
+local oldnotificationsettings = window_guisettings_tab:CreateSection({
+	Name = "Old Notification Settings",
+	Side = "Right"
+})
+
+local CustomOldNotificationSoundINotifs = false
+task	.spawn(function()task.wait(1)CustomOldNotificationSoundINotifs = true end)
+local CustomOldNotificationSoundID = oldnotificationsettings:AddTextbox({
+	Name = "Custom Notification Sound",
+	Value = "10469938989",
+	Multiline = false,
+	Callback = function(id)
+		if CustomOldNotificationSoundINotifs == true then oldnormalmessage("INFO", "Checking if sound exists. Please wait...", 10) end
+		local MarketplaceService = game:GetService("MarketplaceService")
+		local Success, Response = pcall(MarketplaceService.GetProductInfo, MarketplaceService, id)
+
+		if Success then
+			if Response.AssetTypeId == Enum.AssetType.Audio.Value then
+				flags.oldcustomnotifid = tostring(id)
+				oldcustomnotifid = flags.oldcustomnotifid
+				if CustomOldNotificationSoundINotifs == true then
+					oldnormalmessage("INFO", "Successfully set Custom Old Notification Sound.", 10) 
+					if curautoloadtextlabel ~= nil then
+						confirmnotification("INFO", "Do you want to save it to a config called '"..curautoloadtextlabel:Get().."'? (RECOMMENDED)", 25, function(State)
+							if State == true then
+								task.spawn(function()
+									saveConfig(curautoloadtextlabel:Get(), true)
+								end)
+							end
+						end)
+					end
+				end
+			else
+				if CustomOldNotificationSoundINotifs == true then oldwarnmessage("INFO", "'"..tostring(id).."' is not an Sound.", 10) end
+			end
+		else
+			if CustomOldNotificationSoundINotifs == true then oldwarnmessage("INFO", "ID doesn't exists or failed to check ID.\nTry again.", 10) end
+		end
+	end
+})
+buttons.oldcustomnotifid = CustomOldNotificationSoundID
+oldnotificationsettings:AddButton({
+	Name = "Reset Custom Notification Sound",
+	Callback = function()
+		flags.oldcustomnotifid = "4590657391"
+		CustomOldNotificationSoundID:RawSet("4590657391")
+		oldnormalmessage("INFO", "Custom Notification Sound reseted to default.", 10) 
+		if curautoloadtextlabel ~= nil then
+			confirmnotification("INFO", "Do you want to save it to a config called '"..curautoloadtextlabel:Get().."'?", 25, function(State)
+				if State == true then
+					task.spawn(function()
+						saveConfig(curautoloadtextlabel:Get(), true)
+					end)
+				end
+			end)
+		end
+	end
+})
+oldnotificationsettings:AddButton({
+	Name = "Test Notification",
+	Callback = function()
+		oldnormalmessage("POOPDOORS EDITED v"..currentver.." [TEST]", "This is a test!", 5)
+	end
 })
 
 local window_credits_tab = GUIWindow:CreateTab({ Name = "Credits" })
@@ -1159,20 +1297,15 @@ local fakeespdoorsbtn = window_esp:AddToggle({
 					end
 				end
 
-				if table.find(esptableinstances, door) then
-					return
-				end
+				--	if table.find(esptableinstances, door) then
+				--	return
+				--end
 
 				task.wait(0.1)
 				local h = esp(door,Color3.fromRGB(170, 0, 0),door,"Fake Door (Dupe)")
 				table.insert(esptable.fakedoors,h)
 				table.insert(esptableinstances, door)
 
-				pcall(function()
-					door.AncestryChanged:Connect(function()
-						h.delete()
-					end)
-				end)
 				okvaluechange = game:GetService("ReplicatedStorage").GameData.LatestRoom:GetPropertyChangedSignal("Value"):Connect(function()
 					if tostring(game:GetService("ReplicatedStorage").GameData.LatestRoom.Value) ~= room.Name then
 						h.delete()
@@ -1217,37 +1350,40 @@ local espkeysbtn = window_esp:AddToggle({
 					return
 				end
 
-				if v:IsA("Model") and (v.Name == "LeverForGate" or v.Name == "KeyObtain") then
-					task.wait(0.1)
+				if v:IsA("Model") then
 					local okvaluechange = nil
-					if v.Name == "KeyObtain" then
-						local hitbox = v:WaitForChild("Hitbox")
-						local parts = hitbox:GetChildren()
-						table.remove(parts,table.find(parts,hitbox:WaitForChild("PromptHitbox")))
+					task.wait(0.1)
+					if v.Name == "KeyObtain" or v.Name == "ElectricalKeyObtain" then
+						if v.Name == "KeyObtain" then
+							local hitbox = v:WaitForChild("Hitbox")
+							local parts = hitbox:GetChildren()
+							table.remove(parts,table.find(parts,hitbox:WaitForChild("PromptHitbox")))
 
-						local h = esp(parts,Color3.fromRGB(90,255,40),hitbox,"Key")
-						table.insert(esptable.keys,h)
-						table.insert(esptableinstances, v)
-						okvaluechange = game:GetService("ReplicatedStorage").GameData.LatestRoom:GetPropertyChangedSignal("Value"):Connect(function()
-							if tostring(game:GetService("ReplicatedStorage").GameData.LatestRoom.Value) ~= room.Name then
-								h.delete()
-								okvaluechange:Disconnect()
-							end
-						end)
-					elseif v.Name == "ElectricalKeyObtain" then
-						local hitbox = v:WaitForChild("Hitbox")
-						local parts = hitbox:GetChildren()
-						table.remove(parts,table.find(parts,v:WaitForChild("PromptHitbox")))
+							local h = esp(parts,Color3.fromRGB(90,255,40),hitbox,"Key")
+							table.insert(esptable.keys,h)
+							table.insert(esptableinstances, v)
+							okvaluechange = game:GetService("ReplicatedStorage").GameData.LatestRoom:GetPropertyChangedSignal("Value"):Connect(function()
+								if tostring(game:GetService("ReplicatedStorage").GameData.LatestRoom.Value) ~= room.Name then
+									h.delete()
+									okvaluechange:Disconnect()
+								end
+							end)
+						end
+						if v.Name == "ElectricalKeyObtain" then
+							local hitbox = v:WaitForChild("Hitbox")
+							local parts = hitbox:GetChildren()
+							table.remove(parts,table.find(parts,v:WaitForChild("PromptHitbox")))
 
-						local h = esp(parts,Color3.fromRGB(90,255,40),hitbox,"Electrical Key")
-						table.insert(esptable.keys,h)
-						table.insert(esptableinstances, v)
-						okvaluechange = game:GetService("ReplicatedStorage").GameData.LatestRoom:GetPropertyChangedSignal("Value"):Connect(function()
-							if tostring(game:GetService("ReplicatedStorage").GameData.LatestRoom.Value) ~= room.Name then
-								h.delete()
-								okvaluechange:Disconnect()
-							end
-						end)
+							local h = esp(parts,Color3.fromRGB(90,255,40),hitbox,"Electrical Key")
+							table.insert(esptable.keys,h)
+							table.insert(esptableinstances, v)
+							okvaluechange = game:GetService("ReplicatedStorage").GameData.LatestRoom:GetPropertyChangedSignal("Value"):Connect(function()
+								if tostring(game:GetService("ReplicatedStorage").GameData.LatestRoom.Value) ~= room.Name then
+									h.delete()
+									okvaluechange:Disconnect()
+								end
+							end)
+						end
 					elseif v.Name == "LeverForGate" then
 						local h = esp(v,Color3.fromRGB(90,255,40),v.PrimaryPart,"Lever")
 						table.insert(esptable.keys,h)
@@ -1566,7 +1702,7 @@ local esplockerbrn = window_esp:AddToggle({
 
 			local function setup(room)
 				task.wait(.1)
-				local assets = room:FindFirstChild("Assets")
+				local assets = room--:FindFirstChild("Assets")
 
 				if assets then
 					local subaddcon
@@ -1592,13 +1728,12 @@ local esplockerbrn = window_esp:AddToggle({
 				setup(room)
 			end)
 
-			if workspace.CurrentRooms[tostring(game:GetService("ReplicatedStorage").GameData.LatestRoom.Value)]:FindFirstChild("Assets") then
-				setup(workspace.CurrentRooms[tostring(game:GetService("ReplicatedStorage").GameData.LatestRoom.Value)])
+			if workspace.CurrentRooms:FindFirstChild(tostring(game:GetService("ReplicatedStorage").GameData.LatestRoom.Value-1)) then
+				setup(workspace.CurrentRooms[tostring(game:GetService("ReplicatedStorage").GameData.LatestRoom.Value-1)])
 			end
+			setup(workspace.CurrentRooms[tostring(game:GetService("ReplicatedStorage").GameData.LatestRoom.Value)])
 			if workspace.CurrentRooms:FindFirstChild(tostring(game:GetService("ReplicatedStorage").GameData.LatestRoom.Value+1)) then
-				if workspace.CurrentRooms[tostring(game:GetService("ReplicatedStorage").GameData.LatestRoom.Value+1)]:FindFirstChild("Assets") then
-					setup(workspace.CurrentRooms[tostring(game:GetService("ReplicatedStorage").GameData.LatestRoom.Value+1)])
-				end
+				setup(workspace.CurrentRooms[tostring(game:GetService("ReplicatedStorage").GameData.LatestRoom.Value+1)])
 			end
 
 			repeat task.wait() until not flags.esplocker
@@ -2336,6 +2471,7 @@ local getcodebtn = window_misc:AddToggle({
 				return code
 			end
 
+			local apart
 			local addconnect
 			addconnect = char.ChildAdded:Connect(function(v)
 				if v:IsA("Tool") and v.Name == "LibraryHintPaper" then
@@ -2345,14 +2481,21 @@ local getcodebtn = window_misc:AddToggle({
 					if code:find("_") then
 						warnmessage("ROOM 50", "You are still missing some books!", "The current code is: '".. code.."'", 7)
 					else
-						local a = Instance.new("Part", workspace)
-						a.CanCollide = false
-						a.Anchored = true
-						a.Position = game.Players.LocalPlayer.Character.PrimaryPart.Position
-						a.Transparency = 1
-						normalmessage("ROOM 50", "The code is '".. code.."'.", "", 15, nil, a)
-						repeat task.wait() until game:GetService("ReplicatedStorage").GameData.LatestRoom.Value >= 51
-						a:Destroy()
+						if apart == nil then
+							apart = Instance.new("Part", game.ReplicatedStorage)
+							apart.CanCollide = false
+							apart.Anchored = true
+							apart.Position = game.Players.LocalPlayer.Character.PrimaryPart.Position
+							apart.Transparency = 1
+							normalmessage("ROOM 50", "The code is '".. code.."'.", "", 15, nil, a)
+							repeat 
+								task.wait(.1) 
+								print(game:GetService("ReplicatedStorage").GameData.LatestRoom.Value ~= 50)
+							until game:GetService("ReplicatedStorage").GameData.LatestRoom.Value ~= 50
+							print("notification going away")
+							apart:Destroy()
+							apart = nil
+						end
 					end
 				end
 			end)
@@ -2515,6 +2658,36 @@ if fireproximityprompt then
 										until prompt:GetAttribute("Interactions") or not flags.draweraura
 									end)
 								end
+							elseif v.Name == "Green_Herb" then
+								local prompt = v:WaitForChild("HerbPrompt")
+								local okcanckl = 0
+								task.spawn(function()
+									repeat task.wait(0.1)
+										--pcall(function()
+										local posok = false
+										pcall(function()
+											local posoks, posoke = pcall(function()
+												posok = (plr:DistanceFromCharacter(v.PrimaryPart.Position) <= 12)
+											end)
+											if posoke then
+												local part
+												for _,v in pairs(v:GetChildren()) do
+													local hasProperty = pcall(function() local t = v["Position"] end)
+													if hasProperty then
+														part = v
+														break
+													end
+												end
+												posok = (plr:DistanceFromCharacter(part.Position) <= 12)
+											end
+										end)
+										if posok then
+											fireproximityprompt(prompt) 
+											okcanckl += 1
+										end 
+										--end)
+									until prompt:GetAttribute("Interactions") or not flags.draweraura or okcanckl > 35
+								end)
 							elseif v.Name == "PickupItem" then
 								if game:GetService("ReplicatedStorage").GameData.LatestRoom.Value == 51 or game:GetService("ReplicatedStorage").GameData.LatestRoom.Value == 52 then
 									return
@@ -2929,6 +3102,7 @@ if fireproximityprompt then
 							local prompt = v:WaitForChild("ActivateEventPrompt")
 
 							local okcanckl = 0
+							pcall(function() v.PrimaryPart:WaitForChild("SoundToPlay").Played:Connect(function() okcanckl = 100 end) end)
 							task.spawn(function()
 								repeat task.wait(0.1)
 									local posok = false
