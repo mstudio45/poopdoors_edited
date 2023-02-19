@@ -10,8 +10,6 @@ function message(text)
 		msg.Text = tostring(text)
 		task.wait(5)
 		msg:Destroy()
-
-		--firesignal(entityinfo.Caption.OnClientEvent,tostring(text)) 
 	end)
 end
 
@@ -53,14 +51,19 @@ local teleported = false
 repeat
 	for _,v in pairs(game:GetService("Workspace").Lobby.LobbyElevators:GetChildren()) do
 		--pcall(function()
-
-			if v.DoorHitbox.BillboardGui.Title.Text == "0 / 1" or v.DoorHitbox.BillboardGui.Title.Text == "0 / 12" then
-				repeat
-					game.Players.LocalPlayer.Character:PivotTo(v.DoorHitbox.CFrame)
-					task.wait()
-				until v.DoorHitbox.BillboardGui.Title.Text == "1 / 1" or v.DoorHitbox.BillboardGui.Title.Text == "1 / 12"
-				teleported = true
-				break
+			if v:FindFirstChild("DoorHitbox") then
+				if v.DoorHitbox:FindFirstChild("BillboardGui") then
+					if v.DoorHitbox.BillboardGui:FindFirstChild("Title") then
+						if v.DoorHitbox.BillboardGui.Title.Text == "0 / 1" or v.DoorHitbox.BillboardGui.Title.Text == "0 / 12" then
+							repeat
+								game.Players.LocalPlayer.Character:PivotTo(v.DoorHitbox.CFrame)
+								task.wait()
+							until v.DoorHitbox.BillboardGui.Title.Text == "1 / 1" or v.DoorHitbox.BillboardGui.Title.Text == "1 / 12"
+							teleported = true
+							break
+						end
+					end
+				end
 			end
 		--end)
 	end
