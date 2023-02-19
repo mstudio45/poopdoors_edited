@@ -2504,29 +2504,6 @@ local getcodebtn = window_misc:AddToggle({
 	end
 })
 buttons.getcode = getcodebtn
-local bruteforcinglibrarycode = false
-window_misc:AddButton({
-	Name = "Bruteforce Library Code",
-	Callback = function()
-		if game:GetService("ReplicatedStorage").GameData.LatestRoom.Value == 50 then
-			if bruteforcinglibrarycode == true then return end
-			normalmessage("ROOM 50", "This might took a while.", "Please wait...", 10)
-			--confirmnotification("ROOM 50", "Are you sure? This can crash your game.\nDon't click anything until it unfreeze.", 10, function(State)
-			--	if State == true then
-			bruteforcinglibrarycode = true
-			task.spawn(function()
-				for i = 0, 99999 do
-					game:GetService("ReplicatedStorage").EntityInfo.PL:FireServer(tostring(i))
-					task.wait()
-				end
-			end)
-			bruteforcinglibrarycode = false
-			normalmessage("ROOM 50", "Bruteforcing is done.", "", 10)
-			--	end
-			--end)
-		end
-	end
-})
 local roomsnolockbtn = window_misc:AddToggle({
 	Name = "A-000 Door No Locks",
 	Value = false,
