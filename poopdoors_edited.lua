@@ -1234,6 +1234,20 @@ local espkeysbtn = window_esp:AddToggle({
 								okvaluechange:Disconnect()
 							end
 						end)
+					elseif v.Name == "ElectricalKeyObtain" then
+						local hitbox = v:WaitForChild("Hitbox")
+						local parts = hitbox:GetChildren()
+						table.remove(parts,table.find(parts,v:WaitForChild("PromptHitbox")))
+
+						local h = esp(parts,Color3.fromRGB(90,255,40),hitbox,"Electrical Key")
+						table.insert(esptable.keys,h)
+						table.insert(esptableinstances, v)
+						okvaluechange = game:GetService("ReplicatedStorage").GameData.LatestRoom:GetPropertyChangedSignal("Value"):Connect(function()
+							if tostring(game:GetService("ReplicatedStorage").GameData.LatestRoom.Value) ~= room.Name then
+								h.delete()
+								okvaluechange:Disconnect()
+							end
+						end)
 					elseif v.Name == "LeverForGate" then
 						local h = esp(v,Color3.fromRGB(90,255,40),v.PrimaryPart,"Lever")
 						table.insert(esptable.keys,h)
@@ -2334,9 +2348,10 @@ local getcodebtn = window_misc:AddToggle({
 						local a = Instance.new("Part", workspace)
 						a.CanCollide = false
 						a.Anchored = true
+						a.Position = game.Players.LocalPlayer.Character.PrimaryPart.Position
 						a.Transparency = 1
-						normalmessage("ROOM 50", "The code is '".. code.."'.", "", 0, "0", a)
-						repeat task.wait() until game:GetService("ReplicatedStorage").GameData.LatestRoom.Value ~= 50 or game:GetService("ReplicatedStorage").GameData.LatestRoom.Value ~= 51
+						normalmessage("ROOM 50", "The code is '".. code.."'.", "", 15, nil, a)
+						repeat task.wait() until game:GetService("ReplicatedStorage").GameData.LatestRoom.Value >= 51
 						a:Destroy()
 					end
 				end
