@@ -2128,7 +2128,6 @@ workspace.ChildAdded:Connect(function(inst)
 			repeat task.wait() until plr:DistanceFromCharacter(inst:GetPivot().Position) < 300 or not inst:IsDescendantOf(workspace)
 
 			if inst:IsDescendantOf(workspace) then
-				warnmessage("ENTITIES", "Avoiding "..inst.Name:gsub("Moving","")..". Please wait...", 10)
 				if inst.Name:gsub("Moving","") == "Rush" then
 					warnmessage("ENTITIES", "Avoiding "..inst.Name:gsub("Moving",""), "Please wait...", 0, "11102256553", inst)
 				elseif inst.Name:gsub("Moving","") == "Ambush" then
