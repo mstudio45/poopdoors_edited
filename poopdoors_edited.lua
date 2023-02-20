@@ -23,10 +23,10 @@ end
 function normalmessage(title, text, reason, timee, image, textlabel, waitforinsttodelete)
 	task.spawn(function()
 		do
-			local LocalPlayer = game.Players.LocalPlayer;
-			local AchievementsFolder = require(game:GetService("ReplicatedStorage"):WaitForChild("Achievements"));
-			local MainUI = LocalPlayer.PlayerGui.MainUI;
-			local TweenService = game:GetService("TweenService");
+			local AchievementsFolder = require(game:GetService("ReplicatedStorage"):WaitForChild("Achievements"))
+			repeat task.wait() until game.Players.LocalPlayer.PlayerGui:FindFirstChild("MainUI")
+			local MainUI =  game.Players.LocalPlayer.PlayerGui.MainUI
+			local TweenService = game:GetService("TweenService")
 
 			if title == nil or typeof(title) ~= "string" or string.len(title) == 0 then return end
 			if text == nil or typeof(text) ~= "string" or string.len(text) == 0 then return end
@@ -63,7 +63,6 @@ function normalmessage(title, text, reason, timee, image, textlabel, waitforinst
 			}):Play()
 			if waitforinsttodelete ~= nil and typeof(waitforinsttodelete) == "Instance" then
 				waitforinsttodelete.Destroying:Wait()
-				print("ok")
 			else
 				wait(timee)
 			end
@@ -111,7 +110,7 @@ function oldwarnmessage(title, text, timee)
 	)
 end
 
-local currentver = "1.6"
+local currentver = "1.6.1"
 local gui_data = nil
 local s,e = pcall(function()
 	gui_data = game:HttpGet(("https://raw.githubusercontent.com/mstudio45/poopdoors_edited/main/gui_data.json"), true)
@@ -170,7 +169,8 @@ function JoinDiscord(InviteCodee)
 	end
 	local DiscordApiUrl = "http://127.0.0.1:%s/rpc?v=1"
 	if not RequestFunction then
-		return oldwarnmessage("POOPDOORS EDITED v"..currentver, "Your executor does not support http requests.", 5)
+		oldwarnmessage("POOPDOORS EDITED v"..currentver, "Your executor does not support http requests.", 5)
+		return
 	end
 	for i = 6453, 6464 do
 		local DiscordInviteRequest = function()
@@ -286,6 +286,7 @@ local char = plr.Character or plr.CharacterAdded:Wait()
 local hum = char:FindFirstChildOfClass("Humanoid") or char:WaitForChild("Humanoid")
 local LatestRoom = game:GetService("ReplicatedStorage").GameData.LatestRoom
 local Players = game:GetService("Players")
+local inRooms = false
 
 local function changeBrightness(color)
 	local h, s, v = color:ToHSV()
@@ -1011,7 +1012,7 @@ window_credits:AddButton({
 })
 
 task.spawn(function()
-	repeat task.wait(1) until flags.anticheatbypass == true
+--	repeat task.wait(1) until flags.anticheatbypass == true
 
 	local nocliptoggle = window_player:AddToggle({
 		Name = "Noclip",
@@ -2090,13 +2091,23 @@ local avoidrushambushbtn = window_entities:AddToggle({
 buttons.avoidrushambush = avoidrushambushbtn
 workspace.ChildAdded:Connect(function(inst)
 	spawn(function()
-		if flags.avoidrushambush == false then
-			if flags.hintrush == true then
-				if table.find(entitynames, inst.Name) then
-					repeat task.wait() until plr:DistanceFromCharacter(inst:GetPivot().Position) < 1000 or not inst:IsDescendantOf(workspace)
+		if table.find(entitynames, inst.Name) and flags.hintrush == true then
+			if inRooms == true then
+				if inst.Name:gsub("Moving","") == "A60" then
+					warnmessage("ENTITIES", inst.Name:gsub("Moving","").." is coming.", "Hide!", 0, "12350986086", inst)
+				elseif inst.Name:gsub("Moving","") == "A120" then
+					warnmessage("ENTITIES", inst.Name:gsub("Moving","").." is coming.", "Hide!", 0, "12351008553", inst)
+				else
+					task.wait(.1)
+					if plr:DistanceFromCharacter(inst:GetPivot().Position) < 300 and inst:IsDescendantOf(workspace) then
+						warnmessage("ENTITIES", inst.Name:gsub("Moving","").." is coming.", "Hide!", 0, "0", inst)
+					end
+				end
+			else
+				if flags.avoidrushambush == false then
+					repeat task.wait() until plr:DistanceFromCharacter(inst:GetPivot().Position) < 300 or not inst:IsDescendantOf(workspace)
 
 					if inst:IsDescendantOf(workspace) then
-						--message(inst.Name:gsub("Moving",""):lower().." is coming go hide")
 						if inst.Name:gsub("Moving","") == "Rush" then
 							warnmessage("ENTITIES", inst.Name:gsub("Moving","").." is coming.", "Hide!", 0, "11102256553", inst)
 						elseif inst.Name:gsub("Moving","") == "Ambush" then
@@ -2114,7 +2125,7 @@ workspace.ChildAdded:Connect(function(inst)
 
 	if flags.avoidrushambush == true then
 		if inst.Name == "RushMoving" or inst.Name == "AmbushMoving" then
-			repeat task.wait() until plr:DistanceFromCharacter(inst:GetPivot().Position) < 1000 or not inst:IsDescendantOf(workspace)
+			repeat task.wait() until plr:DistanceFromCharacter(inst:GetPivot().Position) < 300 or not inst:IsDescendantOf(workspace)
 
 			if inst:IsDescendantOf(workspace) then
 				warnmessage("ENTITIES", "Avoiding "..inst.Name:gsub("Moving","")..". Please wait...", 10)
@@ -2139,22 +2150,46 @@ workspace.ChildAdded:Connect(function(inst)
 				end
 				local room = getrecentroom(2)
 				local door = room:WaitForChild("Door")
-				local con = game:GetService("RunService").Heartbeat:Connect(function()
-					--	hum.WalkSpeed = 0
-					if door then
+				
+				local CFrameValue = Instance.new("CFrameValue")
+				CFrameValue.Value = game.Players.LocalPlayer.Character:GetPivot()
+
+				CFrameValue:GetPropertyChangedSignal("Value"):connect(function()
+					game.Players.LocalPlayer.Character:PivotTo(CFrameValue.Value)
+				end)
+
+				local tween = game:GetService("TweenService"):Create(CFrameValue, TweenInfo.new(1.5), {Value = CFrame.new(door.Door.Position + Vector3.new(0,avoidingYvalue,0))})
+				tween:Play()
+				
+				local con
+				tween.Completed:connect(function()
+					CFrameValue:Destroy() 
+					con = game:GetService("RunService").RenderStepped:Connect(function()
+						--	hum.WalkSpeed = 0
+						--if door then
 						game.Players.LocalPlayer.Character:MoveTo(door.Door.Position + Vector3.new(0,avoidingYvalue,0))
-					else
-						game.Players.LocalPlayer.Character:MoveTo(OldPos + Vector3.new(0,avoidingYvalue,0))
-					end
-					--game.Players.LocalPlayer.Character:MoveTo(OldPos + Vector3.new(0,125,0))
+						game.Players.LocalPlayer.Character.HumanoidRootPart.Anchored = true
+						--else
+						--	game.Players.LocalPlayer.Character:MoveTo(OldPos + Vector3.new(0,avoidingYvalue,0))
+						--end
+						--game.Players.LocalPlayer.Character:MoveTo(OldPos + Vector3.new(0,125,0))
+					end)
 				end)
 
 				inst.Destroying:Wait()
 				con:Disconnect()
 
-				for i = 1,5 do				
-					game.Players.LocalPlayer.Character:MoveTo(door.Door.Position)--OldPos)
-				end
+				local CFrameValue = Instance.new("CFrameValue")
+				CFrameValue.Value = game.Players.LocalPlayer.Character:GetPivot()
+				CFrameValue:GetPropertyChangedSignal("Value"):connect(function()
+					game.Players.LocalPlayer.Character:PivotTo(CFrameValue.Value)
+				end)
+				local tween = game:GetService("TweenService"):Create(CFrameValue, TweenInfo.new(1.5), {Value = CFrame.new(OldPos)})
+				tween:Play()
+				tween.Completed:connect(function()
+					CFrameValue:Destroy() 
+					game.Players.LocalPlayer.Character.HumanoidRootPart.Anchored = false
+				end)
 			end
 		end
 	end
@@ -2188,6 +2223,7 @@ game:GetService("Workspace").CurrentRooms.ChildAdded:Connect(function(descendant
 end)
 buttons.noseekarmsfire = noseekarmsfirebtn
 
+window_roomsdoors:AddLabel({ Name = "'Skip Room' functions doesn't work without an anticheat bypass."})
 if fireproximityprompt then
 	window_roomsdoors:AddButton({
 		Name = "Skip Current Room",
@@ -2485,12 +2521,8 @@ local getcodebtn = window_misc:AddToggle({
 							apart.Anchored = true
 							apart.Position = game.Players.LocalPlayer.Character.PrimaryPart.Position
 							apart.Transparency = 1
-							normalmessage("ROOM 50", "The code is '".. code.."'.", "", 15, nil, a)
-							repeat 
-								task.wait(.1) 
-								print(game:GetService("ReplicatedStorage").GameData.LatestRoom.Value ~= 50)
-							until game:GetService("ReplicatedStorage").GameData.LatestRoom.Value ~= 50
-							print("notification going away")
+							normalmessage("ROOM 50", "The code is '".. code.."'.", "", 5, nil, nil, apart)
+							repeat task.wait(.1) until game:GetService("ReplicatedStorage").GameData.LatestRoom.Value ~= 50
 							apart:Destroy()
 							apart = nil
 						end
@@ -2624,7 +2656,7 @@ if fireproximityprompt then
 										end
 									end
 								end
-							elseif v.Name == "KeyObtain" then
+							elseif v.Name == "KeyObtain" or v.Name == "ElectricalKeyObtain" then
 								local prompt = v:WaitForChild("ModulePrompt")
 								local interactions = prompt:GetAttribute("Interactions")
 
@@ -3243,11 +3275,10 @@ elseif queue_on_teleport then
 	})
 end
 
-local Path = nil
+local PathRunning = nil
 local Wardrobes = {}
 local Wardrobe = nil
 local CurrentWardrobe = nil
-local inRooms = false
 
 local window_rooms = GUI:CreateSection({
 	Name = "The Rooms"
@@ -3266,6 +3297,11 @@ if game.ReplicatedStorage:WaitForChild("GameData"):WaitForChild("Floor").Value =
 					v["Disconnect"](v)
 				end
 			end
+		else
+			game:GetService("Players").LocalPlayer.Idled:Connect(function()
+				game:GetService("VirtualUser"):CaptureController()
+				game:GetService("VirtualUser"):ClickButton2(Vector2.new()) 
+			end)
 		end
 		--end)
 	end)
@@ -3353,59 +3389,7 @@ if game.ReplicatedStorage:WaitForChild("GameData"):WaitForChild("Floor").Value =
 		return P
 	end
 
-	--[[function hidefunc()
-		loadWardrobes()
-
-		task.spawn(function()
-			repeat
-				fireproximityprompt(Wardrobe.HidePrompt)
-				if Wardrobe.HiddenPlayer.Value ~= nil then
-					if Wardrobe.HiddenPlayer.Value.Name == game.Players.LocalPlayer.Name then
-						CurrentWardrobe = Wardrobe
-						break
-					end
-				end
-				task.wait()
-			until true
-		end)
-	end
-
-	local robloxMenuOpened = false
-	local GuiService = game:GetService("GuiService")
-	GuiService.MenuOpened:Connect(function()
-		robloxMenuOpened = true
-	end)
-	GuiService.MenuClosed:Connect(function()
-		robloxMenuOpened = false
-	end)
-
-	local UnhideDebounce = false
-	local VirtualInputManager = game:GetService("VirtualInputManager")
-	function closerobloxgui()
-		VirtualInputManager:SendKeyEvent(true, "Escape", false, game)
-		task.wait()
-		VirtualInputManager:SendKeyEvent(false, "Escape", false, game)
-	end
-	function unhidefunc()
-		if UnhideDebounce == true then return end
-		plr.DevComputerMovementMode = Enum.DevComputerMovementMode.KeyboardMouse
-
-		UnhideDebounce = true		
-		if robloxMenuOpened == true then
-			closerobloxgui()
-		end
-
-		VirtualInputManager:SendKeyEvent(true, "W", false, game)
-		waitframes(3)
-		VirtualInputManager:SendKeyEvent(false, "W", false, game)
-
-		CurrentWardrobe = nil
-		task.wait(3)
-		UnhideDebounce = false
-		plr.DevComputerMovementMode = Enum.DevComputerMovementMode.Scriptable
-	end--]]
 	function unhidefunc() plr.Character:SetAttribute("Hiding",false) end
-
 	function isLocker(Part)
 		return Part.Name == "Rooms_Locker"
 	end 
@@ -3415,17 +3399,11 @@ if game.ReplicatedStorage:WaitForChild("GameData"):WaitForChild("Floor").Value =
 		Name = "Auto A-1000",
 		Value = false,
 		Callback = function(val, oldval)
-			if flags.noa90 == false then
-				flags.noa90 = true
-				removea90()
-				--normalmessage("A-90", "A-90 disabled.")
-			end
+			if flags.noa90 == false then noa90btn:Set(true);oldnormalmessage("AUTO A-1000", "Enabled Harmless A90", 5) end
 
-			if Path == true or Path == false or Path ~= nil then 
-				oldwarnmessage("AUTO A-1000", "Please wait...", 5)
-				autoa1000:RawSet(flags.autorooms)
-				repeat task.wait() until Path == true or Path == false or Path == nil
-				autoa1000:RawSet(val)
+			if PathRunning == true then 
+				PathRunning = false
+				task.wait()
 			end
 
 			flags.autorooms = val
@@ -3462,6 +3440,10 @@ if game.ReplicatedStorage:WaitForChild("GameData"):WaitForChild("Floor").Value =
 						end
 
 						if game.Players.LocalPlayer.Character.Humanoid.Health < 1 then autoa1000:Set(false) end
+					else
+						game.Players.LocalPlayer.Character.HumanoidRootPart.CanCollide = true
+						game.Players.LocalPlayer.Character.Collision.CanCollide = true
+						game.Players.LocalPlayer.Character.Collision.Size = Vector3.new(4, game.Players.LocalPlayer.Character.Collision.Size.Y, 4)
 					end
 
 					if flags.autorooms_blockcontrols == false then
@@ -3469,11 +3451,8 @@ if game.ReplicatedStorage:WaitForChild("GameData"):WaitForChild("Floor").Value =
 					end
 				end)
 
-				local Highlight = Instance.new("Highlight", Pathfinding_Highlights)
-				Highlight.FillColor = Color3.fromRGB(85, 255, 0)
-
 				while flags.autorooms do
-					task.wait();if flags.noa90 == false then flags.noa90 = true;removea90() end
+					task.wait();if flags.noa90 == false then noa90btn:Set(true);oldnormalmessage("AUTO A-1000", "Enabled Harmless A90", 5) end
 					--repeat task.wait() until goingToHide == false and plr.Character.HumanoidRootPart.Anchored == false
 
 					local Part = getWalkPart()
@@ -3510,24 +3489,34 @@ if game.ReplicatedStorage:WaitForChild("GameData"):WaitForChild("Floor").Value =
 					end)
 
 					if Success and Path.Status == Enum.PathStatus.Success then 
+						PathRunning = true
 						local waypoints = Path:GetWaypoints()
 						VisualizerFolder:ClearAllChildren()
 						PathModule.visualize(waypoints)
 
 						for i, v in pairs(waypoints) do
 							if HRP.Anchored == false then
-								Humanoid:MoveTo(v.Position)
-								Humanoid.MoveToFinished:Wait()
+								if PathRunning == false then
+									pcall(function() Highlight.OutlineTransparency = 1 end);pcall(function() Highlight.FillTransparency = 1 end);pcall(function() Highlight.Adornee = nil end)
+									Pathfinding_Highlights:ClearAllChildren()
+									VisualizerFolder:ClearAllChildren()
+									break
+								else
+									Humanoid:MoveTo(v.Position)
+									Humanoid.MoveToFinished:Wait()
+								end
 							end
 						end
 
 						if isLocker(Part) then
-							repeat task.wait() until HRP.Anchored == false or plr.Character:GetAttribute("Hiding") == false
+							repeat task.wait() until HRP.Anchored == false or plr.Character:GetAttribute("Hiding") == false or PathRunning == false
 						end
+						PathRunning = false
 					end
 
 					pcall(function() Highlight.OutlineTransparency = 1 end);pcall(function() Highlight.FillTransparency = 1 end);pcall(function() Highlight.Adornee = nil end)
 					Pathfinding_Highlights:ClearAllChildren()
+					VisualizerFolder:ClearAllChildren()
 				end
 
 				task.spawn(function()
@@ -3547,7 +3536,7 @@ if game.ReplicatedStorage:WaitForChild("GameData"):WaitForChild("Floor").Value =
 			flags.autorooms_debug = val
 		end
 	})
-	buttons.autorooms_debug= autorooms_debugbtn
+	buttons.autorooms_debug = autorooms_debugbtn
 	local autoa1000blockcontrols = window_rooms:AddToggle({
 		Name = "Auto A-1000 - Block Controls",
 		Value = false,
@@ -3555,7 +3544,7 @@ if game.ReplicatedStorage:WaitForChild("GameData"):WaitForChild("Floor").Value =
 			flags.autorooms_blockcontrols = val
 		end
 	})
-	buttons.autorooms_blockcontrols = autoa1000blockcontrols
+	--buttons.autorooms_blockcontrols = autoa1000blockcontrols
 	autoa1000blockcontrols:Set(true)
 
 	LatestRoom:GetPropertyChangedSignal("Value"):Connect(function()
@@ -3581,6 +3570,11 @@ if inRooms == false then
 	window_rooms:AddLabel({ Name = "You need to be in Rooms for this\nsection." })
 end
 
+function togglegui()
+	game:GetService("VirtualInputManager"):SendKeyEvent(true, Enum.KeyCode.RightShift, false, game)
+	task.wait()
+	game:GetService("VirtualInputManager"):SendKeyEvent(false, Enum.KeyCode.RightShift, false, game)
+end
 function closegui()
 	flags = DELFLAGS
 	--flags.camfov = 70
@@ -3618,6 +3612,12 @@ window_guisettings:AddButton({
 		Library.unload()
 	end
 })
+
+if game:GetService("UserInputService").TouchEnabled and not game:GetService("UserInputService").KeyboardEnabled and not game:GetService("UserInputService").MouseEnabled then
+	--local DeviceSize = workspace.CurrentCamera.ViewportSize;
+	local MobileToggle = {};MobileToggle["1"] = Instance.new("ScreenGui", game:GetService("Players").LocalPlayer:WaitForChild("PlayerGui"));MobileToggle["1"]["ZIndexBehavior"] = Enum.ZIndexBehavior.Sibling;MobileToggle["ToggleButton"] = Instance.new("TextButton", MobileToggle["1"]);MobileToggle["ToggleButton"]["TextWrapped"] = true;MobileToggle["ToggleButton"]["BorderSizePixel"] = 0;MobileToggle["ToggleButton"]["TextScaled"] = true;MobileToggle["ToggleButton"]["BackgroundColor3"] = Color3.fromRGB(255, 255, 255);MobileToggle["ToggleButton"]["TextColor3"] = Color3.fromRGB(0, 0, 0);MobileToggle["ToggleButton"]["Size"] = UDim2.new(0.049780379980802536, 0, 0.08735332638025284, 0);MobileToggle["ToggleButton"]["Name"] = [[Tbtn]];MobileToggle["ToggleButton"]["Text"] = [[Toggle POOPDOORS EDITED]];MobileToggle["ToggleButton"]["Font"] = Enum.Font.FredokaOne;MobileToggle["ToggleButton"]["Position"] = UDim2.new(0.872797429561615, 0, 0.10329286754131317, 0);
+	MobileToggle.ToggleButton.MouseButton1Click:Connect(function() togglegui() end)
+end
 
 task.spawn(function()
 	while WaitUntilTerminated() do task.wait() end
