@@ -2105,7 +2105,7 @@ workspace.ChildAdded:Connect(function(inst)
 				end
 			else
 				if flags.avoidrushambush == false then
-					repeat task.wait() until plr:DistanceFromCharacter(inst:GetPivot().Position) < 300 or not inst:IsDescendantOf(workspace)
+					repeat task.wait() until plr:DistanceFromCharacter(inst:GetPivot().Position) < 500 or not inst:IsDescendantOf(workspace)
 
 					if inst:IsDescendantOf(workspace) then
 						if inst.Name:gsub("Moving","") == "Rush" then
@@ -2125,7 +2125,7 @@ workspace.ChildAdded:Connect(function(inst)
 
 	if flags.avoidrushambush == true then
 		if inst.Name == "RushMoving" or inst.Name == "AmbushMoving" then
-			repeat task.wait() until plr:DistanceFromCharacter(inst:GetPivot().Position) < 300 or not inst:IsDescendantOf(workspace)
+			repeat task.wait() until plr:DistanceFromCharacter(inst:GetPivot().Position) < 500 or not inst:IsDescendantOf(workspace)
 
 			if inst:IsDescendantOf(workspace) then
 				if inst.Name:gsub("Moving","") == "Rush" then
