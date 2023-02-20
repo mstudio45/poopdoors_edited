@@ -2223,7 +2223,7 @@ game:GetService("Workspace").CurrentRooms.ChildAdded:Connect(function(descendant
 end)
 buttons.noseekarmsfire = noseekarmsfirebtn
 
-window_roomsdoors:AddLabel({ Name = "'Skip Room' functions doesn't work without an anticheat bypass."})
+window_roomsdoors:AddLabel({ Name = "'Skip Room' functions doesn't work\nwithout an anticheat bypass."})
 if fireproximityprompt then
 	window_roomsdoors:AddButton({
 		Name = "Skip Current Room",
