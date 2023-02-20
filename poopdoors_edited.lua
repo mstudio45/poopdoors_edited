@@ -473,7 +473,7 @@ task.spawn(function()
 	end	
 end)
 
-local avoidingYvalue = 22.5
+local avoidingYvalue = 25
 
 local flags = {
 	-- general
