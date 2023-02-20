@@ -2147,8 +2147,8 @@ workspace.ChildAdded:Connect(function(inst)
 
 					return rooms[index]
 				end
-				local room = getrecentroom(2)
-				local door = room:WaitForChild("Door")
+				--local room = getrecentroom(2)
+				--local door = room:WaitForChild("Door")
 				
 				local CFrameValue = Instance.new("CFrameValue")
 				CFrameValue.Value = game.Players.LocalPlayer.Character:GetPivot()
@@ -2157,7 +2157,7 @@ workspace.ChildAdded:Connect(function(inst)
 					game.Players.LocalPlayer.Character:PivotTo(CFrameValue.Value)
 				end)
 
-				local tween = game:GetService("TweenService"):Create(CFrameValue, TweenInfo.new(1.5), {Value = CFrame.new(door.Door.Position + Vector3.new(0,avoidingYvalue,0))})
+				local tween = game:GetService("TweenService"):Create(CFrameValue, TweenInfo.new(1.5), {Value = CFrame.new(OldPos + Vector3.new(0,avoidingYvalue,0))})--CFrame.new(door.Door.Position + Vector3.new(0,avoidingYvalue,0))})
 				tween:Play()
 				
 				local con
