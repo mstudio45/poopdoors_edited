@@ -2166,7 +2166,7 @@ workspace.ChildAdded:Connect(function(inst)
 					con = game:GetService("RunService").RenderStepped:Connect(function()
 						--	hum.WalkSpeed = 0
 						--if door then
-						game.Players.LocalPlayer.Character:MoveTo(door.Door.Position + Vector3.new(0,avoidingYvalue,0))
+						game.Players.LocalPlayer.Character:MoveTo(OldPos + Vector3.new(0,avoidingYvalue,0))--door.Door.Position + Vector3.new(0,avoidingYvalue,0))
 						game.Players.LocalPlayer.Character.HumanoidRootPart.Anchored = true
 						--else
 						--	game.Players.LocalPlayer.Character:MoveTo(OldPos + Vector3.new(0,avoidingYvalue,0))
