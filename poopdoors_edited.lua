@@ -2325,14 +2325,14 @@ else
 end
 
 local elevatorbreakerbox = false
-window_roomsdoors:AddLabel({ Name = "Press this only if you have the breaker box minigame on." })
+window_roomsdoors:AddLabel({ Name = "Press this only if you have the\nbreaker box minigame on." })
 window_roomsdoors:AddButton({
 	Name = "Complete Elevator Breaker Box",
 	Callback = function()
 		if elevatorbreakerbox == false then
 			elevatorbreakerbox = true
 			oldnormalmessage("ELEVATOR BREAKER BOX", "Trying to comeplete breaker box. Please wait...",5)
-			for i = 0, 100 do game:GetService("ReplicatedStorage").EntityInfo.EBF:FireServer()task.wait(.1) end
+			for i = 0, 10 do game:GetService("ReplicatedStorage").EntityInfo.EBF:FireServer()task.wait(5) end
 			elevatorbreakerbox = false
 			oldnormalmessage("ELEVATOR BREAKER BOX", "If the breaker box didn't complete press the 'Complete Elevator Breaker Box' button again.",5)
 		else
