@@ -2330,7 +2330,8 @@ window_roomsdoors:AddButton({
 	Name = "Complete Elevator Breaker Box",
 	Callback = function()
 		oldnormalmessage("ELEVATOR BREAKER BOX", "Trying to comeplete breaker box. Please wait...",5)
-		while task.wait(.1) do game:GetService("ReplicatedStorage").EntityInfo.EBF:FireServer()task.wait() end
+		for i = 1, 50 do game:GetService("ReplicatedStorage").EntityInfo.EBF:FireServer()task.wait(.1) end
+		oldnormalmessage("ELEVATOR BREAKER BOX", "If it didn't complete breaker box, try again.",5)
 	end
 })
 
