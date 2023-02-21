@@ -3615,11 +3615,15 @@ window_guisettings:AddButton({
 	end
 })
 
-if game:GetService("UserInputService").TouchEnabled and not game:GetService("UserInputService").KeyboardEnabled and not game:GetService("UserInputService").MouseEnabled then
+local mobiletoggles,mobiletoggleerr=pcall(function()
+local platform=game:GetService("UserInputService"):GetPlatform()
+if platform == Enum.Platform.Android or platform == Enum.Platform.IOS then --ame:GetService("UserInputService").TouchEnabled and not game:GetService("UserInputService").KeyboardEnabled and not game:GetService("UserInputService").MouseEnabled then
 	--local DeviceSize = workspace.CurrentCamera.ViewportSize;
 	local MobileToggle = {};MobileToggle["1"] = Instance.new("ScreenGui", game:GetService("CoreGui"));MobileToggle["1"]["ZIndex"] = 9999;MobileToggle["1"]["ZIndexBehavior"] = Enum.ZIndexBehavior.Sibling;MobileToggle["ToggleButton"] = Instance.new("TextButton", MobileToggle["1"]);MobileToggle["ToggleButton"]["TextWrapped"] = true;MobileToggle["ToggleButton"]["BorderSizePixel"] = 0;MobileToggle["ToggleButton"]["TextScaled"] = true;MobileToggle["ToggleButton"]["BackgroundColor3"] = Color3.fromRGB(255, 255, 255);MobileToggle["ToggleButton"]["TextColor3"] = Color3.fromRGB(0, 0, 0);MobileToggle["ToggleButton"]["Size"] = UDim2.new(0.049780379980802536, 0, 0.08735332638025284, 0);MobileToggle["ToggleButton"]["Name"] = [[Tbtn]];MobileToggle["ToggleButton"]["Text"] = [[Toggle POOPDOORS EDITED]];MobileToggle["ToggleButton"]["Font"] = Enum.Font.FredokaOne;MobileToggle["ToggleButton"]["Position"] = UDim2.new(0.872797429561615, 0, 0.10329286754131317, 0);
 	MobileToggle.ToggleButton.MouseButton1Click:Connect(function() togglegui() end)
 end
+end)
+if mobiletoggleerr then print(mobiletoggleerr) end
 
 task.spawn(function()
 	while WaitUntilTerminated() do task.wait(1) end
