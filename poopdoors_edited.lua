@@ -2329,9 +2329,15 @@ window_roomsdoors:AddLabel({ Name = "Press this only if you have the\nbreaker bo
 window_roomsdoors:AddButton({
 	Name = "Complete Elevator Breaker Box",
 	Callback = function()
-		oldnormalmessage("ELEVATOR BREAKER BOX", "Trying to comeplete breaker box. Please wait...",5)
-		for i = 1, 50 do game:GetService("ReplicatedStorage").EntityInfo.EBF:FireServer()task.wait(.1) end
-		oldnormalmessage("ELEVATOR BREAKER BOX", "If it didn't complete breaker box, try again.",5)
+		if elevatorbreakerbox == false then
+			elevatorbreakerbox = true
+			oldnormalmessage("ELEVATOR BREAKER BOX", "Trying to comeplete breaker box. Please wait...",5)
+			game:GetService("ReplicatedStorage").EntityInfo.EBF:FireServer()
+			for i = 0, 75 do game:GetService("ReplicatedStorage").EntityInfo.EBF:FireServer()task.wait(.1) end
+			game:GetService("ReplicatedStorage").EntityInfo.EBF:FireServer()
+			oldnormalmessage("ELEVATOR BREAKER BOX", "If it didn't complete breaker box, try going to the elevator.\nIf that didn't work try it again.",5)		
+			elevatorbreakerbox = false
+		end
 	end
 })
 
