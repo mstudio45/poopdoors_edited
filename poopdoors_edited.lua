@@ -3707,8 +3707,8 @@ window_guisettings:AddButton({
 })
 
 local mobiletoggles,mobiletoggleerr=pcall(function()
-	--local platform = game:GetService("UserInputService"):GetPlatform()
-	--if platform == Enum.Platform.Android or platform == Enum.Platform.IOS then 
+	local platform = game:GetService("UserInputService"):GetPlatform()
+	if platform == Enum.Platform.Android or platform == Enum.Platform.IOS then 
 		MobileButton["1"] = Instance.new("ScreenGui");
 		MobileButton["1"]["Name"] = randomString()
 		if get_hidden_gui or gethui then
@@ -3725,6 +3725,8 @@ local mobiletoggles,mobiletoggleerr=pcall(function()
 		MobileButton["1"]["IgnoreGuiInset"] = true;
 		MobileButton["1"]["Name"] = [[PM]];
 		MobileButton["1"]["ZIndexBehavior"] = Enum.ZIndexBehavior.Sibling;
+		
+		-- TopBar Frame
 		MobileButton["2"] = Instance.new("Frame", MobileButton["1"]);
 		MobileButton["2"]["BackgroundTransparency"] = 1;
 		MobileButton["2"]["Size"] = UDim2.new(1, 0, 0, 36);
@@ -3736,6 +3738,8 @@ local mobiletoggles,mobiletoggleerr=pcall(function()
 		MobileButton["3"]["Name"] = [[Layout]];
 		MobileButton["3"]["Padding"] = UDim.new(0, 12);
 		MobileButton["3"]["SortOrder"] = Enum.SortOrder.LayoutOrder;
+
+		-- Fake Buttons
 		MobileButton["4"] = Instance.new("Frame", MobileButton["2"]);
 		MobileButton["4"]["BackgroundTransparency"] = 1;
 		MobileButton["4"]["Size"] = UDim2.new(0, 32, 1, 0);
@@ -3744,7 +3748,12 @@ local mobiletoggles,mobiletoggleerr=pcall(function()
 		MobileButton["5"]["BackgroundTransparency"] = 1;
 		MobileButton["5"]["Size"] = UDim2.new(0, 32, 1, 0);
 		MobileButton["5"]["Name"] = [[Place]];
-
+		MobileButton["5bruh"] = Instance.new("Frame", MobileButton["2"]);
+		MobileButton["5bruh"]["BackgroundTransparency"] = 1;
+		MobileButton["5bruh"]["Size"] = UDim2.new(0, 32, 1, 0);
+		MobileButton["5bruh"]["Name"] = [[Place]];
+		
+		-- Button
 		MobileButton["7"] = Instance.new("Frame", MobileButton["6"]);
 		MobileButton["7"]["BackgroundTransparency"] = 1;
 		MobileButton["7"]["Size"] = UDim2.new(0, 32, 1, 0);
@@ -3785,7 +3794,7 @@ local mobiletoggles,mobiletoggleerr=pcall(function()
 			MobileButton["7"].Background.StateOverlay.ImageTransparency = 1
 		end)
 		MobileButton["7"].Background.MouseButton1Down:Connect(function() togglegui() end)
-	--end
+	end
 end)
 if mobiletoggleerr then print(mobiletoggleerr) end
 
