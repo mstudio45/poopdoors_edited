@@ -3606,12 +3606,12 @@ if game.ReplicatedStorage:WaitForChild("GameData"):WaitForChild("Floor").Value =
 					VisualizerFolder:ClearAllChildren()
 				end
 				
-				if goingToHide == false then
+				task.spawn(function()--if goingToHide == false then
 					repeat task.wait() until flags.autorooms == false and goingToHide == false
 					HideCheck:Disconnect()
-				else
-					HideCheck:Disconnect()
-				end
+				--else
+					--HideCheck:Disconnect()
+				end)--end
 			else
 				plr.DevComputerMovementMode = Enum.DevComputerMovementMode.KeyboardMouse
 			end
