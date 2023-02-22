@@ -446,11 +446,8 @@ function TracerESP(Color, instance)
 				end
 				local Position = WorldToViewport(Camera.CFrame:pointToWorldSpace(OPos));
 				if Vis then
-					local TracerPosition = Vector2.new(Camera.ViewportSize.X / 2, Camera.ViewportSize.Y - 135)
-					if TracerPosition.X >= Camera.ViewportSize.X or TracerPosition.Y >= Camera.ViewportSize.Y or TracerPosition.X < 0 or TracerPosition.Y < 0 then
-						TracerPosition = Vector2.new(Camera.ViewportSize.X / 2, Camera.ViewportSize.Y - 135);
-					end
-					Tracer.Visible = true;
+					local TracerPosition = Vector2.new(Camera.ViewportSize.X / 2, Camera.ViewportSize.Y / 1)
+					Tracer.Visible = true
 					Tracer.From = TracerPosition
 					Tracer.To = Vector2.new(Position.X, Position.Y)
 				else
