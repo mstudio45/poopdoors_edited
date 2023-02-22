@@ -24,7 +24,9 @@ function normalmessage(title, text, reason, timee, image, textlabel, waitforinst
 	task.spawn(function()
 		do
 			local AchievementsFolder = require(game:GetService("ReplicatedStorage"):WaitForChild("Achievements"))
-			repeat task.wait() until game.Players.LocalPlayer.PlayerGui:FindFirstChild("MainUI")
+			if not game.Players.LocalPlayer.PlayerGui:FindFirstChild("MainUI") then
+				repeat task.wait() until game.Players.LocalPlayer.PlayerGui:FindFirstChild("MainUI")
+			end
 			local MainUI =  game.Players.LocalPlayer.PlayerGui.MainUI
 			local TweenService = game:GetService("TweenService")
 
@@ -109,6 +111,7 @@ function oldwarnmessage(title, text, timee)
 		{Image = "http://www.roblox.com/asset/?id=6023426923", ImageColor = Color3.fromRGB(255, 84, 84)}
 	)
 end
+function randomString()local length = math.random(10,20);local array = {};for i = 1, length do array[i] = string.char(math.random(32, 126)) end;return table.concat(array);end
 
 local currentver = "1.7"
 local gui_data = nil
@@ -149,50 +152,6 @@ pcall(function() getgenv().POOPDOORSLOADED = true end)
 normalmessage("POOPDOORS EDITED v"..currentver, "Loading script...", "", 2)
 if gui_data ~= nil then
 	oldnormalmessage("INFO", gui_data.changelog, 20)
-end
-
-function JoinDiscord(InviteCodee)
-	InviteCodee = string.gsub(InviteCodee, "https://discord.gg/", "")
-	local Settings = {
-		InviteCode = InviteCodee --add your invite code here (without the "https://discord.gg/" part)
-	}
-	local HttpService = game:GetService("HttpService")
-	local RequestFunction
-	if syn and syn.request then
-		RequestFunction = syn.request
-	elseif request then
-		RequestFunction = request
-	elseif http and http.request then
-		RequestFunction = http.request
-	elseif http_request then
-		RequestFunction = http_request
-	end
-	local DiscordApiUrl = "http://127.0.0.1:%s/rpc?v=1"
-	if not RequestFunction then
-		oldwarnmessage("POOPDOORS EDITED v"..currentver, "Your executor does not support http requests.", 5)
-		return
-	end
-	for i = 6453, 6464 do
-		local DiscordInviteRequest = function()
-			local Request = RequestFunction({
-				Url = string.format(DiscordApiUrl, tostring(i)),
-				Method = "POST",
-				Body = HttpService:JSONEncode({
-					nonce = HttpService:GenerateGUID(false),
-					args = {
-						invite = {code = Settings.InviteCode},
-						code = Settings.InviteCode
-					},
-					cmd = "INVITE_BROWSER"
-				}),
-				Headers = {
-					["Origin"] = "https://discord.com",
-					["Content-Type"] = "application/json"
-				}
-			})
-		end
-		spawn(DiscordInviteRequest)
-	end
 end
 
 -- credits alan1508 on v3erm
@@ -279,6 +238,7 @@ end
 
 --local library = loadstring(game:HttpGet(--[['https://pastebin.com/raw/vPWzQEC8'--]]"https://raw.githubusercontent.com/mstudio45/poopdoors_edited/main/library.lua"))()
 local Library = loadstring(game:GetObjects("rbxassetid://7657867786")[1].Source)()
+local MobileButton = {};
 local WaitUntilTerminated = Library.subs.Wait 
 
 local plr = game.Players.LocalPlayer
@@ -287,181 +247,41 @@ local hum = char:FindFirstChildOfClass("Humanoid") or char:WaitForChild("Humanoi
 local LatestRoom = game:GetService("ReplicatedStorage").GameData.LatestRoom
 local Players = game:GetService("Players")
 local inRooms = false
-
-local function changeBrightness(color)
-	local h, s, v = color:ToHSV()
-	return Color3.fromHSV(h, s, v/2)
+local RequestFunction
+if syn and syn.request then
+	RequestFunction = syn.request
+elseif request then
+	RequestFunction = request
+elseif http and http.request then
+	RequestFunction = http.request
+elseif http_request then
+	RequestFunction = http_request
 end
 
-local GlobalESPFolder = game.CoreGui:FindFirstChild("ESPFolder")
-if GlobalESPFolder == nil then
-	GlobalESPFolder = Instance.new("Folder", game.CoreGui)
-	GlobalESPFolder.Name = "ESPFolder"
-end
-local esptableinstances = {}
-function esp(what,color,core,name)
-	local parts
-
-	local esp_folder = GlobalESPFolder:FindFirstChild(name)
-	if game.Players:FindFirstChild(name) then
-		esp_folder = GlobalESPFolder:FindFirstChild("PlayerESP")
-		if not esp_folder then
-			esp_folder = Instance.new("Folder")
-			esp_folder.Parent = GlobalESPFolder
-			esp_folder.Name = "PlayerESP"
-		end
-	end
-	if not esp_folder then
-		esp_folder = Instance.new("Folder")
-		esp_folder.Parent = GlobalESPFolder
-		esp_folder.Name = name
-	end
-
-	if typeof(what) == "Instance" then
-		if what:IsA("Model") then
-			parts = what:GetChildren()
-		elseif what:IsA("BasePart") then
-			parts = {what,table.unpack(what:GetChildren())}
-		end
-	elseif typeof(what) == "table" then
-		parts = what
-	end
-
-	local bill
-	local boxes = {}
-
-	local s,e = pcall(function()
-		if typeof(parts) ~= "table" then parts = {parts} end
-
-		for i,v in pairs(parts) do
-			if typeof(v) == "table" then
-				for ii,vv in pairs(v) do
-					if vv:IsA("BasePart") then
-						local box = Instance.new("BoxHandleAdornment")
-						box.Size = v.Size
-						box.AlwaysOnTop = true
-						box.ZIndex = 1
-						box.AdornCullingMode = Enum.AdornCullingMode.Never
-						box.Color3 = color
-						box.Transparency = 0.7
-						box.Adornee = v
-						box.Parent = esp_folder
-
-						table.insert(boxes, box)
-
-						task.spawn(function()
-							while box do
-								if box.Adornee == nil or not box.Adornee:IsDescendantOf(workspace) then
-									box.Adornee = nil
-									box.Visible = false
-									box:Destroy()
-								end  
-								task.wait()
-							end
-						end)
-					end
-				end
-			else
-				if v:IsA("BasePart") then
-					local box = Instance.new("BoxHandleAdornment")
-					box.Size = v.Size
-					box.AlwaysOnTop = true
-					box.ZIndex = 1
-					box.AdornCullingMode = Enum.AdornCullingMode.Never
-					box.Color3 = color
-					box.Transparency = 0.7
-					box.Adornee = v
-					box.Parent = esp_folder
-
-					table.insert(boxes, box)
-
-					task.spawn(function()
-						while box do
-							if box.Adornee == nil or not box.Adornee:IsDescendantOf(workspace) then
-								box.Adornee = nil
-								box.Visible = false
-								box:Destroy()
-							end  
-							task.wait()
-						end
-					end)
-				end
-			end
-		end
-	end)
-
-	if e then
-		warn(e)
-		print("box esp failed")
-	end
-
-	if core and name then
-		bill = Instance.new("BillboardGui", esp_folder)
-		bill.AlwaysOnTop = true
-		bill.Size = UDim2.new(0,400,0,100)
-		bill.Adornee = core
-		bill.MaxDistance = 2000
-
-		local mid = Instance.new("Frame",bill)
-		mid.AnchorPoint = Vector2.new(0.5,0.5)
-		mid.BackgroundColor3 = color
-		mid.Size = UDim2.new(0,8,0,8)
-		mid.Position = UDim2.new(0.5,0,0.5,0)
-		Instance.new("UICorner",mid).CornerRadius = UDim.new(1,0)
-		Instance.new("UIStroke",mid)
-
-		local txt = Instance.new("TextLabel",bill)
-		txt.AnchorPoint = Vector2.new(0.5,0.5)
-		txt.BackgroundTransparency = 1
-		txt.BackgroundColor3 = color
-		txt.TextColor3 = color
-		txt.Size = UDim2.new(1,0,0,20)
-		txt.Position = UDim2.new(0.5,0,0.7,0)
-		txt.Text = name
-		Instance.new("UIStroke",txt)
-
+function JoinDiscord(InviteCodee)
+	InviteCodee = string.gsub(InviteCodee, "https://discord.gg/", "");local Settings = { InviteCode = InviteCodee --[[add your invite code here (without the "https://discord.gg/" part)--]] }
+	
+	if not RequestFunction then oldwarnmessage("POOPDOORS EDITED v"..currentver, "Your executor does not support http requests.", 5);return end
+	for i = 6453, 6464 do
 		task.spawn(function()
-			while bill do
-				if bill.Adornee == nil or not bill.Adornee:IsDescendantOf(workspace) then
-					bill.Enabled = false
-					bill.Adornee = nil
-					--pcall(function() table.remove(boxes, table.find(boxes, bill)) end)
-					bill:Destroy() 
-				end  
-				task.wait()
-			end
+			local Request = RequestFunction({
+				Url = string.format("http://127.0.0.1:%s/rpc?v=1", tostring(i)),
+				Method = "POST",
+				Body = game:GetService("HttpService"):JSONEncode({
+					nonce = game:GetService("HttpService"):GenerateGUID(false),
+					args = {
+						invite = {code = Settings.InviteCode},
+						code = Settings.InviteCode
+					},
+					cmd = "INVITE_BROWSER"
+				}),
+				Headers = {
+					["Origin"] = "https://discord.com",
+					["Content-Type"] = "application/json"
+				}
+			})
 		end)
 	end
-
-	local ret = {}
-
-	ret.delete = function()
-		for i,v in pairs(boxes) do
-			pcall(function()
-				table.remove(esptableinstances, table.find(esptableinstances, v.Adornee))
-			end)
-			pcall(function()
-				table.remove(esptableinstances, table.find(esptableinstances, v.Parent))
-			end)
-			v.Adornee = nil
-			v.Visible = false
-			v:Destroy()
-		end
-
-		if bill then
-			pcall(function()
-				table.remove(esptableinstances, table.find(esptableinstances, bill.Adornee))
-			end)
-			pcall(function()
-				table.remove(esptableinstances, table.find(esptableinstances, bill.Parent))
-			end)
-			bill.Adornee = nil
-			bill.Enabled = false
-			bill:Destroy() 
-		end
-	end
-
-	return ret 
 end
 
 local entityinfo = nil
@@ -474,7 +294,6 @@ task.spawn(function()
 end)
 
 local avoidingYvalue = 23
-
 local flags = {
 	-- general
 	light = false,
@@ -516,7 +335,8 @@ local flags = {
 	espgold = false,
 	goldespvalue = 0,
 	fakeespdoors = false,
-
+	tracers = false,
+	
 	-- notifiers
 	hintrush = false,
 	predictentities = false,
@@ -573,7 +393,8 @@ local buttons = {
 	espgold = nil,
 	goldespvalue = nil,
 	fakeespdoors = nil,
-
+	tracers = nil,
+	
 	-- notifiers
 	hintrush = nil,
 	predictentities = nil,
@@ -593,6 +414,257 @@ customnotifid = flags.customnotifid
 
 local DELFLAGS = {table.unpack(flags)}
 local esptable = {doors={},keys={},items={},books={},entity={},chests={},lockers={},people={},gold={},fakedoors={}}
+local function changeBrightness(color)
+	local h, s, v = color:ToHSV()
+	return Color3.fromHSV(h, s, v/2)
+end
+
+local GlobalESPFolder = game.CoreGui:FindFirstChild("ESPFolder")
+if GlobalESPFolder == nil then
+	GlobalESPFolder = Instance.new("Folder", game.CoreGui)
+	GlobalESPFolder.Name = "ESPFolder"
+end
+local esptableinstances = {}
+local Camera = workspace.CurrentCamera
+local WorldToViewportPoint = Camera.WorldToViewportPoint
+local WorldToViewport = function(...) return WorldToViewportPoint(Camera, ...) end
+function TracerESP(Color, instance)
+	if Drawing then
+		local Tracer = Drawing.new("Line")
+		Tracer.Visible = false
+		Tracer.Color = Color
+		Tracer.Thickness = 2
+		Tracer.Transparency = 1
+
+		local con = game:GetService("RunService").RenderStepped:Connect(function()
+			if instance ~= nil and flags.tracers == true then		
+				local ScreenPosition, Vis = WorldToViewport(instance.Position);
+				local OPos = Camera.CFrame:pointToObjectSpace(instance.Position);
+				if ScreenPosition.Z < 0 then
+					local AT = math.atan2(OPos.Y, OPos.X) + math.pi;
+					OPos = CFrame.Angles(0, 0, AT):vectorToWorldSpace((CFrame.Angles(0, math.rad(89.9), 0):vectorToWorldSpace(Vector3.new(0, 0, -1))));
+				end
+				local Position = WorldToViewport(Camera.CFrame:pointToWorldSpace(OPos));
+				if Vis then
+					local TracerPosition = Vector2.new(Camera.ViewportSize.X / 2, Camera.ViewportSize.Y - 135)
+					if TracerPosition.X >= Camera.ViewportSize.X or TracerPosition.Y >= Camera.ViewportSize.Y or TracerPosition.X < 0 or TracerPosition.Y < 0 then
+						TracerPosition = Vector2.new(Camera.ViewportSize.X / 2, Camera.ViewportSize.Y - 135);
+					end
+					Tracer.Visible = true;
+					Tracer.From = TracerPosition
+					Tracer.To = Vector2.new(Position.X, Position.Y)
+				else
+					Tracer.Visible = false
+				end
+			else
+				Tracer.Visible = false
+			end
+		end)
+
+		local ret = {}
+		ret.delete = function()
+			task.spawn(function()
+				if con then con:Disconnect() end
+				Tracer:Remove()
+			end)
+		end
+
+		instance.Destroying:Connect(function() ret.delete() end)
+		return ret
+	else
+		local ret = {}
+		ret.delete = function() end
+		return ret
+	end
+end
+function esp(what,color,core,name)
+	local parts
+
+	local esp_folder = GlobalESPFolder:FindFirstChild(name)
+	if game.Players:FindFirstChild(name) then
+		esp_folder = GlobalESPFolder:FindFirstChild("PlayerESP")
+		if not esp_folder then
+			esp_folder = Instance.new("Folder")
+			esp_folder.Parent = GlobalESPFolder
+			esp_folder.Name = "PlayerESP"
+		end
+	end
+	if not esp_folder then
+		esp_folder = Instance.new("Folder")
+		esp_folder.Parent = GlobalESPFolder
+		esp_folder.Name = name
+	end
+
+	if typeof(what) == "Instance" then
+		if what:IsA("Model") then
+			parts = what:GetChildren()
+		elseif what:IsA("BasePart") then
+			parts = {what,table.unpack(what:GetChildren())}
+		end
+	elseif typeof(what) == "table" then
+		parts = what
+	end
+
+	local bill
+	local boxes = {}
+
+	local s,e = pcall(function()
+		if typeof(parts) ~= "table" then parts = {parts} end
+
+		for i,v in pairs(parts) do
+			if typeof(v) == "table" then
+				for ii,vv in pairs(v) do
+					if vv:IsA("BasePart") then
+						local box = Instance.new("BoxHandleAdornment")
+						box.Size = v.Size
+						box.AlwaysOnTop = true
+						box.ZIndex = 1
+						box.AdornCullingMode = Enum.AdornCullingMode.Never
+						box.Color3 = color
+						box.Transparency = 0.7
+						box.Adornee = v
+						box.Parent = esp_folder
+
+						table.insert(boxes, box)
+
+						task.spawn(function()
+							box.Adornee.Destroying:Connect(function()
+								box.Adornee = nil
+								box.Visible = false
+								box:Destroy()
+							end)
+							--while box do
+							--	if box.Adornee == nil or not box.Adornee:IsDescendantOf(workspace) then
+							--		box.Adornee = nil
+							--		box.Visible = false
+							--		box:Destroy()
+							--	end  
+							--	task.wait()
+							--end
+						end)
+					end
+				end
+			else
+				if v:IsA("BasePart") then
+					local box = Instance.new("BoxHandleAdornment")
+					box.Size = v.Size
+					box.AlwaysOnTop = true
+					box.ZIndex = 1
+					box.AdornCullingMode = Enum.AdornCullingMode.Never
+					box.Color3 = color
+					box.Transparency = 0.7
+					box.Adornee = v
+					box.Parent = esp_folder
+
+					table.insert(boxes, box)
+
+					task.spawn(function()
+						box.Adornee.Destroying:Connect(function()
+							box.Adornee = nil
+							box.Visible = false
+							box:Destroy()
+						end)
+						--while box do
+						--	if box.Adornee == nil or not box.Adornee:IsDescendantOf(workspace) then
+						----		box.Adornee = nil
+						--		box.Visible = false
+						--		box:Destroy()
+						--	end  
+						--	task.wait()
+						--end
+					end)
+				end
+			end
+		end
+	end)
+
+	if e then
+		warn(e)
+		print("box esp failed")
+	end
+
+	if core and name then
+		bill = Instance.new("BillboardGui", esp_folder)
+		bill.AlwaysOnTop = true
+		bill.Size = UDim2.new(0,400,0,100)
+		bill.Adornee = core
+		bill.MaxDistance = 2000
+
+		local mid = Instance.new("Frame",bill)
+		mid.AnchorPoint = Vector2.new(0.5,0.5)
+		mid.BackgroundColor3 = color
+		mid.Size = UDim2.new(0,8,0,8)
+		mid.Position = UDim2.new(0.5,0,0.5,0)
+		Instance.new("UICorner",mid).CornerRadius = UDim.new(1,0)
+		Instance.new("UIStroke",mid)
+
+		local txt = Instance.new("TextLabel",bill)
+		txt.AnchorPoint = Vector2.new(0.5,0.5)
+		txt.BackgroundTransparency = 1
+		txt.BackgroundColor3 = color
+		txt.TextColor3 = color
+		txt.Size = UDim2.new(1,0,0,20)
+		txt.Position = UDim2.new(0.5,0,0.7,0)
+		txt.Text = name
+		Instance.new("UIStroke",txt)
+
+		task.spawn(function()
+			bill.Adornee.Destroying:Connect(function()
+				bill.Enabled = false
+				bill.Adornee = nil
+				--pcall(function() table.remove(boxes, table.find(boxes, bill)) end)
+				bill:Destroy() 
+			end)
+			--while bill do
+			--	if bill.Adornee == nil or not bill.Adornee:IsDescendantOf(workspace) then
+			--		bill.Enabled = false
+			--		bill.Adornee = nil
+			--		--pcall(function() table.remove(boxes, table.find(boxes, bill)) end)
+			--		bill:Destroy() 
+			--	end  
+			--	task.wait()
+			--end
+		end)
+	end
+	
+	local Tracer = nil
+	if flags.tracers == true then Tracer = TracerESP(color, core) end
+	
+	local ret = {}
+	ret.delete = function()
+		task.spawn(function()
+			for i,v in pairs(boxes) do
+				pcall(function()
+					table.remove(esptableinstances, table.find(esptableinstances, v.Adornee))
+				end)
+				pcall(function()
+					table.remove(esptableinstances, table.find(esptableinstances, v.Parent))
+				end)
+				v.Adornee = nil
+				v.Visible = false
+				v:Destroy()
+				task.wait()
+			end
+		end)
+
+		if bill then
+			pcall(function()
+				table.remove(esptableinstances, table.find(esptableinstances, bill.Adornee))
+			end)
+			pcall(function()
+				table.remove(esptableinstances, table.find(esptableinstances, bill.Parent))
+			end)
+			bill.Adornee = nil
+			bill.Enabled = false
+			bill:Destroy() 
+		end
+		
+		if Tracer then Tracer.delete() end
+	end
+
+	return ret 
+end
+
 
 local GUIWindow = Library:CreateWindow({
 	Name = "POOPDOORS EDITED v".. currentver,
@@ -621,6 +693,7 @@ if isfolder and makefolder and listfiles and writefile and delfile then
 			if not filename:match("autostart.txt") then
 				table.insert(filetablelist, filename)
 			end
+			task.wait()
 		end
 		if ConfigDropdowne ~= nil then
 			ConfigDropdowne:UpdateList(filetablelist)
@@ -1004,16 +1077,17 @@ window_credits:AddLabel({ Name = "Original by:" });window_credits:AddLabel({ Nam
 window_credits:AddLabel({ Name = "Edited by: mstudio45" })
 window_credits:AddLabel({ Name = "UI Library suggestion:" });window_credits:AddLabel({ Name = "actu#2004" })
 window_credits:AddLabel({ Name = "Discord Invite: vC9kRbMVCq" })
-window_credits:AddButton({
-	Name = "Join POOPDOORS EDITED\nDiscord Server",
-	Callback = function()
-		JoinDiscord("vC9kRbMVCq")
-	end
-})
+if RequestFunction then
+	window_credits:AddButton({
+		Name = "Join POOPDOORS EDITED\nDiscord Server",
+		Callback = function()
+			JoinDiscord("vC9kRbMVCq")
+		end
+	})
+end
 
 task.spawn(function()
 	--	repeat task.wait(1) until flags.anticheatbypass == true
-
 	local nocliptoggle = window_player:AddToggle({
 		Name = "Noclip",
 		Value = false,
@@ -1185,7 +1259,7 @@ local togglefovbrn = window_player:AddToggle({
 		flags.camfovtoggle = val
 		if not val then
 			waitframes(2)
-			game.Workspace.CurrentCamera.FieldOfView = 70
+			game:GetService("Workspace").CurrentCamera.FieldOfView = 70
 		end
 	end
 })
@@ -1199,9 +1273,17 @@ task.spawn(function()
 			end
 		end
 		if flags.camfovtoggle == true then
-			pcall(function()
-				game.Workspace.CurrentCamera.FieldOfView = flags.camfov
-			end)
+			if flags.tracers == false then
+				pcall(function()
+					game:GetService("Workspace").CurrentCamera.FieldOfView = flags.camfov
+				end)
+			else
+				if syn or PROTOSMASHER_LOADED then
+					pcall(function()
+						game:GetService("Workspace").CurrentCamera.FieldOfView = flags.camfov
+					end)
+				end
+			end
 		end
 	end)
 end)
@@ -1221,6 +1303,20 @@ window_esp:AddButton({
 		GlobalESPFolder:ClearAllChildren()
 	end
 })
+
+if Drawing then
+	if not syn and not PROTOSMASHER_LOADED then
+		window_esp:AddLabel({Name = "Tracers only work with 70 FOV."})
+	end
+	local traceresp = window_esp:AddToggle({
+		Name = "Tracers",
+		Value = false,
+		Callback = function(val, oldval)
+			flags.tracers = val
+		end
+	})
+	buttons.tracers = traceresp
+end
 
 local espdoorsbtn = window_esp:AddToggle({
 	Name = "Door ESP",
@@ -1292,7 +1388,7 @@ local fakeespdoorsbtn = window_esp:AddToggle({
 								if table.find(esptableinstances, v.Door) then
 									return
 								end
-								
+
 								local h = esp(v.Door,Color3.fromRGB(170, 0, 0),v.Door,"Fake Door (Dupe)")
 								table.insert(esptable.fakedoors,h)
 								table.insert(esptableinstances, v.Door)
@@ -1567,7 +1663,7 @@ local esprusbtn = window_esp:AddToggle({
 					table.insert(esptable.entity,h)
 				end
 			end)
-			
+
 			for _,v in pairs(workspace:GetChildren()) do
 				if table.find(entitynames,v.Name) then
 					task.wait(.1)
@@ -1575,7 +1671,7 @@ local esprusbtn = window_esp:AddToggle({
 					table.insert(esptable.entity,h)
 				end
 			end
-			
+
 			local function setup(room)
 				task.wait()
 				if room.Name == "50" or room.Name == "100" then
@@ -1667,7 +1763,7 @@ local esplockerbrn = window_esp:AddToggle({
 
 			local function setup(room)
 				local assets = room:WaitForChild("Assets")
-				
+
 				if assets then
 					local subaddcon
 					subaddcon = assets.DescendantAdded:Connect(function(v)
@@ -2005,9 +2101,9 @@ local noscreechbtn = window_entities:AddToggle({
 		if val then
 			if not ScreechModule then ScreechModule = plr.PlayerGui.MainUI.Initiator.Main_Game.RemoteListener.Modules:FindFirstChild("Screech") end
 			ScreechModule.Parent = nil
-			repeat task.wait() until POOPDOORSLOADED == false or not flags.noscreech
+		else
 			ScreechModule.Parent = plr.PlayerGui.MainUI.Initiator.Main_Game.RemoteListener.Modules
-		end	
+		end
 	end
 })
 buttons.noscreech = noscreechbtn
@@ -2022,9 +2118,9 @@ local notimothybtn = window_entities:AddToggle({
 		if val then
 			if not SpiderJumpscareModule then SpiderJumpscareModule = plr.PlayerGui.MainUI.Initiator.Main_Game.RemoteListener.Modules:FindFirstChild("SpiderJumpscare") end
 			SpiderJumpscareModule.Parent = nil
-			repeat task.wait() until POOPDOORSLOADED == false or not flags.notimothy
+		else
 			SpiderJumpscareModule.Parent = plr.PlayerGui.MainUI.Initiator.Main_Game.RemoteListener.Modules
-		end	
+		end
 	end
 })
 buttons.notimothy = notimothybtn
@@ -2094,9 +2190,9 @@ workspace.ChildAdded:Connect(function(inst)
 					else
 						warnmessage("ENTITIES", inst.Name:gsub("Moving","").." is coming.", "Hide!", 0, "0", inst)
 					end
-						--inst.Destroying:Wait()
-						--warnmessage("ENTITIES", "It's now completely safe to leave the hiding spot.", 7)
-				--	end
+					--inst.Destroying:Wait()
+					--warnmessage("ENTITIES", "It's now completely safe to leave the hiding spot.", 7)
+					--	end
 				end
 			end
 		end
@@ -2181,24 +2277,14 @@ local noseekarmsfirebtn = window_roomsdoors:AddToggle({
 	Value = false,
 	Callback = function(val, oldval)
 		flags.noseekarmsfire = val
-
-		if val then
-			for _,descendant in pairs(game:GetService("Workspace").CurrentRooms:GetDescendants()) do
-				if descendant.Name == "Seek_Arm" or descendant.Name == "ChandelierObstruction" then
-					descendant.Parent = nil
-					descendant:Destroy()
-				end
-			end
-		end
 	end
 })
-game:GetService("Workspace").CurrentRooms.ChildAdded:Connect(function(descendant)
-	if flags.noseekarmsfire == true then
-		for _,descendant in pairs(game:GetService("Workspace").CurrentRooms:GetDescendants()) do
-			if descendant.Name == "Seek_Arm" or descendant.Name == "ChandelierObstruction" then
-				descendant.Parent = nil
-				descendant:Destroy()
-			end
+game:GetService("ReplicatedStorage").GameData.LatestRoom:GetPropertyChangedSignal("Value"):Connect(function()
+	task.wait(.1)
+	for _,descendant in pairs(game:GetService("Workspace").CurrentRooms:GetDescendants()) do
+		if descendant.Name == "Seek_Arm" or descendant.Name == "ChandelierObstruction" then
+			descendant.Parent = nil
+			descendant:Destroy()
 		end
 	end
 end)
@@ -2254,6 +2340,7 @@ else
 	oldwarnmessage("POOPDOORS EDITED v"..currentver, "You need to have fireproximityprompt function for 'skip room'.", 7)	
 end
 
+window_roomsdoors:AddLabel({ Name = "You need to be close to the\nlibrary exit for this to work."})
 window_roomsdoors:AddButton({
 	Name = "Skip Room 50",
 	Callback = function()
@@ -3250,7 +3337,6 @@ window_anticheatbyppasses:AddButton({
 	end
 })
 
-
 if syn then
 	if syn.queue_on_teleport then
 		window_experimentals:AddButton({
@@ -3326,7 +3412,9 @@ if game.ReplicatedStorage:WaitForChild("GameData"):WaitForChild("Floor").Value =
 				if not A90Module then A90Module = plr.PlayerGui.MainUI.Initiator.Main_Game.RemoteListener.Modules:FindFirstChild("A90") end
 				if A90Module then
 					A90Module.Parent = nil
-					repeat task.wait() until POOPDOORSLOADED == false or not flags.noa90
+				end
+			else
+				if A90Module then
 					A90Module.Parent = plr.PlayerGui.MainUI.Initiator.Main_Game.RemoteListener.Modules
 				end
 			end
@@ -3520,11 +3608,13 @@ if game.ReplicatedStorage:WaitForChild("GameData"):WaitForChild("Floor").Value =
 					Pathfinding_Highlights:ClearAllChildren()
 					VisualizerFolder:ClearAllChildren()
 				end
-
-				task.spawn(function()
+				
+				if goingToHide == false then
 					repeat task.wait() until flags.autorooms == false and goingToHide == false
 					HideCheck:Disconnect()
-				end)
+				else
+					HideCheck:Disconnect()
+				end
 			else
 				plr.DevComputerMovementMode = Enum.DevComputerMovementMode.KeyboardMouse
 			end
@@ -3593,6 +3683,7 @@ function closegui()
 
 	VisualizerFolder:Destroy()
 	GlobalESPFolder:Destroy()
+	pcall(function() MobileButton["1"]:Destroy() end)
 	pcall(function() getgenv().POOPDOORSLOADED = false;POOPDOORSLOADED = false end)
 
 	task.wait(.1)
@@ -3616,17 +3707,90 @@ window_guisettings:AddButton({
 })
 
 local mobiletoggles,mobiletoggleerr=pcall(function()
-local platform=game:GetService("UserInputService"):GetPlatform()
-if platform == Enum.Platform.Android or platform == Enum.Platform.IOS then --ame:GetService("UserInputService").TouchEnabled and not game:GetService("UserInputService").KeyboardEnabled and not game:GetService("UserInputService").MouseEnabled then
-	--local DeviceSize = workspace.CurrentCamera.ViewportSize;
-	local MobileToggle = {};MobileToggle["1"] = Instance.new("ScreenGui", game:GetService("CoreGui"));MobileToggle["1"]["DisplayOrder"] = 9999;MobileToggle["1"]["ZIndexBehavior"] = Enum.ZIndexBehavior.Sibling;MobileToggle["ToggleButton"] = Instance.new("TextButton", MobileToggle["1"]);MobileToggle["ToggleButton"]["TextWrapped"] = true;MobileToggle["ToggleButton"]["BorderSizePixel"] = 0;MobileToggle["ToggleButton"]["TextScaled"] = true;MobileToggle["ToggleButton"]["BackgroundColor3"] = Color3.fromRGB(255, 255, 255);MobileToggle["ToggleButton"]["TextColor3"] = Color3.fromRGB(0, 0, 0);MobileToggle["ToggleButton"]["Size"] = UDim2.new(0.049780379980802536, 0, 0.08735332638025284, 0);MobileToggle["ToggleButton"]["Name"] = [[Tbtn]];MobileToggle["ToggleButton"]["Text"] = [[Toggle POOPDOORS EDITED]];MobileToggle["ToggleButton"]["Font"] = Enum.Font.FredokaOne;MobileToggle["ToggleButton"]["Position"] = UDim2.new(0.872797429561615, 0, 0.10329286754131317, 0);
-	MobileToggle.ToggleButton.MouseButton1Click:Connect(function() togglegui() end)
-end
+	--local platform = game:GetService("UserInputService"):GetPlatform()
+	--if platform == Enum.Platform.Android or platform == Enum.Platform.IOS then 
+		MobileButton["1"] = Instance.new("ScreenGui");
+		MobileButton["1"]["Name"] = randomString()
+		if get_hidden_gui or gethui then
+			local HIDEUI = get_hidden_gui or gethui
+			MobileButton["1"]["Parent"] = HIDEUI()
+		elseif (not is_sirhurt_closure) and (syn and syn.protect_gui) then
+			syn.protect_gui(MobileButton["1"])
+			MobileButton["1"]["Parent"] = game:GetService("CoreGui")
+		elseif game:GetService("CoreGui"):FindFirstChild('RobloxGui') then
+			MobileButton["1"]["Parent"] = game:GetService("CoreGui").RobloxGui
+		else
+			MobileButton["1"]["Parent"] = game:GetService("CoreGui")
+		end
+		MobileButton["1"]["IgnoreGuiInset"] = true;
+		MobileButton["1"]["Name"] = [[PM]];
+		MobileButton["1"]["ZIndexBehavior"] = Enum.ZIndexBehavior.Sibling;
+		MobileButton["2"] = Instance.new("Frame", MobileButton["1"]);
+		MobileButton["2"]["BackgroundTransparency"] = 1;
+		MobileButton["2"]["Size"] = UDim2.new(1, 0, 0, 36);
+		MobileButton["2"]["Position"] = UDim2.new(0, 16, 0, 0);
+		MobileButton["2"]["Name"] = [[LeftFrame]];
+		MobileButton["3"] = Instance.new("UIListLayout", MobileButton["2"]);
+		MobileButton["3"]["VerticalAlignment"] = Enum.VerticalAlignment.Center;
+		MobileButton["3"]["FillDirection"] = Enum.FillDirection.Horizontal;
+		MobileButton["3"]["Name"] = [[Layout]];
+		MobileButton["3"]["Padding"] = UDim.new(0, 12);
+		MobileButton["3"]["SortOrder"] = Enum.SortOrder.LayoutOrder;
+		MobileButton["4"] = Instance.new("Frame", MobileButton["2"]);
+		MobileButton["4"]["BackgroundTransparency"] = 1;
+		MobileButton["4"]["Size"] = UDim2.new(0, 32, 1, 0);
+		MobileButton["4"]["Name"] = [[Place]];
+		MobileButton["5"] = Instance.new("Frame", MobileButton["2"]);
+		MobileButton["5"]["BackgroundTransparency"] = 1;
+		MobileButton["5"]["Size"] = UDim2.new(0, 32, 1, 0);
+		MobileButton["5"]["Name"] = [[Place]];
+
+		MobileButton["7"] = Instance.new("Frame", MobileButton["6"]);
+		MobileButton["7"]["BackgroundTransparency"] = 1;
+		MobileButton["7"]["Size"] = UDim2.new(0, 32, 1, 0);
+		MobileButton["7"]["Name"] = [[Button]];
+		MobileButton["8"] = Instance.new("ImageButton", MobileButton["7"]);
+		MobileButton["8"]["AnchorPoint"] = Vector2.new(0, 1);
+		MobileButton["8"]["Image"] = [[rbxasset://textures/ui/TopBar/iconBase.png]];
+		MobileButton["8"]["Size"] = UDim2.new(0, 32, 0, 32);
+		MobileButton["8"]["Name"] = [[Background]];
+		MobileButton["8"]["Position"] = UDim2.new(0, 0, 1, 0);
+		MobileButton["8"]["BackgroundTransparency"] = 1;
+		MobileButton["9"] = Instance.new("ImageLabel", MobileButton["8"]);
+		MobileButton["9"]["AnchorPoint"] = Vector2.new(0.5, 0.5);
+		MobileButton["9"]["Image"] = [[rbxassetid://2914903943]];
+		MobileButton["9"]["Size"] = UDim2.new(0, 24, 0, 24);
+		MobileButton["9"]["Name"] = [[Icon]];
+		MobileButton["9"]["BackgroundTransparency"] = 1;
+		MobileButton["9"]["Position"] = UDim2.new(0.5, 0, 0.5, 0);
+		MobileButton["a"] = Instance.new("ImageLabel", MobileButton["8"]);
+		MobileButton["a"]["ZIndex"] = 2;
+		MobileButton["a"]["SliceCenter"] = Rect.new(8, 8, 8, 8);
+		MobileButton["a"]["ScaleType"] = Enum.ScaleType.Slice;
+		MobileButton["a"]["ImageTransparency"] = 1;
+		MobileButton["a"]["Image"] = [[rbxasset://LuaPackages/Packages/_Index/UIBlox-8b8d973a-6c028e8e/UIBlox/App/ImageSet/ImageAtlas/./img_set_1x_1.png]];
+		MobileButton["a"]["ImageRectSize"] = Vector2.new(17, 17);
+		MobileButton["a"]["Size"] = UDim2.new(1, 0, 1, 0);
+		MobileButton["a"]["Name"] = [[StateOverlay]];
+		MobileButton["a"]["ImageRectOffset"] = Vector2.new(492, 104);
+		MobileButton["a"]["BackgroundTransparency"] = 1;
+
+		MobileButton["7"].Name = "PToggle"
+		MobileButton["7"].Background.Icon.Image = "rbxassetid://12308333801"
+		MobileButton["7"].Parent = MobileButton["2"]
+		MobileButton["7"].Background.MouseEnter:Connect(function()
+			MobileButton["7"].Background.StateOverlay.ImageTransparency = 0.9
+		end)
+		MobileButton["7"].Background.MouseLeave:Connect(function()
+			MobileButton["7"].Background.StateOverlay.ImageTransparency = 1
+		end)
+		MobileButton["7"].Background.MouseButton1Down:Connect(function() togglegui() end)
+	--end
 end)
 if mobiletoggleerr then print(mobiletoggleerr) end
 
 task.spawn(function()
-	while WaitUntilTerminated() do task.wait(1) end
+	while WaitUntilTerminated(.1) do end
 	closegui()
 end)
 
