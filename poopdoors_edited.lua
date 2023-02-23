@@ -323,7 +323,7 @@ local flags = {
 	customnotifid = "10469938989",
 	oldcustomnotifid = "4590657391",
 	noeyesdamage = false,
-	
+
 	-- esp
 	espdoors = false,
 	espkeys = false,
@@ -414,7 +414,7 @@ local buttons = {
 	autorooms = nil,
 	autorooms_debug = nil,
 	autorooms_blockcontrols = nil,
-	
+
 	-- trolling
 	dropdowntrolling = nil
 }
@@ -1169,7 +1169,7 @@ local cfullbrightbtn = window_player:AddToggle({
 				end
 			end
 			doFullbright()
-			
+
 			local coneee = game:GetService("Lighting").LightingChanged:Connect(doFullbright)
 			repeat task.wait() until POOPDOORSLOADED == false or not flags.fullbright
 
@@ -3703,7 +3703,8 @@ local dropdownTrolling = window_Trolling:AddDropdown({
 		"None",
 		"Upside Down",
 		"Broken Back",
-		"Seizure"
+		"Seizure",
+		"Twitching"
 	},
 	Callback = function(val)
 		flags.dropdowntrolling = val
@@ -3751,6 +3752,13 @@ if MotorRepTest == true then
 		end
 	})
 end
+
+task.spawn(function()
+	while task.wait(math.random(0, 0.9)) do
+		repeat task.wait(1) until dropdownTrolling:Get() == "Twitching"
+		game:GetService("ReplicatedStorage").EntityInfo.MotorReplication:FireServer(0, 0, 180, false)
+	end
+end)
 game["Run Service"].RenderStepped:Connect(function()
 	if MotorRepTest == false then
 		if eyesspawned == false then
