@@ -335,7 +335,7 @@ local flags = {
 	esphumans = false,
 	espgold = false,
 	goldespvalue = 0,
-	fakeespdoors = false,
+	--fakeespdoors = false,
 	tracers = false,
 
 	-- notifiers
@@ -397,7 +397,7 @@ local buttons = {
 	esphumans = nil,
 	espgold = nil,
 	goldespvalue = nil,
-	fakeespdoors = nil,
+	--fakeespdoors = nil,
 	tracers = nil,
 
 	-- notifiers
@@ -1383,7 +1383,7 @@ local espdoorsbtn = window_esp:AddToggle({
 	end
 })
 buttons.espdoors = espdoorsbtn
-local fakeespdoorsbtn = window_esp:AddToggle({
+--[[local fakeespdoorsbtn = window_esp:AddToggle({
 	Name = "Fake Door (Dupe) ESP",
 	Value = false,
 	Callback = function(val, oldval)
@@ -1429,7 +1429,7 @@ local fakeespdoorsbtn = window_esp:AddToggle({
 		end
 	end
 })
-buttons.fakeespdoors = fakeespdoorsbtn
+buttons.fakeespdoors = fakeespdoorsbtn--]]
 local espkeysbtn = window_esp:AddToggle({
 	Name = "Key/Lever ESP",
 	Value = false,
