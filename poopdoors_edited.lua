@@ -113,7 +113,7 @@ function oldwarnmessage(title, text, timee)
 end
 function randomString()local length = math.random(10,20);local array = {};for i = 1, length do array[i] = string.char(math.random(32, 126)) end;return table.concat(array);end
 
-local currentver = "1.7"
+local currentver = "1.7.1"
 local gui_data = nil
 local s,e = pcall(function()
 	gui_data = game:HttpGet(("https://raw.githubusercontent.com/mstudio45/poopdoors_edited/main/gui_data.json"), true)
@@ -260,7 +260,7 @@ end
 
 function JoinDiscord(InviteCodee)
 	InviteCodee = string.gsub(InviteCodee, "https://discord.gg/", "");local Settings = { InviteCode = InviteCodee --[[add your invite code here (without the "https://discord.gg/" part)--]] }
-	
+
 	if not RequestFunction then oldwarnmessage("POOPDOORS EDITED v"..currentver, "Your executor does not support http requests.", 5);return end
 	for i = 6453, 6464 do
 		task.spawn(function()
@@ -322,7 +322,8 @@ local flags = {
 	autopulllever = false,
 	customnotifid = "10469938989",
 	oldcustomnotifid = "4590657391",
-
+	noeyesdamage = false,
+	
 	-- esp
 	espdoors = false,
 	espkeys = false,
@@ -336,7 +337,7 @@ local flags = {
 	goldespvalue = 0,
 	fakeespdoors = false,
 	tracers = false,
-	
+
 	-- notifiers
 	hintrush = false,
 	predictentities = false,
@@ -351,6 +352,9 @@ local flags = {
 	autorooms = false,
 	autorooms_debug = false,
 	autorooms_blockcontrols = false,
+
+	-- trolling
+	dropdowntrolling = "None"
 }
 local buttons = {
 	-- general
@@ -380,6 +384,7 @@ local buttons = {
 	autopulllever = nil,
 	customnotifid = nil,
 	oldcustomnotifid = nil,
+	noeyesdamage = nil,
 
 	-- esp
 	espdoors = nil,
@@ -394,7 +399,7 @@ local buttons = {
 	goldespvalue = nil,
 	fakeespdoors = nil,
 	tracers = nil,
-	
+
 	-- notifiers
 	hintrush = nil,
 	predictentities = nil,
@@ -409,6 +414,9 @@ local buttons = {
 	autorooms = nil,
 	autorooms_debug = nil,
 	autorooms_blockcontrols = nil,
+	
+	-- trolling
+	dropdowntrolling = nil
 }
 customnotifid = flags.customnotifid
 
@@ -623,10 +631,10 @@ function esp(what,color,core,name)
 			--end
 		end)
 	end
-	
+
 	local Tracer = nil
 	if flags.tracers == true then Tracer = TracerESP(color, core) end
-	
+
 	local ret = {}
 	ret.delete = function()
 		task.spawn(function()
@@ -655,7 +663,7 @@ function esp(what,color,core,name)
 			bill.Enabled = false
 			bill:Destroy() 
 		end
-		
+
 		if Tracer then Tracer.delete() end
 	end
 
@@ -670,6 +678,12 @@ local GUIWindow = Library:CreateWindow({
 
 local GUI = GUIWindow:CreateTab({
 	Name = "Main"
+})
+local TrollingTabee = GUIWindow:CreateTab({
+	Name = "Trolling"
+})
+local window_Trolling = TrollingTabee:CreateSection({
+	Name = "Trolling"
 })
 local scriptLoaded = false
 -- Config system
@@ -898,7 +912,6 @@ else
 	warnmessage("CONFIGS", "You need to have file functions for Configs.", 10)
 end
 -- Config system
-
 
 --local window_player_tab = GUI:CreateTab({ Name = "Player" })
 local window_player = GUI:CreateSection({
@@ -1133,7 +1146,7 @@ local clientglowbtn = window_player:AddToggle({
 })
 buttons.light = clientglowbtn
 
-local fullbrightbtn = window_player:AddToggle({
+local cfullbrightbtn = window_player:AddToggle({
 	Name = "Fullbright",
 	Value = false,
 	Callback = function(val, oldval)
@@ -1156,7 +1169,7 @@ local fullbrightbtn = window_player:AddToggle({
 				end
 			end
 			doFullbright()
-
+			
 			local coneee = game:GetService("Lighting").LightingChanged:Connect(doFullbright)
 			repeat task.wait() until POOPDOORSLOADED == false or not flags.fullbright
 
@@ -1167,7 +1180,7 @@ local fullbrightbtn = window_player:AddToggle({
 		end
 	end
 })
-buttons.fullbright = fullbrightbtn
+buttons.fullbright = cfullbrightbtn
 
 if fireproximityprompt then
 	local instausebrn = window_player:AddToggle({
@@ -1302,7 +1315,7 @@ window_esp:AddButton({
 })
 
 if Drawing then
-	if not syn and not PROTOSMASHER_LOADED then
+	if not syn or not PROTOSMASHER_LOADED then
 		window_esp:AddLabel({Name = "Tracers only work with 70 FOV."})
 	end
 	local traceresp = window_esp:AddToggle({
@@ -2065,6 +2078,15 @@ game:GetService("ReplicatedStorage").GameData.LatestRoom.Changed:Connect(functio
 	end
 end)
 
+local noeyesdamagebtn = window_entities:AddToggle({
+	Name = "No Eyes Damage",
+	Value = false,
+	Callback = function(val, oldval)
+		flags.noeyesdamage = val
+	end
+})
+buttons.noeyesdamage = noeyesdamagebtn
+
 local noseekbtn = window_entities:AddToggle({
 	Name = "Disable Seek chase",
 	Value = false,
@@ -2159,8 +2181,9 @@ end
 	end
 })
 buttons.avoidrushambush = avoidrushambushbtn--]]
+local eyesspawned = false
 workspace.ChildAdded:Connect(function(inst)
-	spawn(function()
+	task.spawn(function()
 		if table.find(entitynames, inst.Name) and flags.hintrush == true then
 			if inRooms == true then
 				if inst.Name:gsub("Moving","") == "A60" then
@@ -2169,13 +2192,13 @@ workspace.ChildAdded:Connect(function(inst)
 					warnmessage("ENTITIES", inst.Name:gsub("Moving","").." is coming.", "Hide!", 0, "12351008553", inst)
 				else
 					task.wait(.1)
-					if plr:DistanceFromCharacter(inst:GetPivot().Position) < 375 and inst:IsDescendantOf(workspace) then
+					if plr:DistanceFromCharacter(inst:GetPivot().Position) < 400 and inst:IsDescendantOf(workspace) then
 						warnmessage("ENTITIES", inst.Name:gsub("Moving","").." is coming.", "Hide!", 0, "0", inst)
 					end
 				end
 			else
 				--if flags.avoidrushambush == false then
-				repeat task.wait() until plr:DistanceFromCharacter(inst:GetPivot().Position) < 375 or not inst:IsDescendantOf(workspace)
+				repeat task.wait() until plr:DistanceFromCharacter(inst:GetPivot().Position) < 400 or not inst:IsDescendantOf(workspace)
 
 				if inst:IsDescendantOf(workspace) then
 					if inst.Name:gsub("Moving","") == "Rush" then
@@ -2183,6 +2206,21 @@ workspace.ChildAdded:Connect(function(inst)
 					elseif inst.Name:gsub("Moving","") == "Ambush" then
 						warnmessage("ENTITIES", inst.Name:gsub("Moving","").." is coming.", "Hide!", 0, "10938726652", inst)
 					elseif inst.Name:gsub("Moving","") == "Eyes" then
+						task.spawn(function()
+							if flags.noeyesdamage == true then
+								eyesspawned = true
+								local con = game:GetService("RunService").RenderStepped:Connect(function()
+									eyesspawned = true
+									local legrot = 0
+									local bodypitch = -100
+									local bodyrot = 0
+									game:GetService("ReplicatedStorage").EntityInfo.MotorReplication:FireServer(legrot, bodypitch, bodyrot, false)
+								end)
+								inst.Destroying:Wait()
+								con:Disconnect()
+								eyesspawned = false
+							end
+						end)
 						warnmessage("ENTITIES", inst.Name:gsub("Moving","").." spawned.", "Don't look at it!", 10, "10865377903")
 					else
 						warnmessage("ENTITIES", inst.Name:gsub("Moving","").." is coming.", "Hide!", 0, "0", inst)
@@ -3605,11 +3643,11 @@ if game.ReplicatedStorage:WaitForChild("GameData"):WaitForChild("Floor").Value =
 					Pathfinding_Highlights:ClearAllChildren()
 					VisualizerFolder:ClearAllChildren()
 				end
-				
+
 				task.spawn(function()--if goingToHide == false then
 					repeat task.wait() until flags.autorooms == false and goingToHide == false
 					HideCheck:Disconnect()
-				--else
+					--else
 					--HideCheck:Disconnect()
 				end)--end
 			else
@@ -3658,6 +3696,83 @@ end
 if inRooms == false then
 	window_rooms:AddLabel({ Name = "You need to be in Rooms for this\nsection." })
 end
+
+local dropdownTrolling = window_Trolling:AddDropdown({
+	Name = 'Body Positions (Server-Side)',
+	List = {
+		"None",
+		"Upside Down",
+		"Broken Back",
+		"Seizure"
+	},
+	Callback = function(val)
+		flags.dropdowntrolling = val
+	end,
+})
+buttons.dropdowntrolling = dropdownTrolling
+
+local MotorRepTest = false
+local MotorReplicationBodyRot, MotorReplication, MotorReplicatione, MotorReplicationLegRot, MotorReplicationBodyPitch, MotorReplicationtoggle
+if MotorRepTest == true then
+	MotorReplication = GUIWindow:CreateTab({
+		Name = "MotorRepTest"
+	})
+	MotorReplicatione = MotorReplication:CreateSection({
+		Name = "MotorRepTest"
+	})
+	MotorReplicationtoggle = MotorReplicatione:AddToggle({
+		Name = "Enabled",
+		Value = false,
+		Callback = function(val, oldval)
+		end
+	})
+	MotorReplicationLegRot = MotorReplicatione:AddSlider({
+		Name = "LegRot",
+		Value = 0,
+		Min = -4,
+		Max = 4,
+		Callback = function(val, oldval)
+		end
+	})
+	MotorReplicationBodyPitch = MotorReplicatione:AddSlider({
+		Name = "BodyPitch",
+		Value = 0,
+		Min = -360,
+		Max = 360,
+		Callback = function(val, oldval)
+		end
+	})
+	MotorReplicationBodyRot = MotorReplicatione:AddSlider({
+		Name = "BodyRot",
+		Value = 0,
+		Min = -180,
+		Max = 180,
+		Callback = function(val, oldval)
+		end
+	})
+end
+game["Run Service"].RenderStepped:Connect(function()
+	if MotorRepTest == false then
+		if eyesspawned == false then
+			if dropdownTrolling:Get() == "Upside Down" then
+				game:GetService("ReplicatedStorage").EntityInfo.MotorReplication:FireServer(4, 0, 180, false)
+			end
+			if dropdownTrolling:Get() == "Broken Back" then
+				game:GetService("ReplicatedStorage").EntityInfo.MotorReplication:FireServer(-4, -360, 180, false)
+			end
+			if dropdownTrolling:Get() == "Seizure" then
+				game:GetService("ReplicatedStorage").EntityInfo.MotorReplication:FireServer(math.random(-4, 4), math.random(-360, 360), math.random(-180, 180), false)
+			end
+		end
+	else
+		if MotorReplicationtoggle:Get() == true then
+			local legRotation = MotorReplicationLegRot:Get()
+			local bodyPitch = MotorReplicationBodyPitch:Get()
+			local bodyRotation = MotorReplicationBodyRot:Get()
+			game:GetService("ReplicatedStorage").EntityInfo.MotorReplication:FireServer(legRotation, bodyPitch, bodyRotation, false)
+		end
+	end
+end)
 
 function togglegui()
 	game:GetService("VirtualInputManager"):SendKeyEvent(true, Enum.KeyCode.RightShift, false, game)
@@ -3722,7 +3837,7 @@ local mobiletoggles,mobiletoggleerr=pcall(function()
 		MobileButton["1"]["IgnoreGuiInset"] = true;
 		MobileButton["1"]["Name"] = [[PM]];
 		MobileButton["1"]["ZIndexBehavior"] = Enum.ZIndexBehavior.Sibling;
-		
+
 		-- TopBar Frame
 		MobileButton["2"] = Instance.new("Frame", MobileButton["1"]);
 		MobileButton["2"]["BackgroundTransparency"] = 1;
@@ -3749,7 +3864,7 @@ local mobiletoggles,mobiletoggleerr=pcall(function()
 		MobileButton["5bruh"]["BackgroundTransparency"] = 1;
 		MobileButton["5bruh"]["Size"] = UDim2.new(0, 32, 1, 0);
 		MobileButton["5bruh"]["Name"] = [[Place]];
-		
+
 		-- Button
 		MobileButton["7"] = Instance.new("Frame", MobileButton["6"]);
 		MobileButton["7"]["BackgroundTransparency"] = 1;
