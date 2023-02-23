@@ -2212,7 +2212,7 @@ workspace.ChildAdded:Connect(function(inst)
 								local con = game:GetService("RunService").RenderStepped:Connect(function()
 									eyesspawned = true
 									local legrot = 0
-									local bodypitch = -100
+									local bodypitch = -65
 									local bodyrot = 0
 									game:GetService("ReplicatedStorage").EntityInfo.MotorReplication:FireServer(legrot, bodypitch, bodyrot, false)
 								end)
