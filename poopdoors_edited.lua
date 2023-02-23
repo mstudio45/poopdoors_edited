@@ -3755,7 +3755,7 @@ end
 
 task.spawn(function()
 	while task.wait(math.random(0, 0.9)) do
-		repeat task.wait(1) until dropdownTrolling:Get() == "Twitching"
+		repeat task.wait() until dropdownTrolling:Get() == "Twitching"
 		game:GetService("ReplicatedStorage").EntityInfo.MotorReplication:FireServer(0, 0, 180, false)
 	end
 end)
