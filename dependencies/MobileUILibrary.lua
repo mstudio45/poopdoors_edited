@@ -590,7 +590,7 @@ pcall(function() Tab["15"]["ZIndex"] = Library.TotalTabs;Library.TotalTabs+=1 en
 				-- Render
 				do
 					-- StarterGui.ML.Main.Content.HomeTab.Button
-					Button["1c"] = Instance.new("Frame", Section["14"]);
+					Button["1c"] = Instance.new("TextButton", Section["14"]);
 					Button["1c"]["BackgroundColor3"] = Color3.fromRGB(27, 27, 27);
 					Button["1c"]["Size"] = UDim2.new(0.95, 0, 0, 32);
 					Button["1c"]["Name"] = [[Button]];
@@ -637,45 +637,14 @@ pcall(function() Tab["15"]["ZIndex"] = Library.TotalTabs;Library.TotalTabs+=1 en
 
 				-- Logic
 				do
-					Button["1c"].MouseEnter:Connect(function()
-						Button.Hover = true
-
-						Library:tween(Button["1e"], {Color = Color3.fromRGB(102, 102, 102)})
-					end)
-					Button["1c"].MouseLeave:Connect(function()
-						Button.Hover = false
-
-						if not Button.MouseDown then
-							Library:tween(Button["1e"], {Color = Color3.fromRGB(82, 82, 82)})
-						end
-					end)
-
-					UIS.InputBegan:Connect(function(input,gpe)
-						--if gpe then return end
-
-						if input.UserInputType == Enum.UserInputType.MouseButton1 and Button.Hover then
-							Button.MouseDown = true
-							Library:tween(Button["1c"], {BackgroundColor3 = Color3.fromRGB(57, 57, 57)})
-							Library:tween(Button["1e"], {Color = Color3.fromRGB(200, 200, 200)})
-							options.Callback()
-						end
-					end)
-
-					UIS.InputEnded:Connect(function(input,gpe)
-						--if gpe then return end
-
-						if input.UserInputType == Enum.UserInputType.MouseButton1 then
-							Button.MouseDown = false
-
-							if Button.Hover then
-								Library:tween(Button["1c"], {BackgroundColor3 = Color3.fromRGB(27, 27, 27)})
-								Library:tween(Button["1e"], {Color = Color3.fromRGB(102, 102, 102)})
-							else
-								Library:tween(Button["1c"], {BackgroundColor3 = Color3.fromRGB(27, 27, 27)})
-								Library:tween(Button["1e"], {Color = Color3.fromRGB(82, 82, 82)})
-							end
-						end
-					end)
+					Button["1c"].MouseButton1Click:Connect(function()
+					        Library:tween(Button["1c"], {BackgroundColor3 = Color3.fromRGB(57, 57, 57)})
+					        Library:tween(Button["1e"], {Color = Color3.fromRGB(200, 200, 200)})
+					        options.Callback()
+                                                task.wait(0.005)
+                                                Library:tween(Button["1c"], {BackgroundColor3 = Color3.fromRGB(27, 27, 27)})
+						Library:tween(Button["1e"], {Color = Color3.fromRGB(82, 82, 82)})
+                                        end)
 				end
 
 				Button:_update()
