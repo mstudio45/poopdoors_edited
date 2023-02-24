@@ -244,15 +244,16 @@ local mobiletoggles,mobiletoggleerr=pcall(function()
 end)
 
 local Library = nil
-if mobiletoggles then
+--if mobiletoggles then
 	if isMobile == true then
-		Library = loadstring(game:HttpGet(("https://raw.githubusercontent.com/mstudio45/poopdoors_edited/main/ui/Mobile.lua"),true))()
+		Library = loadstring(game:HttpGet("https://raw.githubusercontent.com/mstudio45/poopdoors_edited/main/ui/Mobile.lua", true))()
+--loadstring(game:HttpGet(("https://raw.githubusercontent.com/mstudio45/poopdoors_edited/main/ui/Mobile.lua"),true))()
 	else
 		Library = loadstring(game:GetObjects("rbxassetid://7657867786")[1].Source)()
 	end
-else
-	Library = loadstring(game:GetObjects("rbxassetid://7657867786")[1].Source)()
-end
+--else
+--	Library = loadstring(game:GetObjects("rbxassetid://7657867786")[1].Source)()
+--end
 
 local MobileButton = {};
 local WaitUntilTerminated = Library.subs.Wait 
@@ -3842,7 +3843,7 @@ window_guisettings:AddButton({
 	end
 })
 
-if isMobile == true and mobiletoggles then 
+if isMobile == true then -- and mobiletoggles then 
 	MobileButton["1"] = Instance.new("ScreenGui");
 	MobileButton["1"]["Name"] = randomString()
 	if get_hidden_gui or gethui then
