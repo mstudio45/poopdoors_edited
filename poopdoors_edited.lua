@@ -113,7 +113,7 @@ function oldwarnmessage(title, text, timee)
 end
 function randomString()local length = math.random(10,20);local array = {};for i = 1, length do array[i] = string.char(math.random(32, 126)) end;return table.concat(array);end
 
-local currentver = "1.7.1"
+local currentver = "1.8"
 local gui_data = nil
 local s,e = pcall(function()
 	gui_data = game:HttpGet(("https://raw.githubusercontent.com/mstudio45/poopdoors_edited/main/gui_data.json"), true)
@@ -237,7 +237,23 @@ function PathModule.new(char, goal, agentParameters, jumpingAllowed, offset)
 end
 
 --local library = loadstring(game:HttpGet(--[['https://pastebin.com/raw/vPWzQEC8'--]]"https://raw.githubusercontent.com/mstudio45/poopdoors_edited/main/library.lua"))()
-local Library = loadstring(game:GetObjects("rbxassetid://7657867786")[1].Source)()
+local isMobile = false
+local mobiletoggles,mobiletoggleerr=pcall(function()
+	local platform = game:GetService("UserInputService"):GetPlatform()
+	isMobile = (platform == Enum.Platform.Android or platform == Enum.Platform.IOS)
+end)
+
+local Library = nil
+if mobiletoggles then
+	if isMobile == true then
+		Library = loadstring(game:HttpGet(("https://raw.githubusercontent.com/mstudio45/poopdoors_edited/main/dependencies/MobileUILibrary.lua"),true))()
+	else
+		Library = loadstring(game:GetObjects("rbxassetid://7657867786")[1].Source)()
+	end
+else
+	Library = loadstring(game:GetObjects("rbxassetid://7657867786")[1].Source)()
+end
+
 local MobileButton = {};
 local WaitUntilTerminated = Library.subs.Wait 
 
@@ -3826,97 +3842,93 @@ window_guisettings:AddButton({
 	end
 })
 
-local mobiletoggles,mobiletoggleerr=pcall(function()
-	local platform = game:GetService("UserInputService"):GetPlatform()
-	if platform == Enum.Platform.Android or platform == Enum.Platform.IOS then 
-		MobileButton["1"] = Instance.new("ScreenGui");
-		MobileButton["1"]["Name"] = randomString()
-		if get_hidden_gui or gethui then
-			local HIDEUI = get_hidden_gui or gethui
-			MobileButton["1"]["Parent"] = HIDEUI()
-		elseif (not is_sirhurt_closure) and (syn and syn.protect_gui) then
-			syn.protect_gui(MobileButton["1"])
-			MobileButton["1"]["Parent"] = game:GetService("CoreGui")
-		elseif game:GetService("CoreGui"):FindFirstChild('RobloxGui') then
-			MobileButton["1"]["Parent"] = game:GetService("CoreGui").RobloxGui
-		else
-			MobileButton["1"]["Parent"] = game:GetService("CoreGui")
-		end
-		MobileButton["1"]["IgnoreGuiInset"] = true;
-		MobileButton["1"]["Name"] = [[PM]];
-		MobileButton["1"]["ZIndexBehavior"] = Enum.ZIndexBehavior.Sibling;
-
-		-- TopBar Frame
-		MobileButton["2"] = Instance.new("Frame", MobileButton["1"]);
-		MobileButton["2"]["BackgroundTransparency"] = 1;
-		MobileButton["2"]["Size"] = UDim2.new(1, 0, 0, 36);
-		MobileButton["2"]["Position"] = UDim2.new(0, 16, 0, 0);
-		MobileButton["2"]["Name"] = [[LeftFrame]];
-		MobileButton["3"] = Instance.new("UIListLayout", MobileButton["2"]);
-		MobileButton["3"]["VerticalAlignment"] = Enum.VerticalAlignment.Center;
-		MobileButton["3"]["FillDirection"] = Enum.FillDirection.Horizontal;
-		MobileButton["3"]["Name"] = [[Layout]];
-		MobileButton["3"]["Padding"] = UDim.new(0, 12);
-		MobileButton["3"]["SortOrder"] = Enum.SortOrder.LayoutOrder;
-
-		-- Fake Buttons
-		MobileButton["4"] = Instance.new("Frame", MobileButton["2"]);
-		MobileButton["4"]["BackgroundTransparency"] = 1;
-		MobileButton["4"]["Size"] = UDim2.new(0, 32, 1, 0);
-		MobileButton["4"]["Name"] = [[Place]];
-		MobileButton["5"] = Instance.new("Frame", MobileButton["2"]);
-		MobileButton["5"]["BackgroundTransparency"] = 1;
-		MobileButton["5"]["Size"] = UDim2.new(0, 32, 1, 0);
-		MobileButton["5"]["Name"] = [[Place]];
-		MobileButton["5bruh"] = Instance.new("Frame", MobileButton["2"]);
-		MobileButton["5bruh"]["BackgroundTransparency"] = 1;
-		MobileButton["5bruh"]["Size"] = UDim2.new(0, 32, 1, 0);
-		MobileButton["5bruh"]["Name"] = [[Place]];
-
-		-- Button
-		MobileButton["7"] = Instance.new("Frame", MobileButton["6"]);
-		MobileButton["7"]["BackgroundTransparency"] = 1;
-		MobileButton["7"]["Size"] = UDim2.new(0, 32, 1, 0);
-		MobileButton["7"]["Name"] = [[Button]];
-		MobileButton["8"] = Instance.new("ImageButton", MobileButton["7"]);
-		MobileButton["8"]["AnchorPoint"] = Vector2.new(0, 1);
-		MobileButton["8"]["Image"] = [[rbxasset://textures/ui/TopBar/iconBase.png]];
-		MobileButton["8"]["Size"] = UDim2.new(0, 32, 0, 32);
-		MobileButton["8"]["Name"] = [[Background]];
-		MobileButton["8"]["Position"] = UDim2.new(0, 0, 1, 0);
-		MobileButton["8"]["BackgroundTransparency"] = 1;
-		MobileButton["9"] = Instance.new("ImageLabel", MobileButton["8"]);
-		MobileButton["9"]["AnchorPoint"] = Vector2.new(0.5, 0.5);
-		MobileButton["9"]["Image"] = [[rbxassetid://2914903943]];
-		MobileButton["9"]["Size"] = UDim2.new(0, 24, 0, 24);
-		MobileButton["9"]["Name"] = [[Icon]];
-		MobileButton["9"]["BackgroundTransparency"] = 1;
-		MobileButton["9"]["Position"] = UDim2.new(0.5, 0, 0.5, 0);
-		MobileButton["a"] = Instance.new("ImageLabel", MobileButton["8"]);
-		MobileButton["a"]["ZIndex"] = 2;
-		MobileButton["a"]["SliceCenter"] = Rect.new(8, 8, 8, 8);
-		MobileButton["a"]["ScaleType"] = Enum.ScaleType.Slice;
-		MobileButton["a"]["ImageTransparency"] = 1;
-		MobileButton["a"]["Image"] = [[rbxasset://LuaPackages/Packages/_Index/UIBlox-8b8d973a-6c028e8e/UIBlox/App/ImageSet/ImageAtlas/./img_set_1x_1.png]];
-		MobileButton["a"]["ImageRectSize"] = Vector2.new(17, 17);
-		MobileButton["a"]["Size"] = UDim2.new(1, 0, 1, 0);
-		MobileButton["a"]["Name"] = [[StateOverlay]];
-		MobileButton["a"]["ImageRectOffset"] = Vector2.new(492, 104);
-		MobileButton["a"]["BackgroundTransparency"] = 1;
-
-		MobileButton["7"].Name = "PToggle"
-		MobileButton["7"].Background.Icon.Image = "rbxassetid://12308333801"
-		MobileButton["7"].Parent = MobileButton["2"]
-		MobileButton["7"].Background.MouseEnter:Connect(function()
-			MobileButton["7"].Background.StateOverlay.ImageTransparency = 0.9
-		end)
-		MobileButton["7"].Background.MouseLeave:Connect(function()
-			MobileButton["7"].Background.StateOverlay.ImageTransparency = 1
-		end)
-		MobileButton["7"].Background.MouseButton1Down:Connect(function() togglegui() end)
+if isMobile == true and mobiletoggles then 
+	MobileButton["1"] = Instance.new("ScreenGui");
+	MobileButton["1"]["Name"] = randomString()
+	if get_hidden_gui or gethui then
+		local HIDEUI = get_hidden_gui or gethui
+		MobileButton["1"]["Parent"] = HIDEUI()
+	elseif (not is_sirhurt_closure) and (syn and syn.protect_gui) then
+		syn.protect_gui(MobileButton["1"])
+		MobileButton["1"]["Parent"] = game:GetService("CoreGui")
+	elseif game:GetService("CoreGui"):FindFirstChild('RobloxGui') then
+		MobileButton["1"]["Parent"] = game:GetService("CoreGui").RobloxGui
+	else
+		MobileButton["1"]["Parent"] = game:GetService("CoreGui")
 	end
-end)
-if mobiletoggleerr then print(mobiletoggleerr) end
+	MobileButton["1"]["IgnoreGuiInset"] = true;
+	MobileButton["1"]["Name"] = [[PM]];
+	MobileButton["1"]["ZIndexBehavior"] = Enum.ZIndexBehavior.Sibling;
+
+	-- TopBar Frame
+	MobileButton["2"] = Instance.new("Frame", MobileButton["1"]);
+	MobileButton["2"]["BackgroundTransparency"] = 1;
+	MobileButton["2"]["Size"] = UDim2.new(1, 0, 0, 36);
+	MobileButton["2"]["Position"] = UDim2.new(0, 16, 0, 0);
+	MobileButton["2"]["Name"] = [[LeftFrame]];
+	MobileButton["3"] = Instance.new("UIListLayout", MobileButton["2"]);
+	MobileButton["3"]["VerticalAlignment"] = Enum.VerticalAlignment.Center;
+	MobileButton["3"]["FillDirection"] = Enum.FillDirection.Horizontal;
+	MobileButton["3"]["Name"] = [[Layout]];
+	MobileButton["3"]["Padding"] = UDim.new(0, 12);
+	MobileButton["3"]["SortOrder"] = Enum.SortOrder.LayoutOrder;
+
+	-- Fake Buttons
+	MobileButton["4"] = Instance.new("Frame", MobileButton["2"]);
+	MobileButton["4"]["BackgroundTransparency"] = 1;
+	MobileButton["4"]["Size"] = UDim2.new(0, 32, 1, 0);
+	MobileButton["4"]["Name"] = [[Place]];
+	MobileButton["5"] = Instance.new("Frame", MobileButton["2"]);
+	MobileButton["5"]["BackgroundTransparency"] = 1;
+	MobileButton["5"]["Size"] = UDim2.new(0, 32, 1, 0);
+	MobileButton["5"]["Name"] = [[Place]];
+	MobileButton["5bruh"] = Instance.new("Frame", MobileButton["2"]);
+	MobileButton["5bruh"]["BackgroundTransparency"] = 1;
+	MobileButton["5bruh"]["Size"] = UDim2.new(0, 32, 1, 0);
+	MobileButton["5bruh"]["Name"] = [[Place]];
+
+	-- Button
+	MobileButton["7"] = Instance.new("Frame", MobileButton["6"]);
+	MobileButton["7"]["BackgroundTransparency"] = 1;
+	MobileButton["7"]["Size"] = UDim2.new(0, 32, 1, 0);
+	MobileButton["7"]["Name"] = [[Button]];
+	MobileButton["8"] = Instance.new("ImageButton", MobileButton["7"]);
+	MobileButton["8"]["AnchorPoint"] = Vector2.new(0, 1);
+	MobileButton["8"]["Image"] = [[rbxasset://textures/ui/TopBar/iconBase.png]];
+	MobileButton["8"]["Size"] = UDim2.new(0, 32, 0, 32);
+	MobileButton["8"]["Name"] = [[Background]];
+	MobileButton["8"]["Position"] = UDim2.new(0, 0, 1, 0);
+	MobileButton["8"]["BackgroundTransparency"] = 1;
+	MobileButton["9"] = Instance.new("ImageLabel", MobileButton["8"]);
+	MobileButton["9"]["AnchorPoint"] = Vector2.new(0.5, 0.5);
+	MobileButton["9"]["Image"] = [[rbxassetid://2914903943]];
+	MobileButton["9"]["Size"] = UDim2.new(0, 24, 0, 24);
+	MobileButton["9"]["Name"] = [[Icon]];
+	MobileButton["9"]["BackgroundTransparency"] = 1;
+	MobileButton["9"]["Position"] = UDim2.new(0.5, 0, 0.5, 0);
+	MobileButton["a"] = Instance.new("ImageLabel", MobileButton["8"]);
+	MobileButton["a"]["ZIndex"] = 2;
+	MobileButton["a"]["SliceCenter"] = Rect.new(8, 8, 8, 8);
+	MobileButton["a"]["ScaleType"] = Enum.ScaleType.Slice;
+	MobileButton["a"]["ImageTransparency"] = 1;
+	MobileButton["a"]["Image"] = [[rbxasset://LuaPackages/Packages/_Index/UIBlox-8b8d973a-6c028e8e/UIBlox/App/ImageSet/ImageAtlas/./img_set_1x_1.png]];
+	MobileButton["a"]["ImageRectSize"] = Vector2.new(17, 17);
+	MobileButton["a"]["Size"] = UDim2.new(1, 0, 1, 0);
+	MobileButton["a"]["Name"] = [[StateOverlay]];
+	MobileButton["a"]["ImageRectOffset"] = Vector2.new(492, 104);
+	MobileButton["a"]["BackgroundTransparency"] = 1;
+
+	MobileButton["7"].Name = "PToggle"
+	MobileButton["7"].Background.Icon.Image = "rbxassetid://12308333801"
+	MobileButton["7"].Parent = MobileButton["2"]
+	MobileButton["7"].Background.MouseEnter:Connect(function()
+		MobileButton["7"].Background.StateOverlay.ImageTransparency = 0.9
+	end)
+	MobileButton["7"].Background.MouseLeave:Connect(function()
+		MobileButton["7"].Background.StateOverlay.ImageTransparency = 1
+	end)
+	MobileButton["7"].Background.MouseButton1Down:Connect(function() togglegui() end)
+end
 
 task.spawn(function()
 	while WaitUntilTerminated(.1) do end
