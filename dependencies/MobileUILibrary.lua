@@ -1005,7 +1005,7 @@ function Library:CreateWindow(options)
 						if Slider.Connection == nil or not Slider.Connection then
 							Slider.Connection = RunService.RenderStepped:Connect(function(deltaTime)
 								GUI.CanDrag = false
-								Slider:SetValue()
+								Slider:Set()
 							end)
 						end
 						
