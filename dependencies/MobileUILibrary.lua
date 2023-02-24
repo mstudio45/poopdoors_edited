@@ -246,7 +246,7 @@ function Library:CreateWindow(options)
 		-- StarterGui.ML.Main.Content.Fade.UIGradient
 		GUI["5b"] = Instance.new("UIGradient", GUI["5a"]);
 		GUI["5b"]["Rotation"] = 90;
-		--GUI["5b"]["Color"] = ColorSequence.new{ColorSequenceKeypoint.new(0.000, Color3.fromRGB(29, 29, 29)),ColorSequenceKeypoint.new(1.000, Color3.fromRGB(29, 29, 29))};
+		GUI["5b"]["Color"] = ColorSequence.new{ColorSequenceKeypoint.new(0.000, Color3.fromRGB(29, 29, 29)),ColorSequenceKeypoint.new(1.000, Color3.fromRGB(29, 29, 29))};
 	end
 
 	-- Navigation
