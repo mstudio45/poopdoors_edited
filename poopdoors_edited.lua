@@ -246,8 +246,9 @@ end)
 local Library = nil
 if mobiletoggles then
 	if isMobile == true then
-		Library = loadstring(game:HttpGet("https://raw.githubusercontent.com/mstudio45/poopdoors_edited/main/dependencies/MobileUILibrary.lua"))()
---loadstring(game:HttpGet(""))()
+		Library = loadstring(
+                              game:HttpGet("https://raw.githubusercontent.com/mstudio45/poopdoors_edited/main/dependencies/MobileUILibrary.lua")
+                          )()
 	else
 		Library = loadstring(game:GetObjects("rbxassetid://7657867786")[1].Source)()
 	end
