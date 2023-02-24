@@ -113,50 +113,6 @@ function oldwarnmessage(title, text, timee)
 end
 function randomString()local length = math.random(10,20);local array = {};for i = 1, length do array[i] = string.char(math.random(32, 126)) end;return table.concat(array);end
 
-local currentver = "1.8"
-local gui_data = nil
-local s,e = pcall(function()
-	gui_data = game:HttpGet(("https://raw.githubusercontent.com/mstudio45/poopdoors_edited/main/gui_data.json"), true)
-	gui_data = game:GetService("HttpService"):JSONDecode(gui_data)
-end)
-if e then
-	oldwarnmessage("POOPDOORS EDITED v"..currentver, "Failed to get script data.", 10)
-end
-
-if POOPDOORSLOADED == true then warnmessage("POOPDOORS EDITED v"..currentver, "GUI already loaded!", "", 10) return end
-if game.PlaceId ~= 6839171747 and game.PlaceId == 6516141723 then 
-	--warnmessage("POOPDOORS EDITED v"..currentver, "You need to join a game to run this script.", 10) 
-	confirmnotification("POOPDOORS EDITED v"..currentver, "Do you want to join a game?", 15, function(state)
-		if state == true then
-			task.spawn(function()
-				loadstring(game:HttpGet(("https://raw.githubusercontent.com/mstudio45/poopdoors_edited/main/joinsolo.lua"), true))()
-			end)
-		end
-	end)
-	return
-end
-if game.PlaceId ~= 6839171747 and game.PlaceId ~= 6516141723 then 
-	oldwarnmessage("POOPDOORS EDITED v"..currentver, "You need to join DOORS to run this script.", 10) 
-	return
-end
-if gui_data ~= nil then
-	if currentver ~= gui_data.ver or gui_data.ver ~= currentver then
-		warnmessage("POOPDOORS EDITED v"..currentver, "You are using an outdated version of this script", "Loading latest version.", 10) 
-		loadstring(game:HttpGet((gui_data.loadstring),true))()
-		return
-	else
-		currentver = tostring(gui_data.ver)
-	end
-end
-pcall(function() getgenv().POOPDOORSLOADED = true end)
-normalmessage("POOPDOORS EDITED v"..currentver, "Loading script...", "", 2)
-if gui_data ~= nil then
-	oldnormalmessage("INFO", gui_data.changelog, 20)
-end
-
--- credits alan1508 on v3erm
-do task.spawn(function()if hookfunction then local a;a=hookfunction(game:GetService("ContentProvider").PreloadAsync,function(b,c,d)if table.find(c,game:GetService("CoreGui"))then local e=function(e,f)if e:match("^rbxasset://")or e:match("^rbxthumb://")then return d(e,f)end end;warn("Anticheat Check Detected")return a(b,c,e)end;return a(b,c,d)end)end end)end
-
 local PathModule = {}
 local PathfindingService = game:GetService("PathfindingService")
 local VisualizerFolder = game.Workspace:FindFirstChild("PDVisualizer")
@@ -240,19 +196,63 @@ end
 local isMobile = false
 local mobiletoggles,mobiletoggleerr=pcall(function()
 	local platform = game:GetService("UserInputService"):GetPlatform()
-	isMobile = (platform == Enum.Platform.Android or platform == Enum.Platform.IOS)
+	isMobile = true--(platform == Enum.Platform.Android or platform == Enum.Platform.IOS)
 end)
 
 local Library = nil
 --if mobiletoggles then
-	if isMobile == true then
-		Library = loadstring(game:HttpGet("https://raw.githubusercontent.com/mstudio45/poopdoors_edited/main/ui/Mobile.lua"))()
+if isMobile == true then
+	Library = loadstring(game:HttpGet("https://raw.githubusercontent.com/mstudio45/poopdoors_edited/main/uilibs/Mobile.lua?" .. tostring(math.random(0, 9999999)), true))()
 else
-		Library = loadstring(game:GetObjects("rbxassetid://7657867786")[1].Source)()
-	end
+	Library = loadstring(game:GetObjects("rbxassetid://7657867786")[1].Source)()
+end
 --else
 --	Library = loadstring(game:GetObjects("rbxassetid://7657867786")[1].Source)()
 --end
+
+local currentver = "1.8"
+local gui_data = nil
+local s,e = pcall(function()
+	gui_data = game:HttpGet(("https://raw.githubusercontent.com/mstudio45/poopdoors_edited/main/gui_data.json"), true)
+	gui_data = game:GetService("HttpService"):JSONDecode(gui_data)
+end)
+if e then
+	oldwarnmessage("POOPDOORS EDITED v"..currentver, "Failed to get script data.", 10)
+end
+
+if POOPDOORSLOADED == true then warnmessage("POOPDOORS EDITED v"..currentver, "GUI already loaded!", "", 10) return end
+if game.PlaceId ~= 6839171747 and game.PlaceId == 6516141723 then 
+	--warnmessage("POOPDOORS EDITED v"..currentver, "You need to join a game to run this script.", 10) 
+	confirmnotification("POOPDOORS EDITED v"..currentver, "Do you want to join a game?", 15, function(state)
+		if state == true then
+			task.spawn(function()
+				loadstring(game:HttpGet(("https://raw.githubusercontent.com/mstudio45/poopdoors_edited/main/joinsolo.lua?" .. tostring(math.random(0, 9999999))), true))()
+			end)
+		end
+	end)
+	return
+end
+if game.PlaceId ~= 6839171747 and game.PlaceId ~= 6516141723 then 
+	oldwarnmessage("POOPDOORS EDITED v"..currentver, "You need to join DOORS to run this script.", 10) 
+	return
+end
+if gui_data ~= nil then
+	if currentver ~= gui_data.ver or gui_data.ver ~= currentver then
+		warnmessage("POOPDOORS EDITED v"..currentver, "You are using an outdated version of this script", "Loading latest version.", 10) 
+		loadstring(game:HttpGet((gui_data.loadstring),true))()
+		return
+	else
+		currentver = tostring(gui_data.ver)
+	end
+end
+pcall(function() getgenv().POOPDOORSLOADED = true end)
+normalmessage("POOPDOORS EDITED v"..currentver, "Loading script...", "", 2)
+if gui_data ~= nil then
+	oldnormalmessage("INFO", gui_data.changelog, 20)
+end
+
+-- credits alan1508 on v3erm
+do task.spawn(function()if hookfunction then local a;a=hookfunction(game:GetService("ContentProvider").PreloadAsync,function(b,c,d)if table.find(c,game:GetService("CoreGui"))then local e=function(e,f)if e:match("^rbxasset://")or e:match("^rbxthumb://")then return d(e,f)end end;warn("Anticheat Check Detected")return a(b,c,e)end;return a(b,c,d)end)end end)end
 
 local MobileButton = {};
 local WaitUntilTerminated = Library.subs.Wait 
