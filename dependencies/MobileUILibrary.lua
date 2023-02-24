@@ -390,7 +390,7 @@ function Library:CreateWindow(options)
 		-- Render
 		do
 			-- StarterGui.ML.Main.Navigation.ButtonHolder.Inactive
-			Tab["15"] = Instance.new("TextLabel", GUI["12"]);
+			Tab["15"] = Instance.new("TextButton", GUI["12"]);
 			Tab["15"]["TextXAlignment"] = Enum.TextXAlignment.Left;
 			Tab["15"]["BackgroundColor3"] = Color3.fromRGB(255, 255, 255);
 			Tab["15"]["TextSize"] = 14;
@@ -475,33 +475,10 @@ function Library:CreateWindow(options)
 
 		-- Logic
 		do
-			Tab["15"].MouseEnter:Connect(function()
-				Tab.Hover = true
-
-				if Tab.Active then
-					Library:tween(Tab["15"], {TextColor3 = Color3.fromRGB(255, 255, 255)})
-					Library:tween(Tab["17"], {ImageColor3 = Color3.fromRGB(255, 255, 255)})
-				end
+			Tab["15"].MouseButton1Click:Connect(function()
+				Tab:Activate()
 			end)
-			Tab["15"].MouseLeave:Connect(function()
-				Tab.Hover = false
-
-				if Tab.Active then
-					Library:tween(Tab["15"], {TextColor3 = Color3.fromRGB(200, 200, 200)})
-					Library:tween(Tab["17"], {ImageColor3 = Color3.fromRGB(200, 200, 200)})
-				end
-			end)
-
-			UIS.InputBegan:Connect(function(input, gpe)
-				--if gpe then return end
-
-				if input.UserInputType == Enum.UserInputType.MouseButton1 then
-					if Tab.Hover then
-						Tab:Activate()
-					end
-				end
-			end)
-
+			
 			if GUI.CurrentTab == nil then
 				Tab:Activate()
 			end
@@ -630,6 +607,7 @@ function Library:CreateWindow(options)
 					Button["1f"] = Instance.new("TextLabel", Button["1c"]);
 					Button["1f"]["TextWrapped"] = true;
 					Button["1f"]["AutomaticSize"] = Enum.AutomaticSize.Y;
+					Button["1f"]["TextYAlignment"] = Enum.TextYAlignment.Top;
 					--	Button["1f"]["TextTruncate"] = Enum.TextTruncate.AtEnd;
 					Button["1f"]["TextXAlignment"] = Enum.TextXAlignment.Left;
 					Button["1f"]["BackgroundColor3"] = Color3.fromRGB(255, 255, 255);
@@ -743,6 +721,7 @@ function Library:CreateWindow(options)
 					TextBox["1f"] = Instance.new("TextBox", TextBox["1c"]);
 					TextBox["1f"]["TextWrapped"] = true;
 					TextBox["1f"]["AutomaticSize"] = Enum.AutomaticSize.Y;
+					TextBox["1f"]["TextYAlignment"] = Enum.TextYAlignment.Top;
 					--TextBox["1f"]["TextTruncate"] = Enum.TextTruncate.AtEnd;
 					TextBox["1f"]["TextXAlignment"] = Enum.TextXAlignment.Left;
 					TextBox["1f"]["BackgroundColor3"] = Color3.fromRGB(255, 255, 255);
@@ -832,6 +811,7 @@ function Library:CreateWindow(options)
 					Text["24"] = Instance.new("TextLabel", Text["23"]);
 					Text["24"]["TextWrapped"] = true;
 					Text["24"]["AutomaticSize"] = Enum.AutomaticSize.Y;
+					Text["24"]["TextYAlignment"] = Enum.TextYAlignment.Top;
 					--Text["24"]["TextTruncate"] = Enum.TextTruncate.AtEnd;
 					Text["24"]["TextXAlignment"] = Namexaligment;
 					Text["24"]["TextYAlignment"] = Enum.TextYAlignment.Top;
@@ -913,6 +893,7 @@ function Library:CreateWindow(options)
 					Slider["2f"] = Instance.new("TextLabel", Slider["2c"]);
 					Slider["2f"]["TextWrapped"] = true;
 					Slider["2f"]["AutomaticSize"] = Enum.AutomaticSize.Y;
+					Slider["2f"]["TextYAlignment"] = Enum.TextYAlignment.Top;
 					--Slider["2f"]["TextTruncate"] = Enum.TextTruncate.AtEnd;
 					Slider["2f"]["TextXAlignment"] = Enum.TextXAlignment.Left;
 					Slider["2f"]["BackgroundColor3"] = Color3.fromRGB(255, 255, 255);
@@ -1014,12 +995,18 @@ function Library:CreateWindow(options)
 				-- Logic
 				do
 					Slider["2c"].MouseButton1Click:Connect(function()
+						Slider:Set()						
 						Library:tween(Slider["2c"], {BackgroundColor3 = Color3.fromRGB(57, 57, 57)})
 						Library:tween(Slider["2e"], {Color = Color3.fromRGB(200, 200, 200)})
 						Library:tween(Slider["34"], {Color = Color3.fromRGB(200, 200, 200)})
 						Library:tween(Slider["35"], {BackgroundColor3 = Color3.fromRGB(200, 200, 200)})
-
-						Slider:Set()
+						
+						task.wait(.005)
+						
+						Library:tween(Slider["2c"], {BackgroundColor3 = Color3.fromRGB(27, 27, 27)})
+						Library:tween(Slider["2e"], {Color = Color3.fromRGB(82, 82, 82)})
+						Library:tween(Slider["34"], {Color = Color3.fromRGB(82, 82, 82)})
+						Library:tween(Slider["35"], {BackgroundColor3 = Color3.fromRGB(82, 82, 82)})
 					end)
 				end
 
@@ -1063,6 +1050,7 @@ function Library:CreateWindow(options)
 					Toggle["54"] = Instance.new("TextLabel", Toggle["51"]);
 					Toggle["54"]["TextWrapped"] = true;
 					Toggle["54"]["AutomaticSize"] = Enum.AutomaticSize.Y;
+					Toggle["54"]["TextYAlignment"] = Enum.TextYAlignment.Top;
 					--Toggle["54"]["TextTruncate"] = Enum.TextTruncate.AtEnd;
 					Toggle["54"]["TextXAlignment"] = Enum.TextXAlignment.Left;
 					Toggle["54"]["BackgroundColor3"] = Color3.fromRGB(255, 255, 255);
@@ -1229,6 +1217,7 @@ function Library:CreateWindow(options)
 					Dropdown["3a"] = Instance.new("TextLabel", Dropdown["37"]);
 					Dropdown["3a"]["TextWrapped"] = true;
 					Dropdown["3a"]["AutomaticSize"] = Enum.AutomaticSize.Y;
+					Dropdown["3a"]["TextYAlignment"] = Enum.TextYAlignment.Top;
 					--	Dropdown["3a"]["TextTruncate"] = Enum.TextTruncate.AtEnd;
 					Dropdown["3a"]["TextXAlignment"] = Enum.TextXAlignment.Left;
 					Dropdown["3a"]["BackgroundColor3"] = Color3.fromRGB(255, 255, 255);
@@ -1329,6 +1318,7 @@ function Library:CreateWindow(options)
 					-- StarterGui.ML.Main.Content.HomeTab.Dropdown.OptionHolder.Option
 					Dropdown.Items[id].instance["4d"] = Instance.new("TextButton", Dropdown["3d"]);
 					Dropdown.Items[id].instance["4d"]["AutomaticSize"] = Enum.AutomaticSize.Y;
+					Dropdown.Items[id].instance["4d"]["TextYAlignment"] = Enum.TextYAlignment.Top;
 					--Dropdown.Items[id].instance["4d"]["TextTruncate"] = Enum.TextTruncate.AtEnd;
 					Dropdown.Items[id].instance["4d"]["BackgroundColor3"] = Color3.fromRGB(57, 57, 57);
 					Dropdown.Items[id].instance["4d"]["TextSize"] = 14;
