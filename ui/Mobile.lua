@@ -1005,7 +1005,7 @@ pcall(function() Tab["15"]["ZIndex"] = Library.TotalTabs;Library.TotalTabs+=1 en
 						if Slider.Connection then Slider.Connection:Disconnect()    end
 						Slider.Connection = nil
 					end)--]]
-                                        game:GetService("UserInputService".InputEnded:Connect(function(input, gp)
+                                        game:GetService("UserInputService").InputEnded:Connect(function(input, gp)
 	                                        if input.UserInputType == Enum.UserInputType.MouseButton1 then
 						        GUI.CanDrag = true
 						        Slider.MouseDown = false
