@@ -340,7 +340,7 @@ function Library:CreateWindow(options)
 				end
 			end)
 		end)
-		
+
 		task.spawn(function()
 			local ExitBtn = {
 				Hover = false,
@@ -531,7 +531,7 @@ function Library:CreateWindow(options)
 				--Section["14"]["ScrollBarThickness"] = 0;
 				Section["14"]["Name"] = [[Section]];
 				Section["14"]["SelectionGroup"] = false;
-				
+
 				-- StarterGui.[L"~J:kcm=$E9P}`.:e&.Main.Content.Preview Tab.Preview Section.UIStroke
 				Section["15"] = Instance.new("UIStroke", Section["14"]);
 				Section["15"]["Color"] = Color3.fromRGB(255, 255, 255);
@@ -548,7 +548,7 @@ function Library:CreateWindow(options)
 				Section["1a"]["PaddingRight"] = UDim.new(0, 1);
 				Section["1a"]["PaddingBottom"] = UDim.new(0, 1);
 				Section["1a"]["PaddingLeft"] = UDim.new(0, 1);
-				
+
 				-- StarterGui.[L"~J:kcm=$E9P}`.:e&.Main.Content.Preview Tab.Preview Section.SectionTitle
 				Section["16"] = Instance.new("Frame", Section["14"]);
 				Section["16"]["BackgroundColor3"] = Color3.fromRGB(91, 0, 0);
@@ -579,7 +579,7 @@ function Library:CreateWindow(options)
 				Section["18"]["PaddingRight"] = UDim.new(0, 6);
 				Section["18"]["PaddingBottom"] = UDim.new(0, 6);
 				Section["18"]["PaddingLeft"] = UDim.new(0, 6);
-				
+
 				Section["14ee"] = Instance.new("Frame", Tab["1b"]);
 				Section["14ee"]["BorderSizePixel"] = 0;
 				Section["14ee"]["BackgroundTransparency"] = 1;
@@ -628,7 +628,8 @@ function Library:CreateWindow(options)
 
 					-- StarterGui.ML.Main.Content.HomeTab.Button.Title
 					Button["1f"] = Instance.new("TextLabel", Button["1c"]);
-					--Button["1f"]["TextWrapped"] = true;
+					Button["1f"]["TextWrapped"] = true;
+					Button["1f"]["AutomaticSize"] = Enum.AutomaticSize.Y;
 					--	Button["1f"]["TextTruncate"] = Enum.TextTruncate.AtEnd;
 					Button["1f"]["TextXAlignment"] = Enum.TextXAlignment.Left;
 					Button["1f"]["BackgroundColor3"] = Color3.fromRGB(255, 255, 255);
@@ -741,6 +742,7 @@ function Library:CreateWindow(options)
 					-- StarterGui.ML.Main.Content.HomeTab.Button.Title
 					TextBox["1f"] = Instance.new("TextBox", TextBox["1c"]);
 					TextBox["1f"]["TextWrapped"] = true;
+					TextBox["1f"]["AutomaticSize"] = Enum.AutomaticSize.Y;
 					--TextBox["1f"]["TextTruncate"] = Enum.TextTruncate.AtEnd;
 					TextBox["1f"]["TextXAlignment"] = Enum.TextXAlignment.Left;
 					TextBox["1f"]["BackgroundColor3"] = Color3.fromRGB(255, 255, 255);
@@ -806,7 +808,7 @@ function Library:CreateWindow(options)
 				}, options or {})
 
 				local Text = {}
-				
+
 				options.Position = string.lower(options.Position)
 				local Namexaligment = Enum.TextXAlignment.Left
 				if options.Position == "left" then
@@ -910,6 +912,7 @@ function Library:CreateWindow(options)
 					-- StarterGui.ML.Main.Content.HomeTab.Slider.Title
 					Slider["2f"] = Instance.new("TextLabel", Slider["2c"]);
 					Slider["2f"]["TextWrapped"] = true;
+					Slider["2f"]["AutomaticSize"] = Enum.AutomaticSize.Y;
 					--Slider["2f"]["TextTruncate"] = Enum.TextTruncate.AtEnd;
 					Slider["2f"]["TextXAlignment"] = Enum.TextXAlignment.Left;
 					Slider["2f"]["BackgroundColor3"] = Color3.fromRGB(255, 255, 255);
@@ -980,7 +983,7 @@ function Library:CreateWindow(options)
 					Slider["2c"]["Size"] = UDim2.new(Slider["2c"]["Size"].X.Scale, Slider["2c"]["Size"].X.Offset, 0, Slider["2f"].TextBounds.Y + 26)
 					Section.ResizeFunc()
 				end
-				
+
 				function Slider:SetText(Name)
 					if string.len(Name) ~= 0 then
 						Slider["2f"]["Text"] = tostring(Name)
@@ -1059,6 +1062,7 @@ function Library:CreateWindow(options)
 					-- StarterGui.ML.Main.Content.HomeTab.ToggleInactive.Title
 					Toggle["54"] = Instance.new("TextLabel", Toggle["51"]);
 					Toggle["54"]["TextWrapped"] = true;
+					Toggle["54"]["AutomaticSize"] = Enum.AutomaticSize.Y;
 					--Toggle["54"]["TextTruncate"] = Enum.TextTruncate.AtEnd;
 					Toggle["54"]["TextXAlignment"] = Enum.TextXAlignment.Left;
 					Toggle["54"]["BackgroundColor3"] = Color3.fromRGB(255, 255, 255);
@@ -1144,14 +1148,14 @@ function Library:CreateWindow(options)
 						options.Callback(Toggle:Get(), not Toggle:Get())
 					end)
 				end
-				
+
 				function Toggle:_update()
 					Toggle["51"]["Size"] = UDim2.new(Toggle["51"]["Size"].X.Scale, Toggle["51"]["Size"].X.Offset, 0, math.huge)
 					Toggle["51"]["Size"] = UDim2.new(Toggle["51"]["Size"].X.Scale, Toggle["51"]["Size"].X.Offset, 0, Toggle["54"].TextBounds.Y)
 					Toggle["51"]["Size"] = UDim2.new(Toggle["51"]["Size"].X.Scale, Toggle["51"]["Size"].X.Offset, 0, Toggle["54"].TextBounds.Y + (26-14))
 					Section.ResizeFunc()
 				end
-				
+
 				Toggle:Set(options["Value"])
 
 				-- Logic
@@ -1167,7 +1171,7 @@ function Library:CreateWindow(options)
 						Library:tween(Toggle["53"], {Color = Color3.fromRGB(82, 82, 82)})
 					end)
 				end
-				
+
 				Toggle:_update()
 
 				return Toggle
@@ -1224,7 +1228,8 @@ function Library:CreateWindow(options)
 					-- StarterGui.ML.Main.Content.HomeTab.Dropdown.Title
 					Dropdown["3a"] = Instance.new("TextLabel", Dropdown["37"]);
 					Dropdown["3a"]["TextWrapped"] = true;
-				--	Dropdown["3a"]["TextTruncate"] = Enum.TextTruncate.AtEnd;
+					Dropdown["3a"]["AutomaticSize"] = Enum.AutomaticSize.Y;
+					--	Dropdown["3a"]["TextTruncate"] = Enum.TextTruncate.AtEnd;
 					Dropdown["3a"]["TextXAlignment"] = Enum.TextXAlignment.Left;
 					Dropdown["3a"]["BackgroundColor3"] = Color3.fromRGB(255, 255, 255);
 					Dropdown["3a"]["TextSize"] = 14;
@@ -1323,6 +1328,7 @@ function Library:CreateWindow(options)
 
 					-- StarterGui.ML.Main.Content.HomeTab.Dropdown.OptionHolder.Option
 					Dropdown.Items[id].instance["4d"] = Instance.new("TextButton", Dropdown["3d"]);
+					Dropdown.Items[id].instance["4d"]["AutomaticSize"] = Enum.AutomaticSize.Y;
 					--Dropdown.Items[id].instance["4d"]["TextTruncate"] = Enum.TextTruncate.AtEnd;
 					Dropdown.Items[id].instance["4d"]["BackgroundColor3"] = Color3.fromRGB(57, 57, 57);
 					Dropdown.Items[id].instance["4d"]["TextSize"] = 14;
@@ -1485,7 +1491,7 @@ function Library:CreateWindow(options)
 			end, TweenInfo.new(.35, Enum.EasingStyle.Quad, Enum.EasingDirection.InOut))
 		end, TweenInfo.new(.35, Enum.EasingStyle.Quad, Enum.EasingDirection.InOut))
 	end
-	
+
 	Library.vis_toggle = function()
 		GUI["2"].Visible = not GUI["2"].Visible
 	end
@@ -1497,7 +1503,7 @@ function Library:CreateWindow(options)
 	Library.vis_hide = function()
 		GUI["2"].Visible = false
 	end
-	
+
 	Library.toggle = function()
 		Library.vis_show()
 		if GUI.Minimize.Opened then
@@ -1523,7 +1529,7 @@ function Library:CreateWindow(options)
 			end, TweenInfo.new(.35, Enum.EasingStyle.Quad, Enum.EasingDirection.InOut))
 		end
 	end
-	
+
 	Library.show = function()
 		Library.vis_show()
 		if not GUI.Minimize.Opened then
@@ -1538,7 +1544,7 @@ function Library:CreateWindow(options)
 			end, TweenInfo.new(.35, Enum.EasingStyle.Quad, Enum.EasingDirection.InOut))
 		end
 	end
-	
+
 	Library.hide = function()
 		Library.vis_show()
 		if GUI.Minimize.Opened then
@@ -1554,13 +1560,13 @@ function Library:CreateWindow(options)
 			--GUI["2"]["Size"] = UDim2.new(0, 400, 0, 300);
 		end
 	end
-	
+
 	game:GetService("UserInputService").InputBegan:Connect(function(input, gpa)
 		if input.KeyCode == Enum.KeyCode.RightShift then
 			Library.vis_toggle()
 		end
 	end)
-	
+
 	return GUI
 end
 
