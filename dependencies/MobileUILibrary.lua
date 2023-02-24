@@ -75,7 +75,8 @@ function Library:CreateWindow(options)
 			Hover = false,
 			MouseDown = false,
 			Opened = true
-		}
+		},
+                TotalTabs = 1
 	}
 
 	local Notifications = {
@@ -400,7 +401,7 @@ function Library:CreateWindow(options)
 			Tab["15"]["Name"] = [[Inactive]];
 			Tab["15"]["Font"] = Enum.Font.Gotham;
 			Tab["15"]["BackgroundTransparency"] = 1;
-
+pcall(function() Tab["15"]["ZIndex"] = Library.TotalTabs;Library.TotalTabs+=1 end)
 			-- StarterGui.ML.Main.Navigation.ButtonHolder.Inactive.UIPadding
 			Tab["16"] = Instance.new("UIPadding", Tab["15"]);
 			Tab["16"]["PaddingLeft"] = UDim.new(0, 28);
