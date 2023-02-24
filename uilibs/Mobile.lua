@@ -594,6 +594,7 @@ pcall(function() Tab["15"]["ZIndex"] = Library.TotalTabs;Library.TotalTabs+=1 en
 					Button["1c"]["BackgroundColor3"] = Color3.fromRGB(27, 27, 27);
 					Button["1c"]["Size"] = UDim2.new(0.95, 0, 0, 32);
 					Button["1c"]["Name"] = [[Button]];
+					Button["1c"]["Text"] = [[]];
 
 					-- StarterGui.ML.Main.Content.HomeTab.Button.UICorner
 					Button["1d"] = Instance.new("UICorner", Button["1c"]);
