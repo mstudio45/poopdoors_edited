@@ -1280,10 +1280,11 @@ pcall(function() Tab["15"]["ZIndex"] = Library.TotalTabs;Library.TotalTabs+=1 en
 
 				-- Methods
 				function Dropdown:Set(Name)
+if typeof(name) == "string" then
 					if string.len(Name) ~= 0 then
 						Dropdown["3a"]["Text"] = tostring(Name)
 					end
-				end
+				end end
 				function Dropdown:Get()
 					return Dropdown.CurrentItem
 				end
