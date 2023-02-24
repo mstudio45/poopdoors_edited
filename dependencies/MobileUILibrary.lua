@@ -478,7 +478,7 @@ function Library:CreateWindow(options)
 			Tab["15"].MouseButton1Click:Connect(function()
 				Tab:Activate()
 			end)
-			
+
 			if GUI.CurrentTab == nil then
 				Tab:Activate()
 			end
@@ -994,19 +994,46 @@ function Library:CreateWindow(options)
 
 				-- Logic
 				do
-					Slider["2c"].MouseButton1Click:Connect(function()
-						Slider:Set()						
+					Slider["2c"].MouseButton1Down:Connect(function()
+						GUI.CanDrag = false
+						Slider.MouseDown = true
 						Library:tween(Slider["2c"], {BackgroundColor3 = Color3.fromRGB(57, 57, 57)})
 						Library:tween(Slider["2e"], {Color = Color3.fromRGB(200, 200, 200)})
 						Library:tween(Slider["34"], {Color = Color3.fromRGB(200, 200, 200)})
 						Library:tween(Slider["35"], {BackgroundColor3 = Color3.fromRGB(200, 200, 200)})
+
+						if Slider.Connection == nil or not Slider.Connection then
+							Slider.Connection = RunService.RenderStepped:Connect(function(deltaTime)
+								GUI.CanDrag = false
+								Slider:SetValue()
+							end)
+						end
 						
+						--[[Slider:Set()						
+						Library:tween(Slider["2c"], {BackgroundColor3 = Color3.fromRGB(57, 57, 57)})
+						Library:tween(Slider["2e"], {Color = Color3.fromRGB(200, 200, 200)})
+						Library:tween(Slider["34"], {Color = Color3.fromRGB(200, 200, 200)})
+						Library:tween(Slider["35"], {BackgroundColor3 = Color3.fromRGB(200, 200, 200)})
+
 						task.wait(.005)
-						
+
+						Library:tween(Slider["2c"], {BackgroundColor3 = Color3.fromRGB(27, 27, 27)})
+						Library:tween(Slider["2e"], {Color = Color3.fromRGB(82, 82, 82)})
+						Library:tween(Slider["34"], {Color = Color3.fromRGB(82, 82, 82)})
+						Library:tween(Slider["35"], {BackgroundColor3 = Color3.fromRGB(82, 82, 82)})--]]
+					end)
+					
+					Slider["2c"].MouseButton1Up:Connect(function()
+						GUI.CanDrag = true
+						Slider.MouseDown = false
+
 						Library:tween(Slider["2c"], {BackgroundColor3 = Color3.fromRGB(27, 27, 27)})
 						Library:tween(Slider["2e"], {Color = Color3.fromRGB(82, 82, 82)})
 						Library:tween(Slider["34"], {Color = Color3.fromRGB(82, 82, 82)})
 						Library:tween(Slider["35"], {BackgroundColor3 = Color3.fromRGB(82, 82, 82)})
+						
+						if Slider.Connection then Slider.Connection:Disconnect()    end
+						Slider.Connection = nil
 					end)
 				end
 
@@ -1217,7 +1244,7 @@ function Library:CreateWindow(options)
 					Dropdown["3a"] = Instance.new("TextLabel", Dropdown["37"]);
 					Dropdown["3a"]["TextWrapped"] = true;
 					Dropdown["3a"]["AutomaticSize"] = Enum.AutomaticSize.Y;
-					--Dropdown["3a"]["TextYAlignment"] = Enum.TextYAlignment.Top;
+					Dropdown["3a"]["TextYAlignment"] = Enum.TextYAlignment.Top;
 					--	Dropdown["3a"]["TextTruncate"] = Enum.TextTruncate.AtEnd;
 					Dropdown["3a"]["TextXAlignment"] = Enum.TextXAlignment.Left;
 					Dropdown["3a"]["BackgroundColor3"] = Color3.fromRGB(255, 255, 255);
@@ -1318,7 +1345,7 @@ function Library:CreateWindow(options)
 					-- StarterGui.ML.Main.Content.HomeTab.Dropdown.OptionHolder.Option
 					Dropdown.Items[id].instance["4d"] = Instance.new("TextButton", Dropdown["3d"]);
 					Dropdown.Items[id].instance["4d"]["AutomaticSize"] = Enum.AutomaticSize.Y;
-					--Dropdown.Items[id].instance["4d"]["TextYAlignment"] = Enum.TextYAlignment.Top;
+					Dropdown.Items[id].instance["4d"]["TextYAlignment"] = Enum.TextYAlignment.Top;
 					--Dropdown.Items[id].instance["4d"]["TextTruncate"] = Enum.TextTruncate.AtEnd;
 					Dropdown.Items[id].instance["4d"]["BackgroundColor3"] = Color3.fromRGB(57, 57, 57);
 					Dropdown.Items[id].instance["4d"]["TextSize"] = 14;
