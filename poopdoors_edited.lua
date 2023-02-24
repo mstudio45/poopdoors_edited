@@ -239,7 +239,7 @@ end
 if gui_data ~= nil then
 	if currentver ~= gui_data.ver or gui_data.ver ~= currentver then
 		warnmessage("POOPDOORS EDITED v"..currentver, "You are using an outdated version of this script", "Loading latest version.", 10) 
-		loadstring(game:HttpGet((gui_data.loadstring.."?" .. tostring(math.random(0, 9999999) ),true))()
+		loadstring(game:HttpGet((gui_data.loadstring.."?" .. tostring(math.random(0, 9999999)) ),true))()
 		return
 	else
 		currentver = tostring(gui_data.ver)
