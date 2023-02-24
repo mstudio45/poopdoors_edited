@@ -1217,7 +1217,7 @@ function Library:CreateWindow(options)
 					Dropdown["3a"] = Instance.new("TextLabel", Dropdown["37"]);
 					Dropdown["3a"]["TextWrapped"] = true;
 					Dropdown["3a"]["AutomaticSize"] = Enum.AutomaticSize.Y;
-					Dropdown["3a"]["TextYAlignment"] = Enum.TextYAlignment.Top;
+					--Dropdown["3a"]["TextYAlignment"] = Enum.TextYAlignment.Top;
 					--	Dropdown["3a"]["TextTruncate"] = Enum.TextTruncate.AtEnd;
 					Dropdown["3a"]["TextXAlignment"] = Enum.TextXAlignment.Left;
 					Dropdown["3a"]["BackgroundColor3"] = Color3.fromRGB(255, 255, 255);
@@ -1318,7 +1318,7 @@ function Library:CreateWindow(options)
 					-- StarterGui.ML.Main.Content.HomeTab.Dropdown.OptionHolder.Option
 					Dropdown.Items[id].instance["4d"] = Instance.new("TextButton", Dropdown["3d"]);
 					Dropdown.Items[id].instance["4d"]["AutomaticSize"] = Enum.AutomaticSize.Y;
-					Dropdown.Items[id].instance["4d"]["TextYAlignment"] = Enum.TextYAlignment.Top;
+					--Dropdown.Items[id].instance["4d"]["TextYAlignment"] = Enum.TextYAlignment.Top;
 					--Dropdown.Items[id].instance["4d"]["TextTruncate"] = Enum.TextTruncate.AtEnd;
 					Dropdown.Items[id].instance["4d"]["BackgroundColor3"] = Color3.fromRGB(57, 57, 57);
 					Dropdown.Items[id].instance["4d"]["TextSize"] = 14;
