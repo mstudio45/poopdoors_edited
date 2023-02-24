@@ -196,7 +196,7 @@ end
 local isMobile = false
 local mobiletoggles,mobiletoggleerr=pcall(function()
 	local platform = game:GetService("UserInputService"):GetPlatform()
-	isMobile = true--(platform == Enum.Platform.Android or platform == Enum.Platform.IOS)
+	isMobile = (platform == Enum.Platform.Android or platform == Enum.Platform.IOS)
 end)
 
 local Library = nil
