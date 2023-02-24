@@ -1020,7 +1020,7 @@ pcall(function() Tab["15"]["ZIndex"] = Library.TotalTabs;Library.TotalTabs+=1 en
 	                                        end
                                         end)
 				end
-
+ 
 				Slider:_update()
 
 				return Slider
