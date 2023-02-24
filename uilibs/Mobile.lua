@@ -995,7 +995,7 @@ pcall(function() Tab["15"]["ZIndex"] = Library.TotalTabs;Library.TotalTabs+=1 en
 						Library:tween(Slider["35"], {BackgroundColor3 = Color3.fromRGB(82, 82, 82)})--]]
 					end)
 					
-					--[[Slider["2c"].MouseButton1Up:Connect(function()
+					Slider["2c"].MouseButton1Up:Connect(function()
 						GUI.CanDrag = true
 						Slider.MouseDown = false
 
@@ -1006,9 +1006,9 @@ pcall(function() Tab["15"]["ZIndex"] = Library.TotalTabs;Library.TotalTabs+=1 en
 						
 						if Slider.Connection then Slider.Connection:Disconnect()    end
 						Slider.Connection = nil
-					end)--]]
+					end)
                                         game:GetService("UserInputService").InputEnded:Connect(function(input, gp)
-	                                        if input.UserInputType == Enum.UserInputType.MouseButton1 then
+	                                        if (input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch) and Slider.MouseDown == true then
 						        GUI.CanDrag = true
 						        Slider.MouseDown = false
 
