@@ -220,7 +220,7 @@ if gui_data_e then
 	oldwarnmessage("POOPDOORS EDITED v"..currentver, "Failed to get script data.", 10)
 end
 
-if POOPDOORSLOADED == true and gui_data_s then warnmessage("POOPDOORS EDITED v"..currentver, "GUI already loaded!", "", 10) return end
+if POOPDOORSLOADED == true then warnmessage("POOPDOORS EDITED v"..currentver, "GUI already loaded!", "", 10) return end
 if game.PlaceId ~= 6839171747 and game.PlaceId == 6516141723 then 
 	--warnmessage("POOPDOORS EDITED v"..currentver, "You need to join a game to run this script.", 10) 
 	confirmnotification("POOPDOORS EDITED v"..currentver, "Do you want to join a game?", 15, function(state)
@@ -249,7 +249,7 @@ if gui_data ~= nil then
 end
 pcall(function() getgenv().POOPDOORSLOADED = true end)
 normalmessage("POOPDOORS EDITED v"..currentver, "Loading script...", "", 2)
-if gui_data ~= nil then
+if gui_data ~= nil and gui_data_s then
 	oldnormalmessage("INFO", gui_data.changelog, 20)
 end
 
