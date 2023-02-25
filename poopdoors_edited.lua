@@ -3770,10 +3770,12 @@ if MotorRepTest == true then
 end
 
 task.spawn(function()
-	while task.wait(math.random(0, 0.9)) do
+	while true do
 	        if dropdownTrolling:Get() == "Twitching" then
-		game:GetService("ReplicatedStorage").EntityInfo.MotorReplication:FireServer(0, 0, 180, false)
-	end end
+			game:GetService("ReplicatedStorage").EntityInfo.MotorReplication:FireServer(0, 0, 180, false)
+		end
+		task.wait(math.random(0, 0.9))
+	end
 end)
 game["Run Service"].RenderStepped:Connect(function()
 	if MotorRepTest == false then
