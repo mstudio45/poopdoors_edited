@@ -3482,16 +3482,16 @@ function Library:CreateWindow(options)
 					end
 
 					colourWheel.MouseButton1Down:Connect(function()
-						GUI.CanDrag = false
+						--GUI.CanDrag = false
 						buttonDown = true
-						Tab["1b"]["ScrollingEnabled"] = false;
+						--Tab["1b"]["ScrollingEnabled"] = false;
 					end)
 
 					darknessPicker.MouseButton1Down:Connect(function()
-						GUI.CanDrag = false;
-						buttonDown =true
+						--GUI.CanDrag = false;
+						buttonDown = true
 						movingSlider = true
-						Tab["1b"]["ScrollingEnabled"] = false;
+						--Tab["1b"]["ScrollingEnabled"] = false;
 					end)
 					
 					--[[ colourWheel.MouseButton1Up:Connect(function()
@@ -3512,8 +3512,8 @@ function Library:CreateWindow(options)
 						--if scriptrunning == true then
 							
 							if (input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch) and buttonDown then
-								buttonDown = false;movingSlider = false;GUI.CanDrag = true
-								Tab["1b"]["ScrollingEnabled"] = true;
+								buttonDown = false;movingSlider = false;--GUI.CanDrag = true
+								--Tab["1b"]["ScrollingEnabled"] = true;
 							end
 							--else
 						--	InputEndeduis:Disconnect()
@@ -3528,7 +3528,7 @@ function Library:CreateWindow(options)
 
 						if toggled == true then
 							darknessPicker.Visible = true
-							colourWheel.Visible = true
+							colourWheel.Visible = true;GUI.CanDrag = false;Tab["1b"]["ScrollingEnabled"] = false
 
 							Section["4a"].Visible = false
 							Section["57"].Visible = false
@@ -3537,7 +3537,7 @@ function Library:CreateWindow(options)
 							scripte.Parent.Visible = true
 						else
 							darknessPicker.Visible = false
-							colourWheel.Visible = false
+							colourWheel.Visible = false;GUI.CanDrag = true;Tab["1b"]["ScrollingEnabled"] = true
 
 							Section["4a"].Visible = true
 							Section["57"].Visible = true
