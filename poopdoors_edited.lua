@@ -218,14 +218,31 @@ print("Loading gui data")
 
 local currentver = "1.8.1"
 local gui_data = nil
-local gui_data_s, gui_data_e = pcall(function()
+local gui_data_s, gui_data_e = nil
+task.spawn(function()
+gui_data_s, gui_data_e = pcall(function()
 	gui_data = game:HttpGet(("https://raw.githubusercontent.com/mstudio45/poopdoors_edited/main/gui_data.json"), true)
 	gui_data = game:GetService("HttpService"):JSONDecode(gui_data)
 end)
 if gui_data_e then
 	oldwarnmessage("POOPDOORS EDITED v"..currentver, "Failed to get script data.", 10)
 end
+if gui_data ~= nil and gui_data_s then
+	
+		if currentver ~= gui_data.ver or gui_data.ver ~= currentver then
+print("Outdated version loaded")
+			warnmessage("POOPDOORS EDITED v"..currentver, "You are using an outdated version of this script.", "", 10) 
+			--loadstring(game:HttpGet((gui_data.loadstring.."?" .. tostring(math.random(0, 9999999)) ),true))()
+			--return
+		--else
+			--currentver = tostring(gui_data.ver)
+		end
 
+	oldnormalmessage("INFO", gui_data.changelog, 20)
+
+	
+end
+end)
 print("Checking if loaded or outdated and place id")
 
 if POOPDOORSLOADED == true then 
@@ -251,24 +268,10 @@ print("Not in doors")
 	oldwarnmessage("POOPDOORS EDITED v"..currentver, "You need to join DOORS to run this script.", 10) 
 	return
 end
-if gui_data ~= nil then
-	if gui_data_s then
-		if currentver ~= gui_data.ver or gui_data.ver ~= currentver then
-print("Outdated version loaded")
-			warnmessage("POOPDOORS EDITED v"..currentver, "You are using an outdated version of this script", "Loading latest version.", 10) 
-			loadstring(game:HttpGet((gui_data.loadstring.."?" .. tostring(math.random(0, 9999999)) ),true))()
-			return
-		else
-			currentver = tostring(gui_data.ver)
-		end
-	end
-end
+
 
 pcall(function() getgenv().POOPDOORSLOADED = true end)
 normalmessage("POOPDOORS EDITED v"..currentver, "Loading script...", "", 2)
-if gui_data ~= nil and gui_data_s then
-	oldnormalmessage("INFO", gui_data.changelog, 20)
-end
 
 print("Loading variables")
 
