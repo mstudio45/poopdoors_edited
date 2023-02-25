@@ -253,6 +253,8 @@ if gui_data ~= nil and gui_data_s then
 	oldnormalmessage("INFO", gui_data.changelog, 20)
 end
 
+print("Loading variables")
+
 -- credits alan1508 on v3erm
 do task.spawn(function()if hookfunction then local a;a=hookfunction(game:GetService("ContentProvider").PreloadAsync,function(b,c,d)if table.find(c,game:GetService("CoreGui"))then local e=function(e,f)if e:match("^rbxasset://")or e:match("^rbxthumb://")then return d(e,f)end end;warn("Anticheat Check Detected")return a(b,c,e)end;return a(b,c,d)end)end end)end
 
@@ -693,6 +695,7 @@ function esp(what,color,core,name)
 	return ret 
 end
 
+print("Loadin GUI")
 
 local GUIWindow = Library:CreateWindow({
 	Name = "POOPDOORS EDITED v".. currentver,
@@ -712,7 +715,8 @@ local scriptLoaded = false
 -- Config system
 local curautoloadtextlabel
 if isfolder and makefolder and listfiles and writefile and delfile then
-	local POOPDOORS_EDITED_FOLDER_NAME = "POOPDOORS_EDITED"
+	print("Loading config")
+local POOPDOORS_EDITED_FOLDER_NAME = "POOPDOORS_EDITED"
 	local function checkdir() if not isfolder(POOPDOORS_EDITED_FOLDER_NAME) then makefolder(POOPDOORS_EDITED_FOLDER_NAME) end end
 	checkdir()
 
@@ -983,7 +987,7 @@ local newnotificationsettings = window_guisettings_tab:CreateSection({
 })
 
 local CustomNotificationSoundINotifs = false
-task	.spawn(function()task.wait(1)CustomNotificationSoundINotifs = true end)
+task.spawn(function()task.wait(1)CustomNotificationSoundINotifs = true end)
 local CustomNewNotificationSoundId = newnotificationsettings:AddTextbox({
 	Name = "Custom Notification Sound",
 	Value = "10469938989",
@@ -1047,7 +1051,7 @@ local oldnotificationsettings = window_guisettings_tab:CreateSection({
 })
 
 local CustomOldNotificationSoundINotifs = false
-task	.spawn(function()task.wait(1)CustomOldNotificationSoundINotifs = true end)
+task.spawn(function()task.wait(1)CustomOldNotificationSoundINotifs = true end)
 local CustomOldNotificationSoundID = oldnotificationsettings:AddTextbox({
 	Name = "Custom Notification Sound",
 	Value = "4590657391",
@@ -1122,7 +1126,7 @@ if RequestFunction then
 		end
 	})
 end
-
+print("Loading Player tab")
 task.spawn(function()
 	--	repeat task.wait(1) until flags.anticheatbypass == true
 	local nocliptoggle = window_player:AddToggle({
@@ -1325,6 +1329,7 @@ task.spawn(function()
 	end)
 end)
 
+print("Loading ESP tab")
 window_esp:AddButton({
 	Name = "Clear ESP",
 	Callback = function()
@@ -2080,6 +2085,8 @@ local goldespvaluebtn = window_esp:AddSlider({
 })
 buttons.goldespvalue = goldespvaluebtn
 
+print("Loading Entities tab")
+
 local hintrushbtn = window_entities:AddToggle({
 	Name = "Notify Entities",
 	Value = false,
@@ -2334,6 +2341,8 @@ workspace.ChildAdded:Connect(function(inst)
 	end--]]
 end)
 
+print("Loading rooms (doors) tab")
+
 local noseekarmsfirebtn = window_roomsdoors:AddToggle({
 	Name = "No Seek Arms & Fire",
 	Value = false,
@@ -2489,6 +2498,8 @@ window_roomsdoors:AddButton({
 		end
 	end
 })
+
+print("Loading misc tab")
 
 local nogatesbtn = window_misc:AddToggle({
 	Name = "Delete Gates",
@@ -3372,7 +3383,7 @@ if #game.Players:GetChildren() <= 1 or #game.Players:GetChildren() == 0 then
 		end
 	})
 end
-
+print("Loading anticheat bypasses tab")
 window_anticheatbyppasses:AddLabel({ Name = "Method 1 Info:"})
 window_anticheatbyppasses:AddLabel({ Name = "This method will make it so"})
 window_anticheatbyppasses:AddLabel({ Name = " you CANT pick up ANYTHING so"})
@@ -3399,6 +3410,7 @@ window_anticheatbyppasses:AddButton({
 	end
 })
 
+print("Loading experimentals tab")
 if syn then
 	if syn.queue_on_teleport then
 		window_experimentals:AddButton({
@@ -3434,6 +3446,7 @@ local window_rooms = GUI:CreateSection({
 	Name = "The Rooms"
 })
 
+print("Loading the rooms tab")
 if game.ReplicatedStorage:WaitForChild("GameData"):WaitForChild("Floor").Value == "Rooms" then
 	-- anti afk by geodude#2619
 	task.spawn(function()
@@ -3724,6 +3737,7 @@ if inRooms == false then
 	window_rooms:AddLabel({ Name = "You need to be in Rooms for this\nsection." })
 end
 
+print("Loading trolling tab")
 local dropdownTrolling = window_Trolling:AddDropdown({
 	Name = 'Body Positions (Server-Side)',
 	List = {
@@ -3811,6 +3825,7 @@ game["Run Service"].RenderStepped:Connect(function()
 	end
 end)
 
+print("Loading gui toggle & close function")
 function togglegui()
 	game:GetService("VirtualInputManager"):SendKeyEvent(true, Enum.KeyCode.RightShift, false, game)
 	task.wait()
@@ -3856,7 +3871,8 @@ window_guisettings:AddButton({
 })
 
 if isMobile == true then -- and mobiletoggles then 
-	MobileButton["1"] = Instance.new("ScreenGui");
+	print("Loading mobile toggle button")
+MobileButton["1"] = Instance.new("ScreenGui");
 	MobileButton["1"]["Name"] = randomString()
 	if get_hidden_gui or gethui then
 		local HIDEUI = get_hidden_gui or gethui
@@ -3943,11 +3959,13 @@ if isMobile == true then -- and mobiletoggles then
 	MobileButton["7"].Background.MouseButton1Down:Connect(function() togglegui() end)
 end
 
+
 task.spawn(function()
 	while WaitUntilTerminated(.1) do end
 	closegui()
 end)
 
+print("script loaded")
 scriptLoaded = true
 normalmessage(
 	"POOPDOORS EDITED v"..currentver, "Script loaded!", 
