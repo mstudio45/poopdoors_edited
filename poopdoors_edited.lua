@@ -228,8 +228,14 @@ end
 
 print("Checking if loaded or outdated and place id")
 
-if POOPDOORSLOADED == true then warnmessage("POOPDOORS EDITED v"..currentver, "GUI already loaded!", "", 10) return end
+if POOPDOORSLOADED == true then 
+warnmessage("POOPDOORS EDITED v"..currentver, "GUI already loaded!", "", 10) 
+print("GUI already loaded")
+return 
+end
+
 if game.PlaceId ~= 6839171747 and game.PlaceId == 6516141723 then 
+print("Not in a doors game")
 	--warnmessage("POOPDOORS EDITED v"..currentver, "You need to join a game to run this script.", 10) 
 	confirmnotification("POOPDOORS EDITED v"..currentver, "Do you want to join a game?", 15, function(state)
 		if state == true then
@@ -241,12 +247,14 @@ if game.PlaceId ~= 6839171747 and game.PlaceId == 6516141723 then
 	return
 end
 if game.PlaceId ~= 6839171747 and game.PlaceId ~= 6516141723 then 
+print("Not in doors")
 	oldwarnmessage("POOPDOORS EDITED v"..currentver, "You need to join DOORS to run this script.", 10) 
 	return
 end
 if gui_data ~= nil then
 	if gui_data_s then
 		if currentver ~= gui_data.ver or gui_data.ver ~= currentver then
+print("Outdated version loaded")
 			warnmessage("POOPDOORS EDITED v"..currentver, "You are using an outdated version of this script", "Loading latest version.", 10) 
 			loadstring(game:HttpGet((gui_data.loadstring.."?" .. tostring(math.random(0, 9999999)) ),true))()
 			return
@@ -255,6 +263,7 @@ if gui_data ~= nil then
 		end
 	end
 end
+
 pcall(function() getgenv().POOPDOORSLOADED = true end)
 normalmessage("POOPDOORS EDITED v"..currentver, "Loading script...", "", 2)
 if gui_data ~= nil and gui_data_s then
