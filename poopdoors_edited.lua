@@ -113,6 +113,8 @@ function oldwarnmessage(title, text, timee)
 end
 function randomString()local length = math.random(10,20);local array = {};for i = 1, length do array[i] = string.char(math.random(32, 126)) end;return table.concat(array);end
 
+print("Loading path module")
+
 local PathModule = {}
 local PathfindingService = game:GetService("PathfindingService")
 local VisualizerFolder = game.Workspace:FindFirstChild("PDVisualizer")
@@ -192,6 +194,8 @@ function PathModule.new(char, goal, agentParameters, jumpingAllowed, offset)
 	end
 end
 
+print("Loading UI Library")
+
 --local library = loadstring(game:HttpGet(--[['https://pastebin.com/raw/vPWzQEC8'--]]"https://raw.githubusercontent.com/mstudio45/poopdoors_edited/main/library.lua"))()
 local isMobile = false
 local mobiletoggles,mobiletoggleerr=pcall(function()
@@ -210,6 +214,8 @@ end
 --	Library = loadstring(game:GetObjects("rbxassetid://7657867786")[1].Source)()
 --end
 
+print("Loading gui data")
+
 local currentver = "1.8.1"
 local gui_data = nil
 local gui_data_s, gui_data_e = pcall(function()
@@ -219,6 +225,8 @@ end)
 if gui_data_e then
 	oldwarnmessage("POOPDOORS EDITED v"..currentver, "Failed to get script data.", 10)
 end
+
+print("Checking if loaded or outdated and place id")
 
 if POOPDOORSLOADED == true then warnmessage("POOPDOORS EDITED v"..currentver, "GUI already loaded!", "", 10) return end
 if game.PlaceId ~= 6839171747 and game.PlaceId == 6516141723 then 
