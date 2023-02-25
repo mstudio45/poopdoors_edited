@@ -3488,12 +3488,13 @@ function Library:CreateWindow(options)
 					end)
 
 					darknessPicker.MouseButton1Down:Connect(function()
-						GUI.CanDrag = false
+						GUI.CanDrag = false;
+						buttonDown =true
 						movingSlider = true
 						Tab["1b"]["ScrollingEnabled"] = false;
 					end)
 					
-					colourWheel.MouseButton1Up:Connect(function()
+					--[[ colourWheel.MouseButton1Up:Connect(function()
 						GUI.CanDrag = true
 						buttonDown = false
 						Tab["1b"]["ScrollingEnabled"] = true;
@@ -3501,29 +3502,22 @@ function Library:CreateWindow(options)
 
 					darknessPicker.MouseButton1Up:Connect(function()
 						GUI.CanDrag = true
+						--buttonDown = false
 						movingSlider = false
 						Tab["1b"]["ScrollingEnabled"] = true;
-					end)
+					end) --]]
 					
 					local InputEndeduis = nil
 					InputEndeduis = uis.InputEnded:Connect(function(input)
-						if scriptrunning == true then
-							if (input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch) and movingSlider then
-								movingSlider = false 
-								Tab["1b"]["ScrollingEnabled"] = true;
-							end
+						--if scriptrunning == true then
+							
 							if (input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch) and buttonDown then
-								buttonDown = false
+								buttonDown = false;movingSlider = false;GUI.CanDrag = true
 								Tab["1b"]["ScrollingEnabled"] = true;
 							end
-							if (input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch) and buttonDown and movingSlider then
-								GUI.CanDrag = true
-								Tab["1b"]["ScrollingEnabled"] = true;
-								
-							end
-						else
-							InputEndeduis:Disconnect()
-						end
+							--else
+						--	InputEndeduis:Disconnect()
+						----end
 					end)
 
 					local toggled = false
