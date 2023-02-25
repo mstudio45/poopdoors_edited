@@ -210,17 +210,17 @@ end
 --	Library = loadstring(game:GetObjects("rbxassetid://7657867786")[1].Source)()
 --end
 
-local currentver = "1.8"
+local currentver = "1.8.1"
 local gui_data = nil
-local s,e = pcall(function()
+local gui_data_s, gui_data_e = pcall(function()
 	gui_data = game:HttpGet(("https://raw.githubusercontent.com/mstudio45/poopdoors_edited/main/gui_data.json"), true)
 	gui_data = game:GetService("HttpService"):JSONDecode(gui_data)
 end)
-if e then
+if gui_data_e then
 	oldwarnmessage("POOPDOORS EDITED v"..currentver, "Failed to get script data.", 10)
 end
 
-if POOPDOORSLOADED == true then warnmessage("POOPDOORS EDITED v"..currentver, "GUI already loaded!", "", 10) return end
+if POOPDOORSLOADED == true and gui_data_s then warnmessage("POOPDOORS EDITED v"..currentver, "GUI already loaded!", "", 10) return end
 if game.PlaceId ~= 6839171747 and game.PlaceId == 6516141723 then 
 	--warnmessage("POOPDOORS EDITED v"..currentver, "You need to join a game to run this script.", 10) 
 	confirmnotification("POOPDOORS EDITED v"..currentver, "Do you want to join a game?", 15, function(state)
@@ -237,12 +237,14 @@ if game.PlaceId ~= 6839171747 and game.PlaceId ~= 6516141723 then
 	return
 end
 if gui_data ~= nil then
-	if currentver ~= gui_data.ver or gui_data.ver ~= currentver then
-		warnmessage("POOPDOORS EDITED v"..currentver, "You are using an outdated version of this script", "Loading latest version.", 10) 
-		loadstring(game:HttpGet((gui_data.loadstring.."?" .. tostring(math.random(0, 9999999)) ),true))()
-		return
-	else
-		currentver = tostring(gui_data.ver)
+	if gui_data_s then
+		if currentver ~= gui_data.ver or gui_data.ver ~= currentver then
+			warnmessage("POOPDOORS EDITED v"..currentver, "You are using an outdated version of this script", "Loading latest version.", 10) 
+			loadstring(game:HttpGet((gui_data.loadstring.."?" .. tostring(math.random(0, 9999999)) ),true))()
+			return
+		else
+			currentver = tostring(gui_data.ver)
+		end
 	end
 end
 pcall(function() getgenv().POOPDOORSLOADED = true end)
@@ -491,6 +493,11 @@ function TracerESP(Color, instance)
 		end
 
 		instance.Destroying:Connect(function() ret.delete() end)
+		instance:GetPropertyChangedSignal("Parent"):Connect(function()
+			if not instance:IsDescendantOf(workspace) then
+				ret.delete()
+			end
+		end)
 		return ret
 	else
 		local ret = {}
@@ -879,27 +886,31 @@ if isfolder and makefolder and listfiles and writefile and delfile then
 	CONFIG_AUTO:AddButton({ 
 		Name = "Auto Load Config", 
 		Callback = function() 
-			local s,e
-			repeat task.wait()
-				s,e = pcall(function()
-					writefile(POOPDOORS_EDITED_FOLDER_NAME.."/autostart.txt", ConfigDropdown:Get())
-				end)
-			until not e and s
-			curautoloadtextlabel:Set(ConfigDropdown:Get())
-			oldnormalmessage("CONFIGS", "Config called '"..ConfigDropdown:Get().."' will automaticly load now.", 5)
+			local s,e = pcall(function()
+				writefile(POOPDOORS_EDITED_FOLDER_NAME.."/autostart.txt", ConfigDropdown:Get())
+			end)
+			if e then
+				warn(e)
+				oldwarnmessage("CONFIGS", "There was an issue while setting the config called '"..ConfigDropdown:Get().."' to auto load.", 5)
+			else
+				curautoloadtextlabel:Set(ConfigDropdown:Get())
+				oldnormalmessage("CONFIGS", "Config called '"..ConfigDropdown:Get().."' will automaticly load now.", 5)
+			end
 		end 
 	})
 	CONFIG_AUTO:AddButton({ 
 		Name = "Reset Auto Loading Config", 
 		Callback = function() 
-			local s,e
-			repeat task.wait()
-				s,e = pcall(function()
-					delfile(POOPDOORS_EDITED_FOLDER_NAME.."/autostart.txt")
-				end)
-			until not e and s
-			oldnormalmessage("CONFIGS", "Config called '"..curautoloadtextlabel:Get().."' will not automaticly load anymore.", 5)
-			curautoloadtextlabel:Set("None")
+			local s,e = pcall(function()
+				delfile(POOPDOORS_EDITED_FOLDER_NAME.."/autostart.txt")
+			end)
+			if e then
+				warn(e)
+				oldwarnmessage("CONFIGS", "There was an issue while deleted the config called '"..ConfigDropdown:Get().."'.", 5)
+			else
+				oldnormalmessage("CONFIGS", "Config called '"..curautoloadtextlabel:Get().."' will not automaticly load anymore.", 5)
+				curautoloadtextlabel:Set("None")
+			end
 		end 
 	})
 
@@ -3771,7 +3782,7 @@ end
 
 task.spawn(function()
 	while true do
-	        if dropdownTrolling:Get() == "Twitching" then
+		if dropdownTrolling:Get() == "Twitching" then
 			game:GetService("ReplicatedStorage").EntityInfo.MotorReplication:FireServer(0, 0, 180, false)
 		end
 		task.wait(math.random(0, 0.9))
