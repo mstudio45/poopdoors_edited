@@ -183,8 +183,8 @@ function Library:tween(object, goal, Callback, tweeninfo)
 end
 
 
-function ResizeScrollingFrame(ScrollingFrame, UiListUiGrid)
-	ScrollingFrame.CanvasSize = UDim2.new(0, 0, 0, UiListUiGrid.AbsoluteContentSize.Y + 10) 
+function ResizeScrollingFrame(ScrollingFrame, UiListUiGrid, offset)
+	ScrollingFrame.CanvasSize = UDim2.new(0, 0, 0, UiListUiGrid.AbsoluteContentSize.Y + offset or 10) 
 end
 function getAbsoluteSize(frame)
 	local totalSize = Vector2.new()
@@ -219,12 +219,12 @@ function Library:CreateWindow(options)
 	local Notifications = {
 
 	}
-	
+
 	local function createObject(a,b,c)
 		local ee = Instance.new(a,b)
 		ee.Name = c
 	end
-	
+
 	--300
 	-- Main Frame
 	do
@@ -257,7 +257,7 @@ function Library:CreateWindow(options)
 		GUI["2"]["Position"] = UDim2.fromOffset((Viewport.X / 2) - (GUI["2"]["Size"].X.Offset / 2), (Viewport.Y / 2) - (GUI["2"]["Size"].Y.Offset / 2));
 		GUI["2"]["Name"] = [[Main]];
 		createObject("Color3Value", GUI["2"], "Background_Color")
-		
+
 		-- StarterGui.ML.Main.UICorner
 		GUI["3"] = Instance.new("UICorner", GUI["2"]);
 		GUI["3"]["CornerRadius"] = UDim.new(0, 6);
@@ -292,7 +292,7 @@ function Library:CreateWindow(options)
 		GUI["6"]["Size"] = UDim2.new(1, 0, 0, 30);
 		GUI["6"]["Name"] = [[TopBar]];
 		createObject("Color3Value", GUI["6"], "Topbar_Color")
-		
+
 		-- StarterGui.ML.Main.TopBar.UICorner
 		GUI["7"] = Instance.new("UICorner", GUI["6"]);
 		GUI["7"]["CornerRadius"] = UDim.new(0, 6);
@@ -306,7 +306,7 @@ function Library:CreateWindow(options)
 		GUI["8"]["Position"] = UDim2.new(0, 0, 1, 0);
 		GUI["8"]["Name"] = [[Extension]];
 		createObject("Color3Value", GUI["8"], "Topbar_Color")
-		
+
 		-- StarterGui.ML.Main.TopBar.Title
 		GUI["9"] = Instance.new("TextLabel", GUI["6"]);
 		GUI["9"]["TextWrapped"] = true;
@@ -406,7 +406,7 @@ function Library:CreateWindow(options)
 		GUI["e"]["Position"] = UDim2.new(0, 0, 0, 30);
 		GUI["e"]["Name"] = [[Navigation]];
 		createObject("Color3Value", GUI["e"], "Background_Second_Color")
-		
+
 		-- StarterGui.ML.Main.Navigation.UICorner
 		GUI["f"] = Instance.new("UICorner", GUI["e"]);
 		GUI["f"]["CornerRadius"] = UDim.new(0, 6);
@@ -418,7 +418,7 @@ function Library:CreateWindow(options)
 		GUI["10"]["Size"] = UDim2.new(1, 0, 0, 20);
 		GUI["10"]["Name"] = [[Hide]];
 		createObject("Color3Value", GUI["10"], "Background_Second_Color")
-		
+
 		-- StarterGui.ML.Main.Navigation.Hide2
 		GUI["11"] = Instance.new("Frame", GUI["e"]);
 		GUI["11"]["BorderSizePixel"] = 0;
@@ -735,9 +735,9 @@ function Library:CreateWindow(options)
 
 			Section.ResizeFunc = function()
 				task.spawn(function()
-					Section["14"].Size = UDim2.new(1, 0, 0, Section["19"].AbsoluteContentSize.Y + 10) 
+					Section["14"].Size = UDim2.new(1, 0, 0, Section["19"].AbsoluteContentSize.Y + 26) 
 					task.wait()
-					ResizeScrollingFrame(Tab["1b"] , Tab["22"])
+					ResizeScrollingFrame(Tab["1b"] , Tab["22"], 26)
 				end)
 			end
 
@@ -1644,7 +1644,383 @@ function Library:CreateWindow(options)
 
 				return Dropdown
 			end
+			
+			function Section:AddOpenDropdown(options)
+				options = Library:validate({
+					Name = "Dropdown",
+					Value = "",
+					List = {},
+					Callback = function(v) end
+				}, options or {})
 
+				local Dropdown = {
+					Hover = false,
+					MouseDown = false,
+					Items = {},
+					Opened = true,
+					CurrentItem = nil,
+					ToggleDebounce = true,
+					HoveringItem = false
+				}
+
+				if options.Value == "" then
+					options.Value = options.Name
+					if #options.List ~= 0 then
+						options.Value = options.List[1]
+					end
+				end
+
+				-- Render
+				do
+					Section:AddLabel({
+						Name = options["Name"],
+						Position = "Left"
+					})
+					-- StarterGui.ML.Main.Content.HomeTab.Dropdown (frame)
+					Dropdown["37"] = Instance.new("TextButton", Section["14"]);
+					Dropdown["37"]["BackgroundColor3"] = Color3.fromRGB(27, 27, 27);
+					Dropdown["37"]["Size"] = UDim2.new(0.95, 0, 0, 32);
+					Dropdown["37"]["ClipsDescendants"] = true;
+					Dropdown["37"]["Name"] = [[Dropdown]];
+					Dropdown["37"]["Text"] = "";
+					Dropdown["37"]["Visible"] = true;
+					Dropdown["37"]["Active"] = false;
+					
+					-- StarterGui.ML.Main.Content.HomeTab.Dropdown.UICorner
+					Dropdown["38"] = Instance.new("UICorner", Dropdown["37"]);
+					Dropdown["38"]["CornerRadius"] = UDim.new(0, 4);
+
+					-- StarterGui.ML.Main.Content.HomeTab.Dropdown.UIStroke
+					Dropdown["39"] = Instance.new("UIStroke", Dropdown["37"]);
+					Dropdown["39"]["Color"] = Color3.fromRGB(82, 82, 82);
+					Dropdown["39"]["ApplyStrokeMode"] = Enum.ApplyStrokeMode.Border;
+
+					-- StarterGui.ML.Main.Content.HomeTab.Dropdown.Title
+					Dropdown["3a"] = Instance.new("TextLabel", Dropdown["37"]);
+					Dropdown["3a"]["TextWrapped"] = true;
+					Dropdown["3a"]["AutomaticSize"] = Enum.AutomaticSize.Y;
+					Dropdown["3a"]["TextYAlignment"] = Enum.TextYAlignment.Top;
+					--	Dropdown["3a"]["TextTruncate"] = Enum.TextTruncate.AtEnd;
+					Dropdown["3a"]["TextXAlignment"] = Enum.TextXAlignment.Left;
+					Dropdown["3a"]["BackgroundColor3"] = Color3.fromRGB(255, 255, 255);
+					Dropdown["3a"]["TextSize"] = 14;
+					Dropdown["3a"]["TextColor3"] = Color3.fromRGB(255, 255, 255);
+					Dropdown["3a"]["Size"] = UDim2.new(1, 0, 0, 20);
+					Dropdown["3a"]["Text"] = options["Value"];
+					Dropdown["3a"]["Name"] = [[Title]];
+					Dropdown["3a"]["Font"] = Enum.Font.Gotham;
+					Dropdown["3a"]["BackgroundTransparency"] = 1;
+
+					-- StarterGui.ML.Main.Content.HomeTab.Dropdown.UIPadding
+					Dropdown["3b"] = Instance.new("UIPadding", Dropdown["37"]);
+					Dropdown["3b"]["PaddingTop"] = UDim.new(0, 6);
+					Dropdown["3b"]["PaddingRight"] = UDim.new(0, 6);
+					Dropdown["3b"]["PaddingBottom"] = UDim.new(0, 6);
+					Dropdown["3b"]["PaddingLeft"] = UDim.new(0, 6);
+
+					-- StarterGui.ML.Main.Content.HomeTab.Dropdown.Icon
+					Dropdown["3c"] = Instance.new("ImageLabel", Dropdown["37"]);
+					Dropdown["3c"]["Selectable"] = true;
+					Dropdown["3c"]["AnchorPoint"] = Vector2.new(1, 0);
+					Dropdown["3c"]["Image"] = [[rbxassetid://6764432408]];
+					Dropdown["3c"]["ImageRectSize"] = Vector2.new(50, 50);
+					Dropdown["3c"]["LayoutOrder"] = 3;
+					Dropdown["3c"]["Size"] = UDim2.new(0, 20, 0, 20);
+					Dropdown["3c"]["Active"] = true;
+					Dropdown["3c"]["Name"] = [[Icon]];
+					Dropdown["3c"]["ImageRectOffset"] = Vector2.new(200, 550);
+					Dropdown["3c"]["BackgroundTransparency"] = 1;
+					Dropdown["3c"]["Position"] = UDim2.new(1, 0, 0, 0);
+					Dropdown["3c"]["Visible"] = false
+					
+					-- StarterGui.ML.Main.Content.HomeTab.Button.Title
+					Dropdown["1freeererer"] = Instance.new("TextBox", Dropdown["37"]);
+					Dropdown["1freeererer"]["TextWrapped"] = true;
+					Dropdown["1freeererer"]["AutomaticSize"] = Enum.AutomaticSize.Y;
+					Dropdown["1freeererer"]["TextYAlignment"] = Enum.TextYAlignment.Center;
+					--Dropdown["1freeererer"]["TextTruncate"] = Enum.TextTruncate.AtEnd;
+					Dropdown["1freeererer"]["TextXAlignment"] = Enum.TextXAlignment.Left;
+					Dropdown["1freeererer"]["BackgroundColor3"] = Color3.fromRGB(255, 255, 255);
+					Dropdown["1freeererer"]["TextSize"] = 14;
+					Dropdown["1freeererer"]["TextColor3"] = Color3.fromRGB(255, 255, 255);
+					Dropdown["1freeererer"]["Size"] = UDim2.new(1, 0, 0, 26);
+					Dropdown["1freeererer"]["Text"] = "";
+					Dropdown["1freeererer"]["PlaceholderText"] = "Search";
+					Dropdown["1freeererer"]["MultiLine"] = false;
+					Dropdown["1freeererer"]["ClearTextOnFocus"] = false;
+					Dropdown["1freeererer"]["Name"] = [[SearchBar]];
+					Dropdown["1freeererer"]["Font"] = Enum.Font.Gotham;
+					Dropdown["1freeererer"]["BackgroundColor3"] = Color3.fromRGB(30, 30, 30);
+					Dropdown["1freeererer"]["Position"] = UDim2.new(0, 0, 0, 32)
+					
+					-- StarterGui.ML.Main.Content.HomeTab.Button.UICorner
+					Dropdown["1eererrerererere"] = Instance.new("UICorner", Dropdown["1freeererer"]);
+					Dropdown["1eererrerererere"]["CornerRadius"] = UDim.new(0, 4);
+
+					-- StarterGui.ML.Main.Content.HomeTab.Button.UIStroke
+					Dropdown["1eererrerererere"] = Instance.new("UIStroke", Dropdown["1freeererer"]);
+					Dropdown["1eererrerererere"]["Color"] = Color3.fromRGB(82, 82, 82);
+					Dropdown["1eererrerererere"]["ApplyStrokeMode"] = Enum.ApplyStrokeMode.Border;
+					
+					-- StarterGui.ML.Main.Content.HomeTab.Dropdown.OptionHolder
+					Dropdown["3d"] = Instance.new("ScrollingFrame", Dropdown["37"]);
+					Dropdown["3d"]["BackgroundColor3"] = Color3.fromRGB(255, 255, 255);
+					Dropdown["3d"]["BackgroundTransparency"] = 1;
+					Dropdown["3d"]["Size"] = UDim2.new(1, 0, 1, -24);
+					Dropdown["3d"]["Position"] = UDim2.new(0, 0, 0, 26 + 32);
+					Dropdown["3d"]["Visible"] = true;
+					Dropdown["3d"]["Name"] = [[OptionHolder]];
+					Dropdown["3d"]["ScrollBarThickness"] = 0;
+
+					-- StarterGui.ML.Main.Content.HomeTab.Dropdown.OptionHolder.UIListLayout
+					Dropdown["3e"] = Instance.new("UIListLayout", Dropdown["3d"]);
+					Dropdown["3e"]["Padding"] = UDim.new(0, 6);
+					Dropdown["3e"]["SortOrder"] = Enum.SortOrder.LayoutOrder;
+					
+					-- StarterGui.ML.Main.Content.HomeTab.Dropdown.OptionHolder.Option
+					Dropdown["4dreerereererer"] = Instance.new("TextButton", Dropdown["3d"]);
+					Dropdown["4dreerereererer"]["AutomaticSize"] = Enum.AutomaticSize.Y;
+					Dropdown["4dreerereererer"]["TextYAlignment"] = Enum.TextYAlignment.Top;
+					--Dropdown["4d"]["TextTruncate"] = Enum.TextTruncate.AtEnd;
+					Dropdown["4dreerereererer"]["BackgroundTransparency"] = 1;
+					Dropdown["4dreerereererer"]["TextSize"] = 14;
+					Dropdown["4dreerereererer"]["TextColor3"] = Color3.fromRGB(203, 203, 203);
+					Dropdown["4dreerereererer"]["Size"] = UDim2.new(1, 0, 0, 3);
+					Dropdown["4dreerereererer"]["Text"] = "";
+					Dropdown["4dreerereererer"]["Name"] = "invismiddlesection";
+					Dropdown["4dreerereererer"]["Font"] = Enum.Font.Gotham;
+
+					-- StarterGui.ML.Main.Content.HomeTab.Dropdown.OptionHolder.Option.UICorner
+					Dropdown["4ererrewereerd_UICorner"] = Instance.new("UICorner", Dropdown["4dreerereererer"]);
+					Dropdown["4ererrewereerd_UICorner"]["CornerRadius"] = UDim.new(0, 3);
+					
+				end
+
+				-- Methods
+				function Dropdown:Set(Name)
+					pcall(function()--if typeof(name) == "string" then
+						if string.len(Name) ~= 0 then
+							Dropdown["3a"]["Text"] = tostring(Name)
+						end
+					end)
+				end
+
+				function Dropdown:Get()
+					return Dropdown["3a"]["Text"]
+					--return Dropdown.CurrentItem.id
+				end
+
+				function Dropdown:Resize(counte)
+					local count = 0
+					if counte and typeof(counte) == "number" then
+						count = counte
+					else
+						count = 0
+						for i,v in pairs(Dropdown.Items) do
+							if v ~= nil then
+								count += 1
+							end
+						end
+					end
+					
+					ResizeScrollingFrame(Dropdown["3d"], Dropdown["3e"], 32)
+					if count > 0 and Dropdown.Opened == true then
+						if count > 5 then
+							Library:tween(Dropdown["37"], {Size = UDim2.new(0.95, 0, 0, 30 + (5 * 32) + 4)}, function()
+								task.wait()
+								Section.ResizeFunc()
+							end)
+						else
+							Library:tween(Dropdown["37"], {Size = UDim2.new(0.95, 0, 0, 30 + (count * 32) + 4)}, function()
+								task.wait()
+								Section.ResizeFunc()
+							end)
+						end
+					else
+						Library:tween(Dropdown["37"], {Size = UDim2.new(0.95, 0, 0, 30)}, function()
+							task.wait()
+							Section.ResizeFunc()
+						end)
+					end
+				end
+
+				function Dropdown:Add(id, value)
+					if Dropdown.Items[id] ~= nil then
+						if Dropdown["3d"]:FindFirstChild(id) then
+							return
+						else
+							Dropdown.Items[id] = nil
+						end
+					end
+
+					local Item = {
+						Hover = false,
+						MouseDown = false
+					}
+
+					Dropdown.Items[id] = {
+						instance = {},
+						value = value or id,
+						id = id,
+						Connections = {}
+					}
+
+					-- StarterGui.ML.Main.Content.HomeTab.Dropdown.OptionHolder.Option
+					Dropdown.Items[id].instance["4d"] = Instance.new("TextButton", Dropdown["3d"]);
+					Dropdown.Items[id].instance["4d"]["AutomaticSize"] = Enum.AutomaticSize.Y;
+					Dropdown.Items[id].instance["4d"]["TextYAlignment"] = Enum.TextYAlignment.Top;
+					--Dropdown.Items[id].instance["4d"]["TextTruncate"] = Enum.TextTruncate.AtEnd;
+					Dropdown.Items[id].instance["4d"]["BackgroundColor3"] = Color3.fromRGB(57, 57, 57);
+					Dropdown.Items[id].instance["4d"]["TextSize"] = 14;
+					Dropdown.Items[id].instance["4d"]["TextColor3"] = Color3.fromRGB(203, 203, 203);
+					Dropdown.Items[id].instance["4d"]["Size"] = UDim2.new(1, 0, 0, 16);
+					Dropdown.Items[id].instance["4d"]["Text"] = id;
+					Dropdown.Items[id].instance["4d"]["Name"] = id;
+					Dropdown.Items[id].instance["4d"]["Font"] = Enum.Font.Gotham;
+
+					-- StarterGui.ML.Main.Content.HomeTab.Dropdown.OptionHolder.Option.UIStroke
+					Dropdown.Items[id].instance["4d_UIStroke"] = Instance.new("UIStroke", Dropdown.Items[id].instance["4d"]);
+					Dropdown.Items[id].instance["4d_UIStroke"]["Color"] = Color3.fromRGB(82, 82, 82);
+					Dropdown.Items[id].instance["4d_UIStroke"]["ApplyStrokeMode"] = Enum.ApplyStrokeMode.Border;
+
+					-- StarterGui.ML.Main.Content.HomeTab.Dropdown.OptionHolder.Option.UICorner
+					Dropdown.Items[id].instance["4d_UICorner"] = Instance.new("UICorner", Dropdown.Items[id].instance["4d"]);
+					Dropdown.Items[id].instance["4d_UICorner"]["CornerRadius"] = UDim.new(0, 3);
+
+					Dropdown.Items[id].instance["4d"]["Size"] = UDim2.new(Dropdown.Items[id].instance["4d"]["Size"].X.Scale, Dropdown.Items[id].instance["4d"]["Size"].X.Offset, 0, math.huge)
+					Dropdown.Items[id].instance["4d"]["Size"] = UDim2.new(Dropdown.Items[id].instance["4d"]["Size"].X.Scale, Dropdown.Items[id].instance["4d"]["Size"].X.Offset, 0, Dropdown.Items[id].instance["4d"].TextBounds.Y)
+					Dropdown.Items[id].instance["4d"]["Size"] = UDim2.new(Dropdown.Items[id].instance["4d"]["Size"].X.Scale, Dropdown.Items[id].instance["4d"]["Size"].X.Offset, 0, Dropdown.Items[id].instance["4d"].TextBounds.Y + (26-14))
+
+					table.insert(
+						Dropdown.Items[id].Connections,
+						Dropdown.Items[id].instance["4d"].MouseButton1Click:Connect(function()
+							if Dropdown.Items[id] == nil then return end
+
+							Library:tween(Dropdown.Items[id].instance["4d_UIStroke"], {Color = Color3.fromRGB(200, 200, 200)})
+
+							Dropdown.CurrentItem = Dropdown.Items[id]
+							--if Dropdown.CurrentItem ~= nil then
+							Dropdown:Set(Dropdown.CurrentItem.id)
+							options.Callback(Dropdown.CurrentItem.id)
+							--Dropdown:Toggle()
+							--end
+							task.wait(0.05)
+							Library:tween(Dropdown.Items[id].instance["4d_UIStroke"], {Color = Color3.fromRGB(82, 82, 82)})
+						end)
+					)
+
+					Dropdown:Resize()
+				end
+				
+				--[[function Dropdown:Toggle()
+					if Dropdown.ToggleDebounce == true then return end
+					Dropdown.ToggleDebounce = true
+
+					if Dropdown.Opened then
+						Library:tween(Dropdown["3c"], {Rotation = 0})
+						Library:tween(Dropdown["37"], {Size = UDim2.new(0.95, 0, 0, 30)}, function()
+							Dropdown["3d"]["Visible"] = false
+							Dropdown.Opened = false
+							--Dropdown.ToggleDebounce = false
+							Section.ResizeFunc()
+						end)
+					else
+						local count = 0
+						for i,v in pairs(Dropdown.Items) do
+							if v ~= nil then
+								count += 1
+							end
+						end
+
+						if count > 0 then
+							Dropdown["3d"]["Visible"] = true
+							Library:tween(Dropdown["3c"], {Rotation = 180})
+							Library:tween(Dropdown["37"], {Size = UDim2.new(0.95, 0, 0, 30 + (count * 32) + 4)}, function()
+								Dropdown.Opened = true
+								--Dropdown.ToggleDebounce = false
+								Section.ResizeFunc()
+							end)
+						end
+					end
+				end--]]
+				
+				function Dropdown:Remove(id)
+					if Dropdown.Items[id] ~= nil then
+						if Dropdown.CurrentItem ~= nil then
+							if Dropdown.CurrentItem.id == id then
+								Dropdown.CurrentItem = nil
+							end
+						end
+
+						for _, con in pairs(Dropdown.Items[id].Connections) do
+							pcall(function()
+								con:Disconnect()
+							end)
+						end
+						for _,v in pairs(Dropdown.Items[id].instance) do
+							pcall(function()
+								v:Destroy()
+							end)
+						end
+						Dropdown.Items[id] = nil
+					end
+
+					Dropdown:Resize()
+				end
+
+				function Dropdown:Clear()
+					for i,v in pairs(Dropdown.Items) do
+						Dropdown:Remove(i)
+					end
+					Dropdown.CurrentItem = nil
+					Dropdown.Items = {}
+				end
+				
+				function Dropdown:UpdateList(List)
+					if typeof(List) == "table" then
+						Dropdown:Clear()
+						for _, value in pairs(options["List"]) do
+							Dropdown:Add(value)
+						end
+					end
+				end
+				
+				-- Logic
+				do
+					local function Searching()
+						local scrollingframe = Dropdown["3d"]
+						local searchbar = Dropdown["1freeererer"]
+						
+						local function UpdateInputOfSearchText()
+							local InputText = string.upper(searchbar.Text)
+							local counte = 0
+							for _,button in pairs(scrollingframe:GetChildren()) do
+								if button:IsA("TextButton") then
+									if InputText == "" or string.find(string.upper(button.Name), InputText) ~= nil or button.Name == "invismiddlesection" then
+										button.Visible = true
+										counte += 1
+									else
+										button.Visible = false
+									end
+									task.wait()
+								end
+							end
+							
+							task.wait(.1)
+							Dropdown:Resize(counte)
+						end
+						
+						searchbar:GetPropertyChangedSignal("Text"):Connect(UpdateInputOfSearchText)
+					end
+					task.spawn(Searching);
+				end
+				
+				Dropdown:UpdateList(options["List"])
+				Section.ResizeFunc()
+				Dropdown:Resize()
+				return Dropdown
+			end
+			
 			return Section
 		end
 
@@ -2064,7 +2440,7 @@ function Library:CreateWindow(options)
 				Section["44"]["Position"] = UDim2.new(0, 0, 0.6797480583190918, 0);
 				Section["44"]["Name"] = [[PickTheme]];
 				createObject("Color3Value", Section["44"], "Background_Second_Color")
-				
+
 				-- StarterGui.ml.Main.Content.Preview Tab.Section.PickTheme.UIPadding
 				Section["45"] = Instance.new("UIPadding", Section["44"]);
 				Section["45"]["PaddingTop"] = UDim.new(0, 6);
@@ -2284,10 +2660,10 @@ function Library:CreateWindow(options)
 						Section["15"].Size = UDim2.new(1, 0, 0, k) 
 					end
 					task.wait()
-					ResizeScrollingFrame(Tab["1b"] , Tab["22"])
+					ResizeScrollingFrame(Tab["1b"] , Tab["22"], 26)
 				end)
 			end
-			
+
 			Section.__delete = function()
 				Section.ResizeFunc()
 				pcall(function()
@@ -2305,7 +2681,7 @@ function Library:CreateWindow(options)
 					end
 				end
 			end
-			
+
 			Section.ResizeFunc()
 		end
 
@@ -3469,7 +3845,7 @@ function Library:CreateWindow(options)
 							ColorSequenceKeypoint.new(0, hsv), 
 							ColorSequenceKeypoint.new(1, Color3.new(0, 0, 0))
 						}
-						
+
 						options[colorVariable] = hsv
 						Section["2d"]["BackgroundColor3"] = options["Section_Background"];
 						Section["38"]["BackgroundColor3"] = options["Background_Second"];
@@ -3493,7 +3869,7 @@ function Library:CreateWindow(options)
 						movingSlider = true
 						--Tab["1b"]["ScrollingEnabled"] = false;
 					end)
-					
+
 					--[[ colourWheel.MouseButton1Up:Connect(function()
 						GUI.CanDrag = true
 						buttonDown = false
@@ -3506,16 +3882,16 @@ function Library:CreateWindow(options)
 						movingSlider = false
 						Tab["1b"]["ScrollingEnabled"] = true;
 					end) --]]
-					
+
 					local InputEndeduis = nil
 					InputEndeduis = uis.InputEnded:Connect(function(input)
 						--if scriptrunning == true then
-							
-							if (input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch) and buttonDown then
-								buttonDown = false;movingSlider = false;--GUI.CanDrag = true
-								--Tab["1b"]["ScrollingEnabled"] = true;
-							end
-							--else
+
+						if (input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch) and buttonDown then
+							buttonDown = false;movingSlider = false;--GUI.CanDrag = true
+							--Tab["1b"]["ScrollingEnabled"] = true;
+						end
+						--else
 						--	InputEndeduis:Disconnect()
 						----end
 					end)
@@ -3619,7 +3995,7 @@ function Library:CreateWindow(options)
 						}, true)
 						oldnormalmessage("THEMES", "Custom Theme have been set.", 5)
 					else
-						
+
 					end
 				end)
 
@@ -3643,7 +4019,7 @@ function Library:CreateWindow(options)
 				task.spawn(function()
 					Section["15"].Size = UDim2.new(1, 0, 0, Section["17"].AbsoluteContentSize.Y + 10 - 30 + 200)
 					task.wait()
-					ResizeScrollingFrame(Tab["1b"] , Tab["22"])
+					ResizeScrollingFrame(Tab["1b"] , Tab["22"], 26)
 				end)
 			end
 
@@ -3842,7 +4218,7 @@ function Library:CreateWindow(options)
 		IconOffset = Vector2.new(804, 4),
 		ShowAsLast = true
 	})
-	
+
 	if isfolder and isfile and makefolder and writefile and delfile then
 		local FOLDER_NAME = "POOPDOORS_EDITED_UI"
 		local function checkdir() if not isfolder(FOLDER_NAME) then makefolder(FOLDER_NAME) end end
@@ -3854,7 +4230,7 @@ function Library:CreateWindow(options)
 			if isfile(FOLDER_NAME.."/"..name..".json") then
 				local jsonecoded = readfile(FOLDER_NAME.."/"..name..".json")
 				local flagsjson = game.HttpService:JSONDecode(jsonecoded)
-				
+
 				ThemesTab:__designertheme({
 					Name = flagsjson["Name"],
 					By = flagsjson["By"],
@@ -3864,7 +4240,7 @@ function Library:CreateWindow(options)
 					Section_Background = from_hex(flagsjson["Section_Background"]),
 					Topbar = from_hex(flagsjson["Topbar"]),
 				})
-				
+
 				table.insert(CustomThemes, name)
 			end
 		end
@@ -3880,7 +4256,7 @@ function Library:CreateWindow(options)
 					end
 				end
 			end
-			
+
 			CustomThemes = {}
 			themelist = {}
 			for _,v in pairs(listfiles(FOLDER_NAME)) do
@@ -3969,12 +4345,12 @@ function Library:CreateWindow(options)
 				Library.setTheme(origcolo, false)
 			end
 		end
-		
+
 		ThemesTab:__customdesignertheme({
 			Name = "Theme",
 			By = game.Players.LocalPlayer.Name
 		})
-		
+
 		task.wait()
 		Library.__loadtheme()
 		task.wait()
