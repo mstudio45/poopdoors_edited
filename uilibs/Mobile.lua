@@ -1125,6 +1125,24 @@ function Library:CreateWindow(options)
 					options.Callback(Slider:Get())
 				end
 
+				function Slider:SetMax(v)
+					if typeof(v) == "number" then
+						if v >= options.Min then
+							options.Max = v
+							Slider:Set(Slider:Get())
+						end
+					end
+				end
+				
+				function Slider:SetMin(v)
+					if typeof(v) == "number" then
+						if v <= options.Max then
+							options.Min = v
+							Slider:Set(Slider:Get())
+						end
+					end
+				end
+
 				function Slider:Get()
 					return tonumber(Slider["31"]["Text"])
 				end
