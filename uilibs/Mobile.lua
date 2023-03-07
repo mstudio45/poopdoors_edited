@@ -1795,7 +1795,7 @@ function Library:CreateWindow(options)
 					Dropdown["3e"]["Padding"] = UDim.new(0, 6);
 					Dropdown["3e"]["SortOrder"] = Enum.SortOrder.LayoutOrder;
 					
-					--StarterGui.ML.Main.Content.HomeTab.Dropdown.OptionHolder.Option
+					--[[ StarterGui.ML.Main.Content.HomeTab.Dropdown.OptionHolder.Option
 					Dropdown["4dreerereererer"] = Instance.new("TextButton", Dropdown["3d"]);
 					Dropdown["4dreerereererer"]["AutomaticSize"] = Enum.AutomaticSize.Y;
 					Dropdown["4dreerereererer"]["TextYAlignment"] = Enum.TextYAlignment.Top;
@@ -1803,7 +1803,7 @@ function Library:CreateWindow(options)
 					Dropdown["4dreerereererer"]["BackgroundTransparency"] = 1;
 					Dropdown["4dreerereererer"]["TextSize"] = 14;
 					Dropdown["4dreerereererer"]["TextColor3"] = Color3.fromRGB(203, 203, 203);
-					Dropdown["4dreerereererer"]["Size"] = UDim2.new(1, 0, 0, 1);
+					Dropdown["4dreerereererer"]["Size"] = UDim2.new(1, 0, 0, 0.25);
 					Dropdown["4dreerereererer"]["Text"] = "";
 					Dropdown["4dreerereererer"]["Name"] = "invismiddlesection";
 					Dropdown["4dreerereererer"]["Font"] = Enum.Font.Gotham;
@@ -1811,7 +1811,7 @@ function Library:CreateWindow(options)
 					-- StarterGui.ML.Main.Content.HomeTab.Dropdown.OptionHolder.Option.UICorner
 					Dropdown["4ererrewereerd_UICorner"] = Instance.new("UICorner", Dropdown["4dreerereererer"]);
 					Dropdown["4ererrewereerd_UICorner"]["CornerRadius"] = UDim.new(0, 3);
-					
+					--]]
 				end
 
 				-- Methods
