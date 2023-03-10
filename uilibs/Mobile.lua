@@ -892,6 +892,7 @@ function Library:CreateWindow(options)
 
 				function TextBox:Set(Name)
 					if string.len(Name) ~= 0 then
+if Name == " " then Name = "" end
 						TextBox["1f"]["Text"] = tostring(Name);
 						TextBox:_update()
 					end
