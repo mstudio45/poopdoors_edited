@@ -58,7 +58,7 @@ repeat
 							repeat
 								game.Players.LocalPlayer.Character:PivotTo(v.DoorHitbox.CFrame)
 								task.wait()
-							until v.DoorHitbox.BillboardGui.Title.Text == "1 / 1" or v.DoorHitbox.BillboardGui.Title.Text == "1 / 12"
+							until v.DoorHitbox.BillboardGui.Players:FindFirstChild(game.Players.LocalPlayer.DisplayName) or v.DoorHitbox.BillboardGui.Players:FindFirstChild(game.Players.LocalPlayer.Name) --v.DoorHitbox.BillboardGui.Title.Text == "1 / 1" or v.DoorHitbox.BillboardGui.Title.Text == "1 / 12"
 							teleported = true
 							break
 						end
