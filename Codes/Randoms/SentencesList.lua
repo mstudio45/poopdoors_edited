@@ -16,4 +16,8 @@ return {
 	"sus",
 	"what the dog doing",
 	"whopper whopper whopper whopper juniur double tripple whopper",
+	"Did you know, if you divide 10 by 7, you will get a number with infinity decimals?",
+	"what the dog doing?",
+	"Damn I messed up, we gotta got blad.",
+	"I regret nothing."
 }
