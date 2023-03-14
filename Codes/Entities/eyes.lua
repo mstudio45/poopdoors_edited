@@ -1,3 +1,4 @@
+-- by sponguss, i just fixed some stuff
 return function(_, CanEntityKill)
 	local m=Instance.new("Model");m.Name="Lookman"
 	spawn(function()
