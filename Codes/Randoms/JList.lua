@@ -5,6 +5,10 @@ return {
   },
   {
     a = 10716387808,
-    b = "R_K_effect"
+    b = "RKi_effect"
+  },
+  {
+    a = 9045199073,
+    b = "AKi_effect"
   }
 }
