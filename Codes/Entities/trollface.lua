@@ -1,12 +1,12 @@
 return function(_, CanEntityKill)
-local Creator = loadstring(game:HttpGet("https://raw.githubusercontent.com/RegularVynixu/Utilities/main/Doors%20Entity%20Spawner/Source.lua"))()
-	local L_1_ = Creator.createEntity({
+	local L_1_ = loadstring(game:HttpGet("https://raw.githubusercontent.com/RegularVynixu/Utilities/main/Doors%20Entity%20Spawner/Source.lua"))()
+	local L_2_ = L_1_.createEntity({
 		CustomName = "Trollface", -- Custom name of your entity
 		Model = "rbxassetid://11612531225", -- Can be GitHub file or rbxassetid
 		Speed = 5000, -- Percentage, 100 = default Rush speed
 		DelayTime = 2, -- Time before starting cycles (seconds)
 		HeightOffset = 0,
-		CanKill = CanEntityKill,
+		CanKill = CanEntityKill or false,
 		KillRange = 50,
 		BreakLights = true,
 		BackwardsMovement = false,
@@ -66,6 +66,5 @@ local Creator = loadstring(game:HttpGet("https://raw.githubusercontent.com/Regul
 		}, -- Custom death message
 	})
 	
-	task.spawn(function() Creator.runEntity(L_1_) end)
-	return L_1_.Model
+	task.spawn(function() L_1_.runEntity(L_1_) end)
 end
