@@ -1,10 +1,9 @@
 
 -- by sponguss, i just fixed some stuff
-
-function seekintro(p1)
 local v1 = game.Players.LocalPlayer.PlayerGui:FindFirstAncestor("MainUI");
 local l__EntityInfo__2 = game:GetService("ReplicatedStorage"):WaitForChild("EntityInfo");
 local l__TweenService__1 = game:GetService("TweenService");
+function seekintro(p1)
 	if not workspace:FindFirstChild("SeekMoving", true) then
 		warn("cant find elevator!");
 		return;
