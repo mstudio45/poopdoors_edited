@@ -4,7 +4,7 @@ return function(_, CanEntityKill) -- cannot kill idk why
 	    CustomName = "Trollface", -- Custom name of your entity
 	    Model = "https://github.com/mstudio45/poopdoors_edited/blob/main/Codes/Entities/trollface.rbxm?raw=true", -- Can be GitHub file or rbxassetid
 	    Speed = 300, -- Percentage, 100 = default Rush speed
-		MoveDelay = 2,
+		MoveDelay = 0,
         HeightOffset = 0,
         CanKill = false,
         KillRange = 50,
