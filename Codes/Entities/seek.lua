@@ -138,7 +138,16 @@ return function(_,CanEntityKill)
 
 		Calculate = function()
 			local t = 0
-			local Earliest = 0
+			local Earliest = game.ReplicatedStorage.GameData.LatestRoom.Value-3
+			if not workspace.CurrentRooms:FindFirstChild(tostring(Earliest)) then
+ 				Earliest = game.ReplicatedStorage.GameData.LatestRoom.Value-2
+				if not workspace.CurrentRooms:FindFirstChild(tostring(Earliest)) then
+					Earliest = game.ReplicatedStorage.GameData.LatestRoom.Value-1
+					if not workspace.CurrentRooms:FindFirstChild(tostring(Earliest)) then
+						Earliest = game.ReplicatedStorage.GameData.LatestRoom.Value
+					end
+				end
+			end
 			local Latest = game.ReplicatedStorage.GameData.LatestRoom.Value
 
 			for _,Room in ipairs(workspace.CurrentRooms:GetChildren()) do
