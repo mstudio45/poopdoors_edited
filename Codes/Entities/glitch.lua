@@ -1,3 +1,4 @@
+-- by sponguss, i just fixed some stuff
 return function(_, CanEntityKill)
 local c = workspace.CurrentRooms[game.Players.LocalPlayer:GetAttribute("CurrentRoom")]
 	local r = game.Players.LocalPlayer:GetAttribute("CurrentRoom")
